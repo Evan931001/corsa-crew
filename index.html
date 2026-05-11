@@ -366,12 +366,13 @@ const svg = (name, size=20, color='currentColor') =>
 
 // ─── STATUS ───────────────────────────────────────────────────────────────
 const ST = {
-  pending:  {label:'待拍',   color:'#686868', bg:'rgba(104,104,104,.16)', icon:'○'},
-  shooting: {label:'拍攝中', color:'#e8961e', bg:'rgba(232,150,30,.14)',  icon:'◉'},
+  pending:  {label:'待拍',   color:'#606060', bg:'rgba(96,96,96,.15)',    icon:'○'},
+  shooting: {label:'拍攝中', color:'#d95555', bg:'rgba(217,85,85,.15)',   icon:'◉'},
   done:     {label:'完成',   color:'#3eb87a', bg:'rgba(62,184,122,.14)',  icon:'✓'},
-  ng:       {label:'NG',    color:'#d95555', bg:'rgba(217,85,85,.14)',   icon:'✕'},
+  ng:       {label:'NG',    color:'#f5c518', bg:'rgba(245,197,24,.14)',   icon:'✕'},
+  keep:     {label:'KEEP',  color:'#4a9eff', bg:'rgba(74,158,255,.14)',   icon:'◈'},
 };
-const ST_ORDER = ['pending','shooting','done','ng'];
+const ST_ORDER = ['pending','shooting','done','ng','keep'];
 
 const TABS = [
   {id:'dashboard', label:'首頁',   icon:'grid'},
@@ -600,6 +601,20 @@ function render() {
   }
   updateSyncUI();
   if (state.tab === 'chatroom') attachChatListeners();
+  // Recording mode: red border on app when any shot is 'shooting'
+  const isRecording = state.shots.some(s=>s.status==='shooting');
+  const appEl = document.getElementById('app');
+  if (appEl) {
+    if (isRecording) {
+      appEl.style.outline = '3px solid #d95555';
+      appEl.style.outlineOffset = '-3px';
+      appEl.style.boxShadow = '0 0 0 3px rgba(217,85,85,.3), inset 0 0 30px rgba(217,85,85,.08)';
+    } else {
+      appEl.style.outline = '';
+      appEl.style.outlineOffset = '';
+      appEl.style.boxShadow = '';
+    }
+  }
 }
 
 function renderNav() {
@@ -815,7 +830,8 @@ function renderShots() {
     list.forEach((shot,i) => {
       const showH = i===0 || list[i-1].scene!==shot.scene;
       const expanded = expandShot===shot.id;
-      const borderColor = shot.status==='shooting'?'#e8961e35':shot.status==='done'?'#3eb87a20':'#1e1e1e';
+      const borderColor = shot.status==='shooting'?'#d9555550':shot.status==='done'?'#3eb87a35':shot.status==='ng'?'#f5c51835':shot.status==='keep'?'#4a9eff35':'#1e1e1e';
+      const bgCard = shot.status==='shooting'?'rgba(217,85,85,.06)':shot.status==='ng'?'rgba(245,197,24,.04)':shot.status==='keep'?'rgba(74,158,255,.04)':shot.status==='done'?'rgba(62,184,122,.04)':'var(--bg2)';
       if (showH && shot.scene) {
         cards += `<div style="font-size:10px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;margin-top:${i>0?'16px':'0'}">▸ 場景 ${esc(shot.scene)}${shot.sceneTitle?` — ${esc(shot.sceneTitle)}`:''}
         </div>`;
@@ -845,7 +861,7 @@ function renderShots() {
             <button class="btn-icon danger" data-action="del-confirm" data-type="shot" data-id="${esc(shot.id)}">${svg('trash',13)} 刪除</button>
           </div>
         </div>` : '';
-      cards += `<div style="background:var(--bg2);border-radius:13px;margin-bottom:8px;border:1px solid ${borderColor};overflow:hidden">
+      cards += `<div style="background:${bgCard};border-radius:13px;margin-bottom:8px;border:1.5px solid ${borderColor};overflow:hidden">
         <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer" data-action="expand-shot" data-id="${esc(shot.id)}">
           <div style="width:42px;height:42px;border-radius:9px;background:#0e0e0e;border:1px solid #242424;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-family:'Bebas Neue',sans-serif;color:var(--amber)">${esc(shot.shot||'—')}</div>
           <div style="flex:1;min-width:0">
@@ -877,7 +893,8 @@ function renderScript() {
 
   const sceneList = (selectedId) => state.script.length===0
     ? `<div style="padding:32px 16px;text-align:center">
-        <div style="font-size:13px;color:var(--t4);margin-bottom:12px">尚未新增場景</div>
+        <div style="font-size:12px;color:var(--t4);margin-bottom:6px">尚未新增場景</div>
+        <div style="font-size:10px;color:#444;margin-bottom:12px">支援格式：純文字貼入 / PDF 轉文字後貼入</div>
         <button class="btn-add" data-action="open-modal" data-modal="script">${svg('plus',14)} 新增</button>
       </div>`
     : state.script.map(sc=>`
@@ -1139,8 +1156,7 @@ function attachChatListeners() {
     inp.value = ''; inp.style.height = 'auto';
     render(); // re-renders chat
     setTimeout(()=>{ const m=document.getElementById('chat-msgs'); if(m)m.scrollTop=m.scrollHeight; },50);
-    try { await window.storage.set(KEYS.chat, JSON.stringify(next), true); setSyncStatus('synced'); } catch { setSyncStatus('error'); }
-    updateSyncUI();
+    try { await pushFirebase(); } catch { setSyncStatus('error'); updateSyncUI(); }
   }
 
   // Long-press / right-click context menu
@@ -1173,7 +1189,7 @@ function attachChatListeners() {
       state.chat = state.chat.map(m=>m.id===msgId?{...m,content:'已撤回此訊息',deleted:true}:m);
       closeCtx(); render();
       setTimeout(()=>{ const m=document.getElementById('chat-msgs'); if(m)m.scrollTop=m.scrollHeight; },50);
-      try { await window.storage.set(KEYS.chat, JSON.stringify(state.chat), true); } catch {}
+      try { await pushFirebase(); } catch {}
     };
   }
   function closeCtx() { const m=document.getElementById('ctx-menu'); if(m)m.remove(); }
@@ -1228,7 +1244,7 @@ async function saveCall() {
   state.callsheet = next; closeModal();
   setSyncStatus('syncing'); updateSyncUI();
   saveLocal();
-  try { await window.storage.set(KEYS.callsheet, JSON.stringify(next), true); setSyncStatus('synced'); } catch { setSyncStatus('error'); }
+  try { await pushFirebase(); } catch { setSyncStatus('error'); }
   updateSyncUI(); render();
 }
 
@@ -1236,7 +1252,7 @@ async function deleteCall(id) {
   const next = state.callsheet.filter(s=>s.id!==id);
   state.callsheet = next; setDelItem(null); closeModal();
   saveLocal();
-  try { await window.storage.set(KEYS.callsheet, JSON.stringify(next), true); } catch {}
+  try { await pushFirebase(); } catch {}
   render();
 }
 
@@ -1307,7 +1323,17 @@ function renderShotModal(item={}) {
       <div class="sh-title">${item.id?'編輯鏡頭':'新增鏡頭'}</div>
       <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
     </div>
-    <div class="grid2">${fld('場景代號',inp('s-scene',item.scene,'A'))}${fld('鏡頭編號 *',inp('s-shot',item.shot,'A01'))}</div>
+    <div class="grid2">
+      ${fld('場景',`<select class="inp" id="s-scene">
+        ${Array.from({length:99},(_,i)=>`<option value="S${i+1}"${item.scene===`S${i+1}`?' selected':''}>S${i+1}</option>`).join('')}
+      </select>`)}
+      ${fld('Take 數',`<select class="inp" id="s-shot">
+        ${Array.from({length:99},(_,i)=>{
+          const val='Take '+(i+1);
+          return `<option value="${val}"${item.shot===val?' selected':''}>${val}</option>`;
+        }).join('')}
+      </select>`)}
+    </div>
     ${fld('場景名稱',inp('s-sceneTitle',item.sceneTitle,'例：賽道清晨'))}
     ${fld('畫面描述 *',inp('s-desc',item.desc,'描述這個鏡頭拍什麼'))}
     <div class="grid3">${fld('鏡別',inp('s-type',item.type,'WS / CU'))}${fld('鏡頭',inp('s-lens',item.lens,'50mm'))}${fld('運鏡',inp('s-dir',item.dir,'固定'))}</div>
@@ -1557,7 +1583,7 @@ document.addEventListener('click', (e) => {
       break;
     }
     case 'save-call': saveCall(); break;
-    case 'open-info': showModal(renderInfoModal(state.info)); attachImportHandler(); break;
+    case 'open-info': fetchOnlineUsers().then(()=>{ showModal(renderInfoModal(state.info)); attachImportHandler(); }); break;
     case 'close-modal': closeModal(); render(); break;
 
     // Shot
@@ -1602,6 +1628,21 @@ document.addEventListener('click', (e) => {
     // Info
     case 'save-info': saveInfo(); setTimeout(()=>attachImportHandler(),0); break;
     case 'export-json': exportJSON(); break;
+    case 'refresh-online': {
+      fetchOnlineUsers().then(()=>{
+        const el = document.getElementById('online-users-list');
+        if (!el) return;
+        el.innerHTML = onlineUsers.length===0
+          ? `<div style="font-size:11px;color:#444">沒有在線使用者</div>`
+          : onlineUsers.map(u=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <div style="width:7px;height:7px;border-radius:50%;background:#3eb87a;box-shadow:0 0 4px #3eb87a;flex-shrink:0"></div>
+              <span style="font-size:13px;color:#d8d8d8">${esc(u.name)}</span>
+              ${u.dept?`<span style="font-size:10px;color:#555">${esc(u.dept)}</span>`:''}
+              ${u.isAdmin?`<span class="admin-badge">管理員</span>`:''}
+            </div>`).join('');
+      });
+      break;
+    }
     case 'verify-admin': {
       const code = document.getElementById('admin-code')?.value?.trim();
       if (code === '1001') {
@@ -1613,7 +1654,7 @@ document.addEventListener('click', (e) => {
         // System message in chat
         const sysMsg = {id:`sys${Date.now()}`,author:'系統',content:`${userProfile.name} 已成為管理員`,time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),sys:true,isAdmin:false};
         state.chat=[...state.chat,sysMsg];
-        window.storage.set(KEYS.chat,JSON.stringify(state.chat),true).catch(()=>{});
+        pushFirebase().catch(()=>{});
       } else {
         const err = document.getElementById('admin-err'); if(err) err.style.display='block';
       }
@@ -1809,18 +1850,42 @@ document.getElementById('profile-name-inp').addEventListener('keydown', e => {
 document.getElementById('profile-badge')?.addEventListener('click', showProfileScreen);
 document.getElementById('topbar-profile')?.addEventListener('click', showProfileScreen);
 
+let onlineUsers = [];
+
+async function registerHeartbeat() {
+  if (!userProfile.name || !firebaseUrl) return;
+  try {
+    const key = userProfile.name.replace(/[^a-zA-Z0-9]/g,'_');
+    await fetch(firebaseUrl+'/online/'+key+'.json', {
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name:userProfile.name, dept:userProfile.dept||'', isAdmin:userProfile.isAdmin||false, ts:Date.now() }),
+    });
+  } catch {}
+}
+
+async function fetchOnlineUsers() {
+  if (!firebaseUrl) return;
+  try {
+    const r = await fetch(firebaseUrl+'/online.json');
+    const data = await r.json();
+    if (!data) { onlineUsers=[]; return; }
+    const now = Date.now();
+    onlineUsers = Object.values(data).filter(u => now-(u.ts||0)<90000);
+  } catch { onlineUsers=[]; }
+}
+
 function initApp() {
   loadProfile();
   loadLocal();
   render();
   updateSyncUI();
   updateProfileUI();
+  setInterval(pullFirebase, 4000);
   pullFirebase();
   requestNotificationPermission();
-  // Show profile screen if no name set
-  if (!userProfile.name) {
-    setTimeout(showProfileScreen, 400);
-  }
+  if (!userProfile.name) { setTimeout(showProfileSetup, 400); }
+  registerHeartbeat();
+  setInterval(registerHeartbeat, 30000);
 }
 
 initPasswordGate();

@@ -135,9 +135,117 @@ a{color:inherit;text-decoration:none}
 #pw-hint{font-size:11px;color:#2a2a2a;margin-top:24px}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 
+
+/* ── Broadcast Overlay ── */
+#broadcast-overlay{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .25s ease}
+#broadcast-overlay.show{display:flex}
+#broadcast-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.92)}
+#broadcast-box{position:relative;width:100%;max-width:480px;background:#111;border-radius:20px;border:1px solid #e8961e40;overflow:hidden;animation:broadcastIn .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes broadcastIn{from{transform:scale(.85) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+#broadcast-header{background:linear-gradient(135deg,#1a0f00,#2a1500);padding:20px 20px 16px;border-bottom:1px solid #e8961e25;display:flex;align-items:center;gap:12px}
+#broadcast-icon{width:42px;height:42px;border-radius:50%;background:rgba(232,150,30,.15);border:1px solid #e8961e40;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#broadcast-badge{display:inline-block;font-size:10px;color:#e8961e;background:rgba(232,150,30,.12);border:1px solid #e8961e30;padding:2px 10px;border-radius:99px;margin-bottom:4px;letter-spacing:.08em}
+#broadcast-meta-name{font-size:14px;font-weight:700;color:#e0e0e0}
+#broadcast-meta-role{font-size:11px;color:#888}
+#broadcast-important-bar{background:#e8961e;color:#000;text-align:center;font-size:11px;font-weight:700;padding:5px;letter-spacing:.1em;display:none}
+#broadcast-body{padding:20px}
+#broadcast-time{font-size:10px;color:#555;letter-spacing:.06em;margin-bottom:10px;text-transform:uppercase}
+#broadcast-content{font-size:15px;color:#d8d8d8;line-height:1.85;white-space:pre-line}
+#broadcast-footer{padding:16px 20px;border-top:1px solid #1e1e1e;display:flex;gap:10px}
+#broadcast-dismiss{flex:1;padding:12px;background:#e8961e;color:#000;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+#broadcast-dismiss:hover{background:#d4870e}
+#broadcast-view{flex:0 0 auto;padding:12px 18px;background:#1a1a1a;color:#888;border:1px solid #242424;border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit}
+#broadcast-counter{position:absolute;top:14px;right:16px;font-size:11px;color:#555}
+/* pulse ring for important */
+#broadcast-icon.important{background:rgba(217,85,85,.15);border-color:#d9555540}
+#broadcast-icon.important::after{content:'';position:absolute;width:52px;height:52px;border-radius:50%;border:2px solid #d95555;animation:pulseRing 1.5s ease infinite;pointer-events:none}
+@keyframes pulseRing{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.5);opacity:0}}
+
+
+/* ── Profile Setup Screen ── */
+#profile-screen{position:fixed;inset:0;background:#0a0a0a;z-index:9998;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s}
+#profile-screen.show{display:flex}
+#profile-box{width:100%;max-width:380px}
+#profile-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fff;letter-spacing:.06em;margin-bottom:4px}
+#profile-sub{font-size:13px;color:#555;margin-bottom:32px}
+.profile-dept-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.dept-btn{padding:11px 8px;border-radius:10px;background:#141414;border:1px solid #242424;color:#888;font-size:13px;cursor:pointer;font-family:inherit;text-align:center;transition:all .12s}
+.dept-btn:hover{background:#1e1e1e;color:#ccc}
+.dept-btn.selected{background:rgba(232,150,30,.12);border-color:#e8961e50;color:#e8961e;font-weight:600}
+#profile-name-inp{width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;color:#d8d8d8;font-size:15px;font-family:inherit;outline:none;margin-top:6px}
+#profile-name-inp:focus{border-color:#e8961e40}
+#profile-confirm{width:100%;margin-top:20px;padding:14px;background:#e8961e;color:#000;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+#profile-confirm:hover{background:#d4870e}
+/* Profile badge in sidebar/topbar */
+#profile-badge{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#141414;border-radius:10px;border:1px solid #1e1e1e;cursor:pointer;margin-bottom:8px}
+#profile-avatar{width:32px;height:32px;border-radius:50%;background:rgba(232,150,30,.15);border:1px solid #e8961e40;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#e8961e;flex-shrink:0}
+#profile-info{flex:1;min-width:0}
+#profile-name-lbl{font-size:13px;color:#d8d8d8;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#profile-role-lbl{font-size:10px;color:#666;margin-top:1px}
+#profile-edit-btn{font-size:10px;color:#555;flex-shrink:0}
+/* Mobile topbar profile */
+#topbar-profile{display:flex;align-items:center;gap:6px;cursor:pointer}
+#topbar-avatar{width:28px;height:28px;border-radius:50%;background:rgba(232,150,30,.15);border:1px solid #e8961e40;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#e8961e;flex-shrink:0}
+
 </style>
 </head>
 <body>
+
+<!-- ── PROFILE SETUP ── -->
+<div id="profile-screen">
+  <div id="profile-box">
+    <div id="profile-title">你是誰？</div>
+    <div id="profile-sub">設定後會自動填入公告的發布人</div>
+
+    <div class="field">
+      <div class="fl">你的姓名</div>
+      <input id="profile-name-inp" type="text" placeholder="輸入真實姓名" maxlength="20">
+    </div>
+
+    <div class="field" style="margin-top:14px">
+      <div class="fl">所屬組別</div>
+      <div class="profile-dept-grid" id="dept-grid">
+        <button class="dept-btn" data-dept="導演組">導演組</button>
+        <button class="dept-btn" data-dept="製片組">製片組</button>
+        <button class="dept-btn" data-dept="攝影組">攝影組</button>
+        <button class="dept-btn" data-dept="燈光組">燈光組</button>
+        <button class="dept-btn" data-dept="美術組">美術組</button>
+        <button class="dept-btn" data-dept="收音組">收音組</button>
+        <button class="dept-btn" data-dept="場務組">場務組</button>
+        <button class="dept-btn" data-dept="演員">演員</button>
+      </div>
+    </div>
+
+    <button id="profile-confirm">確認進入</button>
+  </div>
+</div>
+
+<!-- ── BROADCAST OVERLAY ── -->
+<div id="broadcast-overlay">
+  <div id="broadcast-backdrop" id="bc-backdrop"></div>
+  <div id="broadcast-box">
+    <div id="broadcast-important-bar">⚠ 重要公告</div>
+    <div id="broadcast-header">
+      <div id="broadcast-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8961e" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      </div>
+      <div>
+        <div id="broadcast-badge">劇組公告</div>
+        <div id="broadcast-meta-name"></div>
+        <div id="broadcast-meta-role"></div>
+      </div>
+      <div id="broadcast-counter"></div>
+    </div>
+    <div id="broadcast-body">
+      <div id="broadcast-time"></div>
+      <div id="broadcast-content"></div>
+    </div>
+    <div id="broadcast-footer">
+      <button id="broadcast-view">查看全部公告</button>
+      <button id="broadcast-dismiss">我知道了</button>
+    </div>
+  </div>
+</div>
 
 <!-- ── PASSWORD GATE ── -->
 <div id="pw-screen">
@@ -160,6 +268,14 @@ a{color:inherit;text-decoration:none}
     </div>
     <div class="sb-nav" id="sb-nav"></div>
     <div class="sb-foot">
+      <div id="profile-badge">
+        <div id="profile-avatar">?</div>
+        <div id="profile-info">
+          <div id="profile-name-lbl">設定個人資訊</div>
+          <div id="profile-role-lbl">點此設定</div>
+        </div>
+        <div id="profile-edit-btn">✎</div>
+      </div>
       <div id="sync-sb"></div>
       <div style="font-size:10px;color:#2a2a2a;margin-top:5px" id="sync-mode-lbl"></div>
     </div>
@@ -169,7 +285,12 @@ a{color:inherit;text-decoration:none}
     <div class="topbar">
       <div class="topbar-logo">PROD<span>.</span>CREW</div>
       <div class="topbar-label" id="topbar-lbl"></div>
-      <div id="sync-top"></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="sync-top"></div>
+        <div id="topbar-profile">
+          <div id="topbar-avatar">?</div>
+        </div>
+      </div>
     </div>
     <div class="content" id="content"></div>
   </div>
@@ -231,7 +352,8 @@ let state = {
 };
 
 let syncStatus = 'local'; // 'local' | 'synced' | 'syncing' | 'error'
-let firebaseUrl = localStorage.getItem('prod:fb') || '';
+let firebaseUrl = 'https://corsa2025zg1001-default-rtdb.firebaseio.com';
+localStorage.setItem('prod:fb', firebaseUrl);
 
 // ─── STORAGE (localStorage + optional Firebase) ───────────────────────────
 const LS_KEY = 'prod:data:v4';
@@ -273,6 +395,12 @@ async function pullFirebase() {
     if (!r.ok) throw new Error(r.status);
     const data = await r.json();
     if (!data || data._ts <= state._ts) { syncStatus = 'synced'; updateSyncUI(); return; }
+    // Check for new announcements
+    const prevAnnIds = new Set((state.announcements||[]).map(a=>a.id));
+    const newAnns = (data.announcements||[]).filter(a => !prevAnnIds.has(a.id));
+    if (newAnns.length > 0 && state._ts > 0) {
+      newAnns.forEach(a => showNotification(a));
+    }
     const prevTab = state.tab;
     Object.assign(state, {
       shots: data.shots||[], script: data.script||[],
@@ -284,6 +412,86 @@ async function pullFirebase() {
     render();
   } catch(e) { syncStatus = 'error'; updateSyncUI(); }
 }
+
+// ─── NOTIFICATIONS & BROADCAST ───────────────────────────────────────────
+function requestNotificationPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+// Queue of unread broadcasts
+let broadcastQueue = [];
+let broadcastShowing = false;
+
+function showNotification(ann) {
+  // Browser notification (background)
+  if ('Notification' in window && Notification.permission === 'granted') {
+    const title = ann.important ? `🔴 重要公告｜${ann.author||'劇組'}` : `📢 新公告｜${ann.author||'劇組'}`;
+    const body = ann.content.substring(0, 80) + (ann.content.length > 80 ? '…' : '');
+    try {
+      const n = new Notification(title, { body });
+      n.onclick = () => { window.focus(); n.close(); };
+      setTimeout(() => n.close(), 8000);
+    } catch(e) {}
+  }
+  // In-app broadcast overlay
+  broadcastQueue.push(ann);
+  if (!broadcastShowing) showNextBroadcast();
+}
+
+function showNextBroadcast() {
+  if (broadcastQueue.length === 0) { broadcastShowing = false; return; }
+  broadcastShowing = true;
+  const ann = broadcastQueue.shift();
+  const el = document.getElementById('broadcast-overlay');
+  const remaining = broadcastQueue.length;
+
+  // Important styling
+  const icon = document.getElementById('broadcast-icon');
+  const bar  = document.getElementById('broadcast-important-bar');
+  if (ann.important) {
+    icon.classList.add('important');
+    bar.style.display = 'block';
+    el.style.background = 'none';
+  } else {
+    icon.classList.remove('important');
+    bar.style.display = 'none';
+  }
+
+  document.getElementById('broadcast-meta-name').textContent = ann.author || '（匿名）';
+  document.getElementById('broadcast-meta-role').textContent = ann.role || '';
+  document.getElementById('broadcast-time').textContent = ann.time ? `發布於 ${ann.time}` : '';
+  document.getElementById('broadcast-content').textContent = ann.content;
+  document.getElementById('broadcast-counter').textContent = remaining > 0 ? `還有 ${remaining} 則` : '';
+
+  el.classList.add('show');
+
+  // Vibrate on mobile for important
+  if (ann.important && navigator.vibrate) navigator.vibrate([200,100,200]);
+}
+
+function dismissBroadcast() {
+  const el = document.getElementById('broadcast-overlay');
+  el.classList.remove('show');
+  setTimeout(() => {
+    if (broadcastQueue.length > 0) showNextBroadcast();
+    else broadcastShowing = false;
+  }, 250);
+}
+
+// Broadcast event listeners (attached once)
+document.getElementById('broadcast-dismiss').addEventListener('click', dismissBroadcast);
+document.getElementById('broadcast-view').addEventListener('click', () => {
+  dismissBroadcast();
+  state.tab = 'announce'; render();
+});
+document.getElementById('broadcast-backdrop').addEventListener('click', () => {
+  // Don't dismiss on backdrop click for important announcements
+  const ann = document.getElementById('broadcast-important-bar');
+  if (ann && ann.style.display === 'block') return;
+  dismissBroadcast();
+});
 
 function save() { saveLocal(); pushFirebase(); }
 setInterval(pullFirebase, 5000);
@@ -840,7 +1048,13 @@ function renderAnnModal() {
       <div class="sh-title">發佈公告</div>
       <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
     </div>
-    <div class="grid2">${fld('你的姓名',inp('an-author','','姓名'))}${fld('職稱',inp('an-role','','導演 / 助導…'))}</div>
+    <div class="grid2">
+      ${fld('你的姓名',inp('an-author',userProfile.name,'姓名'))}
+      ${fld('身分組別',`<select class="inp" id="an-role">
+        <option value="">選擇身分</option>
+        ${['導演組','製片組','攝影組','燈光組','美術組','收音組','場務組','演員','其他'].map(d=>`<option value="${d}"${userProfile.dept===d?' selected':''}>${d}</option>`).join('')}
+      </select>`)}
+    </div>
     ${fld('公告內容 *',ta('an-content','','輸入公告內容…',4))}
     <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:4px">
       <input type="checkbox" id="an-important" style="width:17px;height:17px;accent-color:var(--amber)">
@@ -863,13 +1077,8 @@ function renderInfoModal(info={}) {
     ${fld('導演',inp('in-dir',info.director,'導演姓名'))}
     ${fld('拍攝地點',inp('in-loc',info.location,'拍攝地點'))}
     <div style="margin-top:8px;padding:14px;background:#0e0e0e;border-radius:10px;border:1px solid #1e1e1e">
-      <div style="font-size:11px;color:var(--amber);margin-bottom:8px;font-weight:600">🔗 Firebase 同步設定（選填）</div>
-      <div class="fl">Firebase Realtime Database URL</div>
-      <input class="inp" id="in-firebase" value="${esc(firebaseUrl)}" placeholder="https://your-project-default-rtdb.firebaseio.com">
-      <div style="font-size:11px;color:#444;margin-top:8px;line-height:1.7">
-        填入後所有劇組成員開啟同一個 HTML 檔案即可即時同步。<br>
-        申請方式：<a href="https://console.firebase.google.com" target="_blank" style="color:var(--amber)">console.firebase.google.com</a> → 建立專案 → Realtime Database → 複製網址
-      </div>
+      <div style="font-size:11px;color:var(--amber);margin-bottom:4px;font-weight:600">🔗 Firebase 同步</div>
+      <div style="font-size:11px;color:#3eb87a">● 已連線：corsa2025zg1001</div>
     </div>
     <div style="display:flex;gap:8px;margin-top:8px">
       <button class="btn-icon" data-action="export-json" style="flex:1">${svg('download',14)} 匯出 JSON 備份</button>
@@ -1150,11 +1359,92 @@ async function initPasswordGate() {
   input.focus();
 }
 
+// ─── PROFILE ─────────────────────────────────────────────────────────────
+const PROFILE_KEY = 'prod:profile:v1';
+let userProfile = { name: '', dept: '' };
+
+function loadProfile() {
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY);
+    if (raw) userProfile = JSON.parse(raw);
+  } catch(e) {}
+}
+
+function saveProfile(name, dept) {
+  userProfile = { name, dept };
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
+  updateProfileUI();
+}
+
+function updateProfileUI() {
+  const { name, dept } = userProfile;
+  const initial = name ? name[0].toUpperCase() : '?';
+  // Sidebar
+  const av = document.getElementById('profile-avatar');
+  const nl = document.getElementById('profile-name-lbl');
+  const rl = document.getElementById('profile-role-lbl');
+  if (av) av.textContent = initial;
+  if (nl) nl.textContent = name || '設定個人資訊';
+  if (rl) rl.textContent = dept || '點此設定';
+  // Topbar
+  const tav = document.getElementById('topbar-avatar');
+  if (tav) tav.textContent = initial;
+}
+
+function showProfileScreen() {
+  const screen = document.getElementById('profile-screen');
+  const nameInp = document.getElementById('profile-name-inp');
+  nameInp.value = userProfile.name || '';
+  // Restore selected dept
+  document.querySelectorAll('.dept-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.dept === userProfile.dept);
+  });
+  screen.classList.add('show');
+  nameInp.focus();
+}
+
+function hideProfileScreen() {
+  document.getElementById('profile-screen').classList.remove('show');
+}
+
+// Dept button selection
+document.getElementById('dept-grid').addEventListener('click', e => {
+  const btn = e.target.closest('.dept-btn');
+  if (!btn) return;
+  document.querySelectorAll('.dept-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+});
+
+// Confirm profile
+document.getElementById('profile-confirm').addEventListener('click', () => {
+  const name = document.getElementById('profile-name-inp').value.trim();
+  const dept = document.querySelector('.dept-btn.selected')?.dataset.dept || '';
+  if (!name) { document.getElementById('profile-name-inp').focus(); return; }
+  saveProfile(name, dept);
+  hideProfileScreen();
+});
+
+// Profile name input enter key
+document.getElementById('profile-name-inp').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('profile-confirm').click();
+});
+
+// Edit profile on click
+document.getElementById('profile-badge')?.addEventListener('click', showProfileScreen);
+document.getElementById('topbar-profile')?.addEventListener('click', showProfileScreen);
+
 function initApp() {
+  loadProfile();
   loadLocal();
   render();
   updateSyncUI();
+  updateProfileUI();
   pullFirebase();
+  requestNotificationPermission();
+  // Show profile screen if no name set
+  if (!userProfile.name) {
+    setTimeout(showProfileScreen, 400);
+  }
 }
 
 initPasswordGate();

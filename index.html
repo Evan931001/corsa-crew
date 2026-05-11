@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <title>PROD.CREW</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -1109,6 +1111,24 @@ document.addEventListener('click', e => {
   if (e.target.closest('#fs-btn')) toggleFS();
 });
 function toggleFS(){
+  // iOS (Safari & Chrome) doesn't support requestFullscreen
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isChrome = /CriOS/.test(navigator.userAgent);
+  if(isIOS){
+    const hint = isChrome
+      ? `Chrome 右上角 <b style="color:var(--c-am)">⋯</b> → 加入主畫面`
+      : `Safari → 底部 <b style="color:var(--c-am)">□↑ 分享</b> → 加入主畫面`;
+    showM(`<div class="dialog">
+      <div style="font-size:28px;margin-bottom:12px">📱</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:8px">iOS 不支援全螢幕</div>
+      <div style="font-size:13px;color:var(--c-t3);line-height:1.8;margin-bottom:20px">
+        ${hint}<br>
+        <span style="color:var(--c-t4)">加入主畫面後從桌面開啟即為全螢幕</span>
+      </div>
+      <button class="btn btn-primary btn-full" data-a="close-modal">知道了</button>
+    </div>`,true);
+    return;
+  }
   if(!document.fullscreenElement){
     document.documentElement.requestFullscreen().catch(()=>{});
   } else {

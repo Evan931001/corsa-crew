@@ -294,6 +294,12 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-t3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
           <span id="ann-badge" style="display:none;position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--c-rd);border:1.5px solid #080808"></span>
         </button>
+        <button id="fs-btn" style="width:32px;height:32px;border-radius:50%;background:var(--c-s2);border:1px solid var(--c-bd2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" title="全螢幕">
+          <svg id="fs-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--c-t3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 00-2 2v3"/><path d="M21 8V5a2 2 0 00-2-2h-3"/>
+            <path d="M3 16v3a2 2 0 002 2h3"/><path d="M16 21h3a2 2 0 002-2v-3"/>
+          </svg>
+        </button>
         <div class="tb-av" id="tb-av">?</div>
       </div>
     </div>
@@ -487,7 +493,7 @@ function nextBc(){
 function hideBc(){$('bc').classList.remove('on');setTimeout(()=>{if(bcQ.length)nextBc();else bcOn=false;},220);}
 $('bc-ok').onclick=hideBc;
 $('bc-view').onclick=()=>{hideBc();D.tab='ann';render();};
-$('bc-bg').onclick=()=>{if($('bc-imp').style.display==='block')return;hideBc();};
+$('bc-bg').onclick=()=>{const imp=$('bc-imp');if(imp&&imp.style.display==='block')return;hideBc();};
 
 // ── Heartbeat ──
 async function heartbeat(){
@@ -1097,6 +1103,29 @@ function initApp(){
   setInterval(pull,5000);
   if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
 }
+
+// ── Fullscreen ──
+document.addEventListener('click', e => {
+  if (e.target.closest('#fs-btn')) toggleFS();
+});
+function toggleFS(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    document.exitFullscreen();
+  }
+}
+document.addEventListener('fullscreenchange',()=>{
+  const isFS=!!document.fullscreenElement;
+  const icon=$('fs-icon');
+  if(!icon)return;
+  // Switch icon between expand and compress
+  icon.innerHTML=isFS
+    ?'<path d="M8 3v3a2 2 0 01-2 2H3"/><path d="M21 8h-3a2 2 0 01-2-2V3"/><path d="M3 16h3a2 2 0 012 2v3"/><path d="M16 21v-3a2 2 0 012-2h3"/>'
+    :'<path d="M8 3H5a2 2 0 00-2 2v3"/><path d="M21 8V5a2 2 0 00-2-2h-3"/><path d="M3 16v3a2 2 0 002 2h3"/><path d="M16 21h3a2 2 0 002-2v-3"/>';
+  const btn=$('fs-btn');
+  if(btn)btn.style.borderColor=isFS?'var(--c-am3)':'var(--c-bd2)';
+});
 
 initPW();
 </script></body></html>

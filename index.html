@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>PROD.CREW — 劇組管理</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--bg1:#111;--bg2:#141414;--bg3:#1a1a1a;--bd:#1e1e1e;--bd2:#242424;--text:#d8d8d8;--t2:#999;--t3:#666;--t4:#444;--amber:#e8961e;--green:#3eb87a;--red:#d95555;--sw:220px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans TC','PingFang TC','Heiti TC',sans-serif;font-size:14px}
+::-webkit-scrollbar{width:0;height:0}
+input,textarea,select{font-family:inherit;outline:none;-webkit-appearance:none;appearance:none}
+button{cursor:pointer;font-family:inherit}
+a{color:inherit;text-decoration:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── Layout ── */
+#app{display:flex;height:100dvh;overflow:hidden}
+.sidebar{width:var(--sw);flex-shrink:0;background:#080808;border-right:1px solid #141414;display:flex;flex-direction:column;height:100dvh;overflow-y:auto}
+.sb-logo{padding:22px 18px 16px;border-bottom:1px solid #141414}
+.sb-wordmark{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--amber);letter-spacing:.14em}
+.sb-wordmark span{color:#2a2a2a}
+.sb-proj{font-size:11px;color:#3a3a3a;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-nav{padding:10px;flex:1}
+.sb-btn{width:100%;display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;margin-bottom:3px;background:none;color:var(--t4);border:1px solid transparent;font-size:13px;text-align:left;transition:all .12s}
+.sb-btn:hover{background:#111;color:var(--t3)}
+.sb-btn.active{background:rgba(232,150,30,.1);color:var(--amber);border-color:rgba(232,150,30,.2);font-weight:600}
+.sb-foot{padding:14px 18px;border-top:1px solid #141414}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.topbar{flex-shrink:0;background:rgba(10,10,10,.96);backdrop-filter:blur(14px);border-bottom:1px solid #141414;padding:11px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--t3);letter-spacing:.12em}
+.topbar-logo span{color:var(--amber)}
+.topbar-label{font-size:13px;color:var(--t3)}
+.content{flex:1;overflow-y:auto}
+.page{padding:20px 18px 20px;max-width:1400px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.97);backdrop-filter:blur(20px);border-top:1px solid #141414;display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:100}
+.bnav-btn{flex:1;background:none;border:none;padding:10px 0 12px;display:flex;flex-direction:column;align-items:center;gap:4px;color:#3a3a3a;font-size:10px;letter-spacing:.04em;transition:color .1s}
+.bnav-btn.active{color:var(--amber);font-weight:700}
+
+/* ── Components ── */
+.card{background:var(--bg2);border-radius:13px;padding:14px 16px;border:1px solid var(--bd)}
+.slabel{font-size:10px;color:var(--t4);letter-spacing:.1em;text-transform:uppercase;margin:20px 0 10px}
+.ptitle{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;letter-spacing:.05em;margin-bottom:16px}
+.badge{border:none;border-radius:99px;padding:3px 11px;font-size:11px;font-weight:700;white-space:nowrap;min-width:58px;text-align:center;line-height:1.5}
+.chip{font-size:10px;padding:2px 8px;border-radius:99px;background:var(--bg3);color:var(--t3);border:1px solid #222;white-space:nowrap;display:inline-block}
+.chip.a{background:rgba(232,150,30,.12);color:var(--amber);border-color:rgba(232,150,30,.25)}
+.inp{width:100%;background:#181818;border:1px solid #2c2c2c;border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px}
+.inp:focus{border-color:#404040}
+.fl{font-size:10px;color:#555;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px}
+.field{margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* Buttons */
+.btn-add{display:inline-flex;align-items:center;gap:6px;background:var(--amber);color:#000;border:none;border-radius:99px;padding:8px 16px;font-size:13px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.btn-add:hover{background:#d4870e}
+.btn-icon{display:inline-flex;align-items:center;gap:6px;background:var(--bg3);color:var(--t3);border:1px solid var(--bd2);border-radius:99px;padding:5px 13px;font-size:12px}
+.btn-icon:hover{color:var(--t2)}
+.btn-icon.danger{color:var(--red);border-color:rgba(217,85,85,.3)}
+.btn-mini{display:inline-flex;align-items:center;gap:5px;background:var(--bg3);color:var(--t3);border:1px solid var(--bd2);border-radius:99px;padding:5px 11px;font-size:12px}
+.btn-tbl{display:inline-flex;align-items:center;background:none;border:none;color:var(--t4);padding:4px;border-radius:6px;transition:color .1s}
+.btn-tbl:hover{color:var(--t2)}
+.btn-tbl.danger:hover{color:var(--red)}
+
+/* Table */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{padding:10px 16px;text-align:left;font-size:10px;color:#555;letter-spacing:.08em;text-transform:uppercase;font-weight:600;border-bottom:1px solid #1e1e1e;white-space:nowrap}
+.tbl td{padding:9px 16px;border-bottom:1px solid #181818;vertical-align:middle}
+.tbl tr:hover td{background:#141414}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .15s}
+.overlay.center{align-items:center}
+.sheet{width:100%;max-width:720px;background:#111;border-radius:20px 20px 0 0;padding:20px;padding-bottom:max(28px,env(safe-area-inset-bottom));border:1px solid #242424;max-height:92dvh;overflow-y:auto;animation:slideUp .22s ease}
+.sh-handle{width:36px;height:4px;background:#2a2a2a;border-radius:99px;margin:0 auto 18px}
+.sh-title{font-family:'Bebas Neue',sans-serif;font-size:19px;color:#fff;letter-spacing:.06em}
+.sh-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.dialog{width:100%;max-width:360px;background:#111;border-radius:16px;padding:26px;border:1px solid #2a2a2a;text-align:center;animation:fadeIn .15s}
+.btn-submit{width:100%;margin-top:16px;padding:14px;background:var(--amber);color:#000;border:none;border-radius:11px;font-size:14px;font-weight:700}
+.btn-submit:hover{background:#d4870e}
+
+/* Script split */
+.script-pane{display:flex;height:calc(100dvh - 50px)}
+.script-list{width:270px;flex-shrink:0;border-right:1px solid #1a1a1a;overflow-y:auto;display:flex;flex-direction:column}
+.script-list-hdr{padding:15px 18px 12px;border-bottom:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.sc-row{padding:13px 18px;cursor:pointer;border-bottom:1px solid #181818;border-left:3px solid transparent;transition:background .1s}
+.sc-row:hover{background:#181818}
+.sc-row.active{background:#1e1e1e;border-left-color:var(--amber)}
+.script-detail{flex:1;overflow-y:auto;padding:24px}
+.script-empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+
+/* Storyboard frame */
+.sb-frame{background:#080808;aspect-ratio:16/9;position:relative;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #1a1a1a;cursor:pointer;overflow:hidden}
+
+/* Sync dot */
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* Empty state */
+.empty{text-align:center;padding:48px 20px}
+.empty-icon{margin-bottom:14px;display:flex;justify-content:center;opacity:.4}
+
+/* Status colors as CSS vars for JS */
+/* ── Responsive ── */
+@media(max-width:767px){
+  .sidebar{display:none}
+  .topbar-label{display:none}
+  .content{padding-bottom:80px}
+}
+@media(min-width:768px){
+  .bottom-nav{display:none}
+  .topbar-logo{display:none}
+}
+@media(min-width:768px) and (max-width:1199px){:root{--sw:200px}}
+@media(min-width:1200px){
+  :root{--sw:240px}
+  .page{padding:24px 28px}
+}
+
+/* ── Password Screen ── */
+#pw-screen{position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Noto Sans TC','PingFang TC',sans-serif}
+#pw-box{width:100%;max-width:360px;text-align:center}
+#pw-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#e8961e;letter-spacing:.16em;margin-bottom:4px}
+#pw-sub{font-size:12px;color:#3a3a3a;margin-bottom:36px;letter-spacing:.06em}
+#pw-label{font-size:10px;color:#555;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;text-align:left}
+#pw-input{width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:13px 16px;color:#d8d8d8;font-size:15px;font-family:inherit;outline:none;text-align:center;letter-spacing:.15em;margin-bottom:14px;transition:border-color .2s}
+#pw-input:focus{border-color:#e8961e40}
+#pw-input.shake{animation:shake .4s ease}
+#pw-btn{width:100%;padding:13px;background:#e8961e;color:#000;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
+#pw-btn:hover{background:#d4870e}
+#pw-err{font-size:12px;color:#d95555;margin-top:10px;min-height:18px;opacity:0;transition:opacity .2s}
+#pw-err.show{opacity:1}
+#pw-hint{font-size:11px;color:#2a2a2a;margin-top:24px}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+
+</style>
+</head>
+<body>
+
+<!-- ── PASSWORD GATE ── -->
+<div id="pw-screen">
+  <div id="pw-box">
+    <div id="pw-logo">PROD<span style="color:#2a2a2a">.</span>CREW</div>
+    <div id="pw-sub">劇組管理系統</div>
+    <div id="pw-label">請輸入密碼</div>
+    <input id="pw-input" type="password" placeholder="••••••••" autocomplete="off" maxlength="32">
+    <button id="pw-btn">進入</button>
+    <div id="pw-err">密碼錯誤，請重試</div>
+    <div id="pw-hint">PROD.CREW &copy; 2025</div>
+  </div>
+</div>
+
+<div id="app">
+  <nav class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-wordmark">PROD<span>.</span>CREW</div>
+      <div class="sb-proj" id="sb-proj-name">設定項目資訊</div>
+    </div>
+    <div class="sb-nav" id="sb-nav"></div>
+    <div class="sb-foot">
+      <div id="sync-sb"></div>
+      <div style="font-size:10px;color:#2a2a2a;margin-top:5px" id="sync-mode-lbl"></div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-logo">PROD<span>.</span>CREW</div>
+      <div class="topbar-label" id="topbar-lbl"></div>
+      <div id="sync-top"></div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+
+  <nav class="bottom-nav" id="bnav"></nav>
+  <div id="modal-root"></div>
+</div>
+
+<script>
+// ─── ICONS ────────────────────────────────────────────────────────────────
+const I = {
+  grid:    `<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>`,
+  clap:    `<path d="M4 11v8a2 2 0 002 2h12a2 2 0 002-2v-8H4z"/><path d="M4 11L2 6l4.5-1.5 2 4.5"/><path d="M11.5 11L9 5.5 13.5 4l2.5 5.5"/><path d="M18 11l2-5-4.5-1.5-2 4.5"/>`,
+  file:    `<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>`,
+  monitor: `<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>`,
+  bell:    `<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>`,
+  back:    `<polyline points="15 18 9 12 15 6"/>`,
+  plus:    `<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>`,
+  edit:    `<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>`,
+  trash:   `<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>`,
+  settings:`<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>`,
+  x:       `<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,
+  download:`<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>`,
+  upload:  `<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>`,
+  link:    `<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>`,
+};
+const svg = (name, size=20, color='currentColor') =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block">${I[name]}</svg>`;
+
+// ─── STATUS ───────────────────────────────────────────────────────────────
+const ST = {
+  pending:  {label:'待拍',   color:'#686868', bg:'rgba(104,104,104,.16)', icon:'○'},
+  shooting: {label:'拍攝中', color:'#e8961e', bg:'rgba(232,150,30,.14)',  icon:'◉'},
+  done:     {label:'完成',   color:'#3eb87a', bg:'rgba(62,184,122,.14)',  icon:'✓'},
+  ng:       {label:'NG',    color:'#d95555', bg:'rgba(217,85,85,.14)',   icon:'✕'},
+};
+const ST_ORDER = ['pending','shooting','done','ng'];
+
+const TABS = [
+  {id:'dashboard', label:'首頁', icon:'grid'},
+  {id:'shots',     label:'進度', icon:'clap'},
+  {id:'script',    label:'劇本', icon:'file'},
+  {id:'storyboard',label:'分鏡', icon:'monitor'},
+  {id:'announce',  label:'公告', icon:'bell'},
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────
+let state = {
+  tab: 'dashboard',
+  shots: [], script: [], storyboard: [], announcements: [],
+  info: {title:'',subtitle:'',shootDay:'',totalDays:'',director:'',location:''},
+  ui: {
+    filterScene: 'all',
+    expandShot: null, expandSb: null,
+    activeScript: null,
+    modal: null, editItem: null, delItem: null,
+  },
+  _ts: 0,
+};
+
+let syncStatus = 'local'; // 'local' | 'synced' | 'syncing' | 'error'
+let firebaseUrl = localStorage.getItem('prod:fb') || '';
+
+// ─── STORAGE (localStorage + optional Firebase) ───────────────────────────
+const LS_KEY = 'prod:data:v4';
+
+function saveLocal() {
+  const {ui, ...data} = state;
+  localStorage.setItem(LS_KEY, JSON.stringify(data));
+}
+
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    Object.assign(state, data);
+  } catch(e) {}
+}
+
+async function pushFirebase() {
+  if (!firebaseUrl) return;
+  syncStatus = 'syncing'; updateSyncUI();
+  try {
+    const {ui, ...data} = state;
+    data._ts = Date.now();
+    await fetch(`${firebaseUrl}/prodcrew.json`, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(data),
+    });
+    state._ts = data._ts;
+    syncStatus = 'synced'; updateSyncUI();
+  } catch(e) { syncStatus = 'error'; updateSyncUI(); }
+}
+
+async function pullFirebase() {
+  if (!firebaseUrl) return;
+  try {
+    const r = await fetch(`${firebaseUrl}/prodcrew.json`);
+    if (!r.ok) throw new Error(r.status);
+    const data = await r.json();
+    if (!data || data._ts <= state._ts) { syncStatus = 'synced'; updateSyncUI(); return; }
+    const prevTab = state.tab;
+    Object.assign(state, {
+      shots: data.shots||[], script: data.script||[],
+      storyboard: data.storyboard||[], announcements: data.announcements||[],
+      info: data.info||state.info, _ts: data._ts,
+    });
+    state.tab = prevTab;
+    syncStatus = 'synced'; updateSyncUI();
+    render();
+  } catch(e) { syncStatus = 'error'; updateSyncUI(); }
+}
+
+function save() { saveLocal(); pushFirebase(); }
+setInterval(pullFirebase, 5000);
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const uid = () => `${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+const pct = (a,b) => b ? Math.round((a/b)*100) : 0;
+
+function badge(status, id) {
+  const s = ST[status]||ST.pending;
+  return `<button class="badge" data-action="cycle" data-id="${esc(id)}" style="color:${s.color};background:${s.bg};border:1px solid ${s.color}45" title="點擊切換">${s.icon} ${s.label}</button>`;
+}
+
+function syncDot(status) {
+  const cfg = {local:['#3a3a3a','本地'],synced:['#3eb87a','已同步'],syncing:['#e8961e','同步中'],error:['#d95555','連線失敗']};
+  const [c,t] = cfg[status]||cfg.local;
+  return `<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:${c}">
+    <span class="dot" style="background:${c};box-shadow:0 0 5px ${c};${status==='syncing'?'animation:blink 1s infinite':''}"></span>${t}</span>`;
+}
+
+function updateSyncUI() {
+  const mode = firebaseUrl ? '雲端同步' : '本地模式 — 設定Firebase可跨裝置';
+  document.getElementById('sync-top').innerHTML = syncDot(syncStatus);
+  document.getElementById('sync-sb').innerHTML = syncDot(syncStatus);
+  document.getElementById('sync-mode-lbl').textContent = mode;
+}
+
+function scenes() { return [...new Set(state.shots.map(s=>s.scene).filter(Boolean))]; }
+function shotCount() {
+  const c = {total:state.shots.length,done:0,shooting:0,pending:0,ng:0};
+  state.shots.forEach(s=>{if(c[s.status]!==undefined)c[s.status]++});
+  return c;
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────
+function render() {
+  const info = state.info;
+  document.getElementById('sb-proj-name').textContent = info.title||'設定項目資訊';
+  document.getElementById('topbar-lbl').textContent = TABS.find(t=>t.id===state.tab)?.label||'';
+  renderNav();
+  document.getElementById('content').innerHTML = renderTab();
+  updateSyncUI();
+}
+
+function renderNav() {
+  const tabs = TABS.map(t => {
+    const a = state.tab===t.id;
+    return `<button class="sb-btn${a?' active':''}" data-nav="${t.id}">${svg(t.icon,17)} ${t.label}</button>`;
+  }).join('');
+  document.getElementById('sb-nav').innerHTML = tabs;
+
+  const bnav = TABS.map(t => {
+    const a = state.tab===t.id;
+    return `<button class="bnav-btn${a?' active':''}" data-nav="${t.id}">${svg(t.icon,21)}<span>${t.label}</span></button>`;
+  }).join('');
+  document.getElementById('bnav').innerHTML = bnav;
+}
+
+function renderTab() {
+  switch(state.tab) {
+    case 'shots':      return renderShots();
+    case 'script':     return renderScript();
+    case 'storyboard': return renderStoryboard();
+    case 'announce':   return renderAnnounce();
+    default:           return renderDashboard();
+  }
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────
+function renderDashboard() {
+  const info = state.info;
+  const c = shotCount();
+  const p = pct(c.done, c.total);
+  const isDesktop = window.innerWidth >= 1200;
+  const sceneCards = scenes().map(scn => {
+    const ss = state.shots.filter(s=>s.scene===scn);
+    const d = ss.filter(s=>s.status==='done').length;
+    const pp = pct(d,ss.length);
+    const mini = ST_ORDER.map(st=>{
+      const n = ss.filter(s=>s.status===st).length;
+      return n ? `<span style="font-size:10px;color:${ST[st].color}">${ST[st].icon} ${n}</span>` : '';
+    }).join('');
+    return `<div class="card card-hover" style="cursor:pointer;margin-bottom:8px" data-action="goto-shots" data-scene="${esc(scn)}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--amber);margin-right:8px;letter-spacing:.05em">場景 ${esc(scn)}</span>
+          <span style="font-size:12px;color:var(--t3)">${esc(ss[0]?.sceneTitle||'')}</span>
+        </div>
+        <span style="font-size:11px;color:${pp===100?'#3eb87a':'#777'};font-weight:600">${d}/${ss.length}</span>
+      </div>
+      <div style="height:3px;background:#1c1c1c;border-radius:99px;overflow:hidden">
+        <div style="height:100%;width:${pp}%;background:${pp===100?'#3eb87a':'var(--amber)'};border-radius:99px"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">${mini}</div>
+    </div>`;
+  }).join('');
+
+  const annHTML = state.announcements.slice(0,3).map(renderAnnCard).join('') ||
+    `<div class="card" style="text-align:center;padding:20px;font-size:12px;color:var(--t4)">尚無公告</div>`;
+
+  const progressCard = c.total > 0 ? `
+    <div class="card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:24px;margin-bottom:18px">
+        <div style="position:relative;width:96px;height:96px;flex-shrink:0">
+          <svg width="96" height="96" viewBox="0 0 96 96">
+            <circle cx="48" cy="48" r="40" fill="none" stroke="#1c1c1c" stroke-width="9"/>
+            <circle cx="48" cy="48" r="40" fill="none" stroke="var(--amber)" stroke-width="9"
+              stroke-dasharray="${2*Math.PI*40}"
+              stroke-dashoffset="${2*Math.PI*40*(1-p/100)}"
+              stroke-linecap="round" transform="rotate(-90 48 48)" style="transition:stroke-dashoffset 1s ease"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--amber);line-height:1">${p}%</span>
+            <span style="font-size:9px;color:#555;margin-top:2px;letter-spacing:.05em">DONE</span>
+          </div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:11px;color:var(--t3);margin-bottom:12px">拍攝進度 · 共 ${c.total} 個鏡頭</div>
+          <div style="display:grid;grid-template-columns:${isDesktop?'1fr 1fr 1fr 1fr':'1fr 1fr'};gap:10px 20px">
+            ${[['完成','done','#3eb87a'],['拍攝中','shooting','#e8961e'],['待拍','pending','#686868'],['NG','ng','#d95555']].map(([l,k,col])=>
+              `<div style="display:flex;align-items:center;gap:7px">
+                <span style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0"></span>
+                <span style="font-size:12px;color:var(--t3)">${l}</span>
+                <span style="font-size:15px;font-weight:700;color:${col};margin-left:auto">${c[k]}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div style="height:4px;background:#181818;border-radius:99px;overflow:hidden">
+        <div style="height:100%;width:${p}%;background:linear-gradient(90deg,#b8700e,#e8961e);border-radius:99px;transition:width 1s ease"></div>
+      </div>
+    </div>` : `<div class="card" style="text-align:center;padding:36px;font-size:13px;color:var(--t4)">前往「進度」標籤新增鏡頭</div>`;
+
+  return `<div class="page">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:26px">
+      <div style="border-left:3px solid var(--amber);padding-left:14px">
+        ${info.subtitle?`<div style="font-size:10px;color:var(--amber);letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px">${esc(info.subtitle)}</div>`:''}
+        ${info.title
+          ? `<div style="font-family:'Bebas Neue',sans-serif;font-size:${isDesktop?'38px':'30px'};color:#fff;letter-spacing:.04em;line-height:1">${esc(info.title)}</div>`
+          : `<div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#2a2a2a">點擊右上角 ⚙ 設定項目資訊</div>`}
+        ${(info.shootDay||info.director) ? `<div style="font-size:12px;color:#777;margin-top:8px">
+          ${info.shootDay&&info.totalDays?`第 ${esc(info.shootDay)} / ${esc(info.totalDays)} 拍攝日`:''}
+          ${info.director?` · 導演：${esc(info.director)}`:''}
+          ${info.location?` · 📍 ${esc(info.location)}`:''}
+        </div>`:''}
+      </div>
+      <button class="btn-icon" data-action="open-info" style="flex-shrink:0">${svg('settings',15)} ${isDesktop?'項目設定':''}</button>
+    </div>
+    <div style="display:grid;grid-template-columns:${isDesktop?'1fr 360px':'1fr'};gap:24px">
+      <div>
+        ${progressCard}
+        ${scenes().length ? `<div class="slabel">場景概況</div>
+        <div style="display:grid;grid-template-columns:${isDesktop?'1fr 1fr':'1fr'};gap:10px">${sceneCards}</div>` : ''}
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="slabel" style="margin-top:0">公告</div>
+          <button class="btn-mini" data-action="open-modal" data-modal="ann">${svg('plus',13)} 新增</button>
+        </div>
+        ${annHTML}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ─── SHOTS ────────────────────────────────────────────────────────────────
+function renderShots() {
+  const {filterScene, expandShot} = state.ui;
+  const isDesktop = window.innerWidth >= 1200;
+  const list = filterScene==='all' ? state.shots : state.shots.filter(s=>s.scene===filterScene);
+  const chips = ['all',...scenes()].map(scn=>`
+    <button data-action="filter-scene" data-scene="${esc(scn)}"
+      style="padding:6px 15px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0;
+      background:${filterScene===scn?'var(--amber)':'#181818'};
+      color:${filterScene===scn?'#000':'#666'};
+      border:1px solid ${filterScene===scn?'var(--amber)':'#242424'}">
+      ${scn==='all'?'全部':`場景 ${esc(scn)}`}
+    </button>`).join('');
+
+  const emptyHTML = `<div class="card empty">
+    <div class="empty-icon">${svg('clap',32,'#e8961e')}</div>
+    <div style="font-size:14px;color:var(--t4);margin-bottom:16px">尚未新增任何鏡頭</div>
+    <button class="btn-add" data-action="open-modal" data-modal="shot">${svg('plus',14)} 新增第一個鏡頭</button>
+  </div>`;
+
+  let bodyHTML = '';
+  if (list.length === 0) {
+    bodyHTML = emptyHTML;
+  } else if (isDesktop) {
+    // Table view
+    let rows = '';
+    list.forEach((shot,i) => {
+      const showH = i===0 || list[i-1].scene!==shot.scene;
+      if (showH && shot.scene) {
+        rows += `<tr><td colspan="8" style="padding:10px 16px 6px;font-size:10px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;background:rgba(232,150,30,.03);border-top:1px solid #1e1e1e">▸ 場景 ${esc(shot.scene)}${shot.sceneTitle?` — ${esc(shot.sceneTitle)}`:''}</td></tr>`;
+      }
+      rows += `<tr>
+        <td style="font-family:'Bebas Neue',sans-serif;color:var(--amber);font-size:14px;letter-spacing:.05em;white-space:nowrap">${esc(shot.shot||'—')}</td>
+        <td style="max-width:280px">
+          <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">${esc(shot.desc||'—')}</div>
+          ${shot.notes?`<div style="font-size:11px;color:var(--t4);margin-top:2px">備注：${esc(shot.notes)}</div>`:''}
+        </td>
+        <td style="color:var(--t3);white-space:nowrap">${esc(shot.type||'—')}</td>
+        <td style="color:var(--t3);white-space:nowrap">${esc(shot.lens||'—')}</td>
+        <td style="color:var(--t3);white-space:nowrap">${esc(shot.dir||'—')}</td>
+        <td style="color:var(--t4);white-space:nowrap">${esc(shot.scene||'—')}</td>
+        <td>${badge(shot.status,shot.id)}</td>
+        <td>
+          <div style="display:flex;gap:4px">
+            <button class="btn-tbl" data-action="edit-shot" data-id="${esc(shot.id)}" title="編輯">${svg('edit',14)}</button>
+            <button class="btn-tbl danger" data-action="del-confirm" data-type="shot" data-id="${esc(shot.id)}" title="刪除">${svg('trash',14)}</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+    bodyHTML = `<div class="card" style="padding:0;overflow:hidden">
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr>
+            <th>編號</th><th>描述</th><th>鏡別</th><th>鏡頭</th>
+            <th>運鏡</th><th>場景</th><th>狀態</th><th></th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+  } else {
+    // Card view
+    let cards = '';
+    list.forEach((shot,i) => {
+      const showH = i===0 || list[i-1].scene!==shot.scene;
+      const expanded = expandShot===shot.id;
+      const borderColor = shot.status==='shooting'?'#e8961e35':shot.status==='done'?'#3eb87a20':'#1e1e1e';
+      if (showH && shot.scene) {
+        cards += `<div style="font-size:10px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;margin-top:${i>0?'16px':'0'}">▸ 場景 ${esc(shot.scene)}${shot.sceneTitle?` — ${esc(shot.sceneTitle)}`:''}
+        </div>`;
+      }
+      const expandedHTML = expanded ? `
+        <div style="padding:0 14px 14px;border-top:1px solid #181818">
+          ${(shot.type||shot.lens||shot.dir)?`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px">
+            ${[['鏡別',shot.type],['鏡頭',shot.lens],['運鏡',shot.dir]].map(([l,v])=>`
+              <div style="background:#0e0e0e;border-radius:7px;padding:7px 10px">
+                <div style="font-size:9px;color:#555;margin-bottom:3px">${l}</div>
+                <div style="font-size:12px;color:#bbb">${esc(v||'—')}</div>
+              </div>`).join('')}
+          </div>`:''}
+          ${shot.notes?`<div style="background:#0e0e0e;border-radius:7px;padding:8px 10px;margin-top:8px">
+            <div style="font-size:9px;color:#555;margin-bottom:3px">備注</div>
+            <div style="font-size:12px;color:#aaa">${esc(shot.notes)}</div>
+          </div>`:''}
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+            ${ST_ORDER.map(st=>`
+              <button data-action="set-status" data-id="${esc(shot.id)}" data-status="${st}"
+                style="padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600;
+                color:${ST[st].color};background:${shot.status===st?ST[st].bg:'#0e0e0e'};
+                border:1px solid ${ST[st].color}40;cursor:pointer;font-family:inherit">
+                ${ST[st].icon} ${ST[st].label}
+              </button>`).join('')}
+            <button class="btn-icon" data-action="edit-shot" data-id="${esc(shot.id)}" style="margin-left:auto">${svg('edit',13)} 編輯</button>
+            <button class="btn-icon danger" data-action="del-confirm" data-type="shot" data-id="${esc(shot.id)}">${svg('trash',13)} 刪除</button>
+          </div>
+        </div>` : '';
+      cards += `<div style="background:var(--bg2);border-radius:13px;margin-bottom:8px;border:1px solid ${borderColor};overflow:hidden">
+        <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer" data-action="expand-shot" data-id="${esc(shot.id)}">
+          <div style="width:42px;height:42px;border-radius:9px;background:#0e0e0e;border:1px solid #242424;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-family:'Bebas Neue',sans-serif;color:var(--amber)">${esc(shot.shot||'—')}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;color:#d8d8d8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px">${esc(shot.desc||'（無描述）')}</div>
+            <div style="font-size:11px;color:#555">${[shot.type,shot.lens,shot.dir].filter(Boolean).map(esc).join(' · ')||'點擊展開'}</div>
+          </div>
+          ${badge(shot.status,shot.id)}
+        </div>
+        ${expandedHTML}
+      </div>`;
+    });
+    bodyHTML = cards;
+  }
+
+  return `<div class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="ptitle" style="margin-bottom:0">拍攝進度表</div>
+      <button class="btn-add" data-action="open-modal" data-modal="shot">${svg('plus',14)} 新增鏡頭</button>
+    </div>
+    ${state.shots.length>0?`<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px">${chips}</div>`:''}
+    ${bodyHTML}
+  </div>`;
+}
+
+// ─── SCRIPT ───────────────────────────────────────────────────────────────
+function renderScript() {
+  const isDesktop = window.innerWidth >= 1200;
+  const {activeScript} = state.ui;
+
+  const sceneList = (selectedId) => state.script.length===0
+    ? `<div style="padding:32px 16px;text-align:center">
+        <div style="font-size:13px;color:var(--t4);margin-bottom:12px">尚未新增場景</div>
+        <button class="btn-add" data-action="open-modal" data-modal="script">${svg('plus',14)} 新增</button>
+      </div>`
+    : state.script.map(sc=>`
+      <div class="sc-row${sc.id===selectedId?' active':''}" data-action="select-script" data-id="${esc(sc.id)}">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap">
+          ${sc.scene?`<span style="font-size:11px;font-family:'Bebas Neue',sans-serif;color:var(--amber);letter-spacing:.05em">場景 ${esc(sc.scene)}</span>`:''}
+          ${sc.int?`<span class="chip">${esc(sc.int)}</span>`:''}
+          ${sc.time?`<span class="chip">${esc(sc.time)}</span>`:''}
+        </div>
+        <div style="font-size:13px;color:#ccc">${esc(sc.title||'（未命名）')}</div>
+        ${sc.cast?.length?`<div style="font-size:11px;color:#555;margin-top:3px">${esc(Array.isArray(sc.cast)?sc.cast.join('、'):sc.cast)}</div>`:''}
+      </div>`).join('');
+
+  const sceneDetail = (sc) => {
+    if (!sc) return `<div class="script-empty">
+      ${svg('file',40,'#222')}
+      <div style="font-size:13px;color:var(--t4)">選擇左側場景查看劇本</div>
+    </div>`;
+    const tags = [sc.scene&&`場景 ${sc.scene}`,sc.int,sc.time,sc.page].filter(Boolean).map((t,i)=>
+      `<span class="chip${i===0?' a':''}">${esc(t)}</span>`).join('');
+    return `<div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+        <div style="display:flex;gap:7px;flex-wrap:wrap">${tags}</div>
+        <div style="display:flex;gap:7px;flex-shrink:0">
+          <button class="btn-icon" data-action="edit-script" data-id="${esc(sc.id)}">${svg('edit',13)} 編輯</button>
+          <button class="btn-icon danger" data-action="del-confirm" data-type="script" data-id="${esc(sc.id)}">${svg('trash',13)} 刪除</button>
+        </div>
+      </div>
+      <div style="font-size:${isDesktop?'20px':'17px'};font-weight:700;color:#e4e4e4;margin-bottom:6px">${esc(sc.title)}</div>
+      ${sc.cast?.length?`<div style="font-size:12px;color:#666;margin-bottom:18px">演員：${esc(Array.isArray(sc.cast)?sc.cast.join('、'):sc.cast)}</div>`:''}
+      ${sc.content
+        ? `<div style="font-family:'Courier New',monospace;font-size:13px;color:#c0c0c0;line-height:2.2;white-space:pre-line;background:#0a0a0a;border-radius:10px;padding:${isDesktop?'20px':'14px'}">${esc(sc.content)}</div>`
+        : `<div style="font-size:13px;color:var(--t4);text-align:center;padding:32px">尚未輸入劇本內容</div>`}
+    </div>`;
+  };
+
+  if (isDesktop) {
+    return `<div class="script-pane">
+      <div class="script-list">
+        <div class="script-list-hdr">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:#fff;letter-spacing:.06em">劇本</div>
+          <button class="btn-mini" data-action="open-modal" data-modal="script">${svg('plus',13)} 新增</button>
+        </div>
+        ${sceneList(activeScript?.id)}
+      </div>
+      <div class="script-detail">${sceneDetail(activeScript)}</div>
+    </div>`;
+  }
+
+  // Mobile/tablet: drill-in
+  if (activeScript) {
+    return `<div class="page">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <button class="btn-icon" data-action="back-script">${svg('back',15)} 返回</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn-icon" data-action="edit-script" data-id="${esc(activeScript.id)}">${svg('edit',13)}</button>
+          <button class="btn-icon danger" data-action="del-confirm" data-type="script" data-id="${esc(activeScript.id)}">${svg('trash',13)}</button>
+        </div>
+      </div>
+      ${sceneDetail(activeScript)}
+    </div>`;
+  }
+  return `<div class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="ptitle" style="margin-bottom:0">劇本</div>
+      <button class="btn-add" data-action="open-modal" data-modal="script">${svg('plus',14)} 新增場景</button>
+    </div>
+    ${state.script.length===0
+      ? `<div class="card empty"><div class="empty-icon">${svg('file',32,'#e8961e')}</div>
+         <div style="font-size:14px;color:var(--t4);margin-bottom:16px">尚未新增任何劇本場景</div>
+         <button class="btn-add" data-action="open-modal" data-modal="script">${svg('plus',14)} 新增場景</button></div>`
+      : `<div class="card" style="padding:0;overflow:hidden">${sceneList(null)}</div>`}
+  </div>`;
+}
+
+// ─── STORYBOARD ───────────────────────────────────────────────────────────
+function renderStoryboard() {
+  const {expandSb} = state.ui;
+  const w = window.innerWidth;
+  const cols = w>=1200 ? '1fr 1fr 1fr' : w>=768 ? '1fr 1fr' : '1fr';
+
+  const cards = state.storyboard.map(item => {
+    const expanded = expandSb===item.id;
+    const detailHTML = expanded ? `
+      <div style="padding:0 13px 13px;border-top:1px solid #141414">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px">
+          ${item.desc?`<div style="background:#0a0a0a;border-radius:7px;padding:8px 10px;grid-column:1/-1">
+            <div style="font-size:9px;color:#555;margin-bottom:3px">完整描述</div>
+            <div style="font-size:12px;color:#aaa;line-height:1.5">${esc(item.desc)}</div>
+          </div>`:''}
+          ${item.mood?`<div style="background:#0a0a0a;border-radius:7px;padding:8px 10px">
+            <div style="font-size:9px;color:#555;margin-bottom:3px">情感氛圍</div>
+            <div style="font-size:12px;color:#aaa">${esc(item.mood)}</div>
+          </div>`:''}
+          ${item.sfx?`<div style="background:#0a0a0a;border-radius:7px;padding:8px 10px">
+            <div style="font-size:9px;color:#555;margin-bottom:3px">音效</div>
+            <div style="font-size:12px;color:#aaa">${esc(item.sfx)}</div>
+          </div>`:''}
+        </div>
+        <div style="display:flex;gap:7px;margin-top:10px">
+          <button class="btn-icon" data-action="edit-sb" data-id="${esc(item.id)}">${svg('edit',13)} 編輯</button>
+          <button class="btn-icon danger" data-action="del-confirm" data-type="sb" data-id="${esc(item.id)}">${svg('trash',13)} 刪除</button>
+        </div>
+      </div>` : '';
+    return `<div style="background:var(--bg2);border-radius:13px;border:1px solid var(--bd);overflow:hidden">
+      <div class="sb-frame" data-action="expand-sb" data-id="${esc(item.id)}">
+        <div class="sb-frame-grid-h" style="top:33%"></div>
+        <div class="sb-frame-grid-h" style="top:66%"></div>
+        <div class="sb-frame-grid-v" style="left:33%"></div>
+        <div class="sb-frame-grid-v" style="left:66%"></div>
+        <div class="sb-frame-border"></div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#1e1e1e;letter-spacing:.06em;z-index:1;text-align:center;padding:10px;line-height:1.3">${esc(item.frame||item.shot||'分鏡')}</div>
+        ${item.shot?`<div style="position:absolute;top:9px;left:11px;font-size:10px;font-family:'Bebas Neue',sans-serif;color:var(--amber)">${esc(item.shot)}</div>`:''}
+        ${item.scene?`<div style="position:absolute;top:9px;right:11px;font-size:10px;color:#3a3a3a">場景${esc(item.scene)}</div>`:''}
+        ${item.dur?`<div style="position:absolute;bottom:9px;right:11px;font-size:10px;color:#555">${esc(item.dur)}</div>`:''}
+      </div>
+      <div style="padding:11px 13px">
+        ${item.desc?`<div style="font-size:12px;color:#c0c0c0;margin-bottom:6px;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${esc(item.desc)}</div>`:''}
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          ${item.camera?`<span class="chip">📷 ${esc(item.camera)}</span>`:''}
+          ${item.move?`<span class="chip">⟳ ${esc(item.move)}</span>`:''}
+        </div>
+      </div>
+      ${detailHTML}
+    </div>`;
+  }).join('');
+
+  return `<div class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="ptitle" style="margin-bottom:0">分鏡板</div>
+      <button class="btn-add" data-action="open-modal" data-modal="sb">${svg('plus',14)} 新增分鏡</button>
+    </div>
+    ${state.storyboard.length===0
+      ? `<div class="card empty"><div class="empty-icon">${svg('monitor',32,'#e8961e')}</div>
+         <div style="font-size:14px;color:var(--t4);margin-bottom:16px">尚未新增任何分鏡</div>
+         <button class="btn-add" data-action="open-modal" data-modal="sb">${svg('plus',14)} 新增第一個分鏡</button></div>`
+      : `<div style="display:grid;grid-template-columns:${cols};gap:14px">${cards}</div>`}
+  </div>`;
+}
+
+// ─── ANNOUNCE ─────────────────────────────────────────────────────────────
+function renderAnnCard(a, showDel=true) {
+  return `<div class="card" style="margin-bottom:10px;border:1px solid ${a.important?'#e8961e28':'var(--bd)'};background:${a.important?'rgba(232,150,30,.04)':'var(--bg2)'}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:9px">
+        <div style="width:34px;height:34px;border-radius:50%;background:var(--bg3);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:13px;color:#aaa;font-weight:700;flex-shrink:0">${esc(a.author?.[0]||'?')}</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#d8d8d8">${esc(a.author||'（匿名）')}</div>
+          <div style="font-size:11px;color:var(--t3)">${esc(a.role||'')}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+        ${a.important?`<span class="chip a">重要</span>`:''}
+        <span style="font-size:11px;color:#555">${esc(a.time||'')}</span>
+        ${showDel?`<button class="btn-tbl danger" data-action="del-confirm" data-type="ann" data-id="${esc(a.id)}" title="刪除">${svg('trash',14)}</button>`:''}
+      </div>
+    </div>
+    <div style="font-size:13px;color:#bbb;line-height:1.8">${esc(a.content)}</div>
+  </div>`;
+}
+
+function renderAnnounce() {
+  return `<div class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="ptitle" style="margin-bottom:0">劇組公告</div>
+      <button class="btn-add" data-action="open-modal" data-modal="ann">${svg('plus',14)} 新增公告</button>
+    </div>
+    ${state.announcements.length===0
+      ? `<div class="card empty"><div class="empty-icon">${svg('bell',32,'#e8961e')}</div>
+         <div style="font-size:14px;color:var(--t4);margin-bottom:16px">尚未有任何公告</div>
+         <button class="btn-add" data-action="open-modal" data-modal="ann">${svg('plus',14)} 發佈第一則公告</button></div>`
+      : state.announcements.map(a=>renderAnnCard(a,true)).join('')}
+  </div>`;
+}
+
+// ─── MODALS ───────────────────────────────────────────────────────────────
+function showModal(html, center=false) {
+  document.getElementById('modal-root').innerHTML =
+    `<div class="overlay${center?' center':''}" id="overlay">${html}</div>`;
+}
+function closeModal() { document.getElementById('modal-root').innerHTML=''; state.ui.modal=null; state.ui.editItem=null; }
+
+function inp(id, val, placeholder='', type='text') {
+  return `<input class="inp" id="${id}" type="${type}" value="${esc(val||'')}" placeholder="${esc(placeholder)}">`;
+}
+function ta(id, val, placeholder='', rows=4) {
+  return `<textarea class="inp" id="${id}" placeholder="${esc(placeholder)}" rows="${rows}" style="resize:none">${esc(val||'')}</textarea>`;
+}
+function sel(id, val, opts) {
+  return `<select class="inp" id="${id}">${opts.map(o=>`<option value="${o}"${val===o?' selected':''}>${o}</option>`).join('')}</select>`;
+}
+function fld(label, content) {
+  return `<div class="field"><div class="fl">${label}</div>${content}</div>`;
+}
+
+function renderShotModal(item={}) {
+  const stBtns = ST_ORDER.map(st=>`
+    <button type="button" data-pick-status="${st}" style="flex:1;padding:7px 4px;border-radius:99px;font-size:11px;font-weight:600;
+      color:${ST[st].color};background:${(item.status||'pending')===st?ST[st].bg:'#141414'};
+      border:1px solid ${(item.status||'pending')===st?ST[st].color+'55':'#252525'};font-family:inherit">
+      ${ST[st].icon}
+    </button>`).join('');
+  return `<div class="sheet" id="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-hdr">
+      <div class="sh-title">${item.id?'編輯鏡頭':'新增鏡頭'}</div>
+      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
+    </div>
+    <div class="grid2">${fld('場景代號',inp('s-scene',item.scene,'A'))}${fld('鏡頭編號 *',inp('s-shot',item.shot,'A01'))}</div>
+    ${fld('場景名稱',inp('s-sceneTitle',item.sceneTitle,'例：賽道清晨'))}
+    ${fld('畫面描述 *',inp('s-desc',item.desc,'描述這個鏡頭拍什麼'))}
+    <div class="grid3">${fld('鏡別',inp('s-type',item.type,'WS / CU'))}${fld('鏡頭',inp('s-lens',item.lens,'50mm'))}${fld('運鏡',inp('s-dir',item.dir,'固定'))}</div>
+    ${fld('備注',inp('s-notes',item.notes,'特殊需求、器材等'))}
+    <div class="field"><div class="fl">狀態</div><div style="display:flex;gap:6px" id="status-pick">${stBtns}</div></div>
+    <input type="hidden" id="s-status" value="${esc(item.status||'pending')}">
+    <button class="btn-submit" data-action="save-shot">${item.id?'儲存變更':'新增鏡頭'}</button>
+  </div>`;
+}
+
+function renderScriptModal(item={}) {
+  const cast = Array.isArray(item.cast) ? item.cast.join('、') : (item.cast||'');
+  return `<div class="sheet" id="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-hdr">
+      <div class="sh-title">${item.id?'編輯場景':'新增劇本場景'}</div>
+      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
+    </div>
+    <div class="grid2">${fld('場景代號 *',inp('sc-scene',item.scene,'A'))}${fld('頁數',inp('sc-page',item.page,'P.1'))}</div>
+    ${fld('場景標題 *',inp('sc-title',item.title,'場景名稱'))}
+    <div class="grid2">${fld('內外景',sel('sc-int',item.int||'INT',['INT','EXT','INT/EXT']))}${fld('時間',inp('sc-time',item.time,'日 / 夜 / 清晨'))}</div>
+    ${fld('演員（逗號分隔）',inp('sc-cast',cast,'主角、配角'))}
+    ${fld('劇本內容',ta('sc-content',item.content,'在此輸入場景劇本…\n\n角色名\n（動作）\n台詞內容',7))}
+    <button class="btn-submit" data-action="save-script">${item.id?'儲存變更':'新增場景'}</button>
+  </div>`;
+}
+
+function renderSbModal(item={}) {
+  return `<div class="sheet" id="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-hdr">
+      <div class="sh-title">${item.id?'編輯分鏡':'新增分鏡'}</div>
+      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
+    </div>
+    <div class="grid2">${fld('場景代號',inp('sb-scene',item.scene,'A'))}${fld('分鏡編號 *',inp('sb-shot',item.shot,'A01'))}</div>
+    ${fld('構圖描述（顯示於框格）',inp('sb-frame',item.frame,'例：EWS 俯角 / CU 特寫'))}
+    ${fld('畫面描述',ta('sb-desc',item.desc,'詳細描述畫面內容、構圖、動作等',3))}
+    <div class="grid2">${fld('攝影機 / 鏡頭',inp('sb-camera',item.camera,'例：85mm f1.8'))}${fld('運鏡方式',inp('sb-move',item.move,'例：Dolly in'))}</div>
+    <div class="grid2">${fld('時長',inp('sb-dur',item.dur,'例：5s'))}${fld('情感氛圍',inp('sb-mood',item.mood,'例：緊張、壓迫'))}</div>
+    ${fld('音效 / 音樂',inp('sb-sfx',item.sfx,'例：低頻電子音效'))}
+    <button class="btn-submit" data-action="save-sb">${item.id?'儲存變更':'新增分鏡'}</button>
+  </div>`;
+}
+
+function renderAnnModal() {
+  return `<div class="sheet" id="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-hdr">
+      <div class="sh-title">發佈公告</div>
+      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
+    </div>
+    <div class="grid2">${fld('你的姓名',inp('an-author','','姓名'))}${fld('職稱',inp('an-role','','導演 / 助導…'))}</div>
+    ${fld('公告內容 *',ta('an-content','','輸入公告內容…',4))}
+    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:4px">
+      <input type="checkbox" id="an-important" style="width:17px;height:17px;accent-color:var(--amber)">
+      <span style="font-size:13px;color:#aaa">標記為重要公告</span>
+    </label>
+    <button class="btn-submit" data-action="save-ann">發佈公告</button>
+  </div>`;
+}
+
+function renderInfoModal(info={}) {
+  return `<div class="sheet" id="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-hdr">
+      <div class="sh-title">項目設定</div>
+      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
+    </div>
+    ${fld('片名',inp('in-title',info.title,'作品名稱'))}
+    ${fld('副標題 / 類型',inp('in-subtitle',info.subtitle,'例：短片製作 / 畢製'))}
+    <div class="grid2">${fld('今天是第幾拍攝日',inp('in-day',info.shootDay,'1','number'))}${fld('總拍攝天數',inp('in-total',info.totalDays,'5','number'))}</div>
+    ${fld('導演',inp('in-dir',info.director,'導演姓名'))}
+    ${fld('拍攝地點',inp('in-loc',info.location,'拍攝地點'))}
+    <div style="margin-top:8px;padding:14px;background:#0e0e0e;border-radius:10px;border:1px solid #1e1e1e">
+      <div style="font-size:11px;color:var(--amber);margin-bottom:8px;font-weight:600">🔗 Firebase 同步設定（選填）</div>
+      <div class="fl">Firebase Realtime Database URL</div>
+      <input class="inp" id="in-firebase" value="${esc(firebaseUrl)}" placeholder="https://your-project-default-rtdb.firebaseio.com">
+      <div style="font-size:11px;color:#444;margin-top:8px;line-height:1.7">
+        填入後所有劇組成員開啟同一個 HTML 檔案即可即時同步。<br>
+        申請方式：<a href="https://console.firebase.google.com" target="_blank" style="color:var(--amber)">console.firebase.google.com</a> → 建立專案 → Realtime Database → 複製網址
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn-icon" data-action="export-json" style="flex:1">${svg('download',14)} 匯出 JSON 備份</button>
+      <label class="btn-icon" style="flex:1;cursor:pointer;display:flex;align-items:center;gap:6px;justify-content:center">
+        ${svg('upload',14)} 匯入 JSON
+        <input type="file" id="import-file" accept=".json" style="display:none">
+      </label>
+    </div>
+    <button class="btn-submit" data-action="save-info">儲存設定</button>
+  </div>`;
+}
+
+function renderDelModal(type, id) {
+  const labels = {shot:'鏡頭',script:'場景',sb:'分鏡',ann:'公告'};
+  return `<div class="dialog">
+    <div style="color:var(--red);margin-bottom:14px;display:flex;justify-content:center">${svg('trash',26,'#d95555')}</div>
+    <div style="font-size:15px;color:#ddd;margin-bottom:6px">確認刪除此${labels[type]||'項目'}？</div>
+    <div style="font-size:12px;color:#555;margin-bottom:24px">此操作無法復原</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-icon" data-action="close-modal" style="flex:1;justify-content:center;padding:12px">取消</button>
+      <button data-action="confirm-del" data-type="${type}" data-id="${esc(id)}"
+        style="flex:1;padding:12px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit">刪除</button>
+    </div>
+  </div>`;
+}
+
+// ─── val helper ─────────────────────────────────────────────────────────
+const val = id => document.getElementById(id)?.value?.trim()||'';
+const checked = id => document.getElementById(id)?.checked||false;
+
+// ─── CRUD ─────────────────────────────────────────────────────────────────
+function saveShot() {
+  const desc = val('s-desc');
+  if (!desc) return;
+  const item = { shot:val('s-shot'), scene:val('s-scene'), sceneTitle:val('s-sceneTitle'), desc, type:val('s-type'), lens:val('s-lens'), dir:val('s-dir'), notes:val('s-notes'), status:val('s-status')||'pending' };
+  if (state.ui.editItem) {
+    state.shots = state.shots.map(s => s.id===state.ui.editItem ? {...item,id:state.ui.editItem} : s);
+  } else {
+    state.shots = [...state.shots, {...item, id:uid()}];
+  }
+  closeModal(); save(); render();
+}
+
+function saveScript() {
+  const title = val('sc-title');
+  if (!title) return;
+  const item = { scene:val('sc-scene'), title, page:val('sc-page'), int:val('sc-int')||'INT', time:val('sc-time'), cast:val('sc-cast').split(/[,，、]/).map(s=>s.trim()).filter(Boolean), content:val('sc-content') };
+  if (state.ui.editItem) {
+    state.script = state.script.map(s => s.id===state.ui.editItem ? {...item,id:state.ui.editItem} : s);
+  } else {
+    state.script = [...state.script, {...item, id:uid()}];
+  }
+  closeModal(); save(); render();
+}
+
+function saveSb() {
+  const shot = val('sb-shot');
+  if (!shot) return;
+  const item = { scene:val('sb-scene'), shot, frame:val('sb-frame'), camera:val('sb-camera'), move:val('sb-move'), dur:val('sb-dur'), desc:val('sb-desc'), mood:val('sb-mood'), sfx:val('sb-sfx') };
+  if (state.ui.editItem) {
+    state.storyboard = state.storyboard.map(s => s.id===state.ui.editItem ? {...item,id:state.ui.editItem} : s);
+  } else {
+    state.storyboard = [...state.storyboard, {...item, id:uid()}];
+  }
+  closeModal(); save(); render();
+}
+
+function saveAnn() {
+  const content = val('an-content');
+  if (!content) return;
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const item = { id:uid(), author:val('an-author'), role:val('an-role'), content, important:checked('an-important'), time };
+  state.announcements = [item, ...state.announcements];
+  closeModal(); save(); render();
+}
+
+function saveInfo() {
+  const fb = document.getElementById('in-firebase')?.value?.trim()||'';
+  if (fb !== firebaseUrl) { firebaseUrl = fb; localStorage.setItem('prod:fb', fb); }
+  state.info = { title:val('in-title'), subtitle:val('in-subtitle'), shootDay:val('in-day'), totalDays:val('in-total'), director:val('in-dir'), location:val('in-loc') };
+  closeModal(); save(); render();
+}
+
+function confirmDel(type, id) {
+  if (type==='shot') { state.shots = state.shots.filter(s=>s.id!==id); if(state.ui.expandShot===id) state.ui.expandShot=null; }
+  if (type==='script') { state.script = state.script.filter(s=>s.id!==id); if(state.ui.activeScript?.id===id) state.ui.activeScript=null; }
+  if (type==='sb') { state.storyboard = state.storyboard.filter(s=>s.id!==id); if(state.ui.expandSb===id) state.ui.expandSb=null; }
+  if (type==='ann') { state.announcements = state.announcements.filter(a=>a.id!==id); }
+  closeModal(); save(); render();
+}
+
+function cycleStatus(id) {
+  state.shots = state.shots.map(s => {
+    if (s.id!==id) return s;
+    return {...s, status: ST_ORDER[(ST_ORDER.indexOf(s.status)+1)%4]};
+  });
+  save(); render();
+}
+
+function setStatus(id, status) {
+  state.shots = state.shots.map(s => s.id!==id ? s : {...s, status});
+  save(); render();
+}
+
+// Export / Import
+function exportJSON() {
+  const {ui,...data} = state;
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `prodcrew_${Date.now()}.json`;
+  a.click();
+}
+function importJSON(file) {
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      Object.assign(state, {shots:data.shots||[],script:data.script||[],storyboard:data.storyboard||[],announcements:data.announcements||[],info:data.info||state.info});
+      closeModal(); save(); render();
+    } catch(err) { alert('JSON 格式錯誤'); }
+  };
+  r.readAsText(file);
+}
+
+// ─── EVENT DELEGATION ─────────────────────────────────────────────────────
+document.addEventListener('click', (e) => {
+  // Nav
+  const nav = e.target.closest('[data-nav]');
+  if (nav) { state.tab = nav.dataset.nav; state.ui.filterScene='all'; render(); return; }
+
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const act = btn.dataset.action;
+  const {id, type, modal, scene, status} = btn.dataset;
+
+  switch(act) {
+    case 'open-modal':
+      state.ui.editItem = null;
+      if (modal==='shot')   showModal(renderShotModal());
+      if (modal==='script') showModal(renderScriptModal());
+      if (modal==='sb')     showModal(renderSbModal());
+      if (modal==='ann')    showModal(renderAnnModal());
+      break;
+    case 'open-info': showModal(renderInfoModal(state.info)); attachImportHandler(); break;
+    case 'close-modal': closeModal(); render(); break;
+
+    // Shot
+    case 'expand-shot': state.ui.expandShot = state.ui.expandShot===id ? null : id; render(); break;
+    case 'cycle': cycleStatus(id); break;
+    case 'set-status': setStatus(id, status); break;
+    case 'edit-shot': {
+      const shot = state.shots.find(s=>s.id===id);
+      if (!shot) break;
+      state.ui.editItem = id;
+      showModal(renderShotModal(shot));
+      break;
+    }
+    case 'save-shot': saveShot(); break;
+
+    // Script
+    case 'select-script': state.ui.activeScript = state.script.find(s=>s.id===id)||null; render(); break;
+    case 'back-script': state.ui.activeScript = null; render(); break;
+    case 'edit-script': {
+      const sc = state.script.find(s=>s.id===id);
+      if (!sc) break;
+      state.ui.editItem = id;
+      showModal(renderScriptModal(sc));
+      break;
+    }
+    case 'save-script': saveScript(); break;
+
+    // Storyboard
+    case 'expand-sb': state.ui.expandSb = state.ui.expandSb===id ? null : id; render(); break;
+    case 'edit-sb': {
+      const s = state.storyboard.find(x=>x.id===id);
+      if (!s) break;
+      state.ui.editItem = id;
+      showModal(renderSbModal(s));
+      break;
+    }
+    case 'save-sb': saveSb(); break;
+
+    // Ann
+    case 'save-ann': saveAnn(); break;
+
+    // Info
+    case 'save-info': saveInfo(); setTimeout(()=>attachImportHandler(),0); break;
+    case 'export-json': exportJSON(); break;
+
+    // Del
+    case 'del-confirm': showModal(renderDelModal(type,id),true); break;
+    case 'confirm-del': confirmDel(type, id); break;
+
+    // Dashboard goto
+    case 'goto-shots': state.tab='shots'; state.ui.filterScene=scene||'all'; render(); break;
+
+    // Scene filter
+    case 'filter-scene': state.ui.filterScene = scene; render(); break;
+  }
+});
+
+// Overlay click to close
+document.addEventListener('click', (e) => {
+  if (e.target.id==='overlay') closeModal();
+});
+
+// Status pick in shot modal
+document.addEventListener('click', (e) => {
+  const pick = e.target.closest('[data-pick-status]');
+  if (!pick) return;
+  const st = pick.dataset.pickStatus;
+  const inp = document.getElementById('s-status');
+  if (inp) inp.value = st;
+  document.querySelectorAll('[data-pick-status]').forEach(b => {
+    const s = ST[b.dataset.pickStatus];
+    b.style.background = b.dataset.pickStatus===st ? s.bg : '#141414';
+    b.style.borderColor = b.dataset.pickStatus===st ? `${s.color}55` : '#252525';
+  });
+});
+
+function attachImportHandler() {
+  const fileInput = document.getElementById('import-file');
+  if (fileInput) fileInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) importJSON(file);
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  if (state.tab === 'shots' || state.tab === 'storyboard' || state.tab === 'script') render();
+});
+
+
+// ─── PASSWORD GATE ───────────────────────────────────────────────────────
+// 修改密碼：把下面的字串改成你想要的密碼
+const CREW_PASSWORD = 'corsa2025';
+const PW_SESSION_KEY = 'prod:auth:v1';
+
+async function hashStr(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function initPasswordGate() {
+  const screen = document.getElementById('pw-screen');
+  const input  = document.getElementById('pw-input');
+  const btn    = document.getElementById('pw-btn');
+  const err    = document.getElementById('pw-err');
+
+  const correctHash = await hashStr(CREW_PASSWORD);
+  const stored = sessionStorage.getItem(PW_SESSION_KEY);
+
+  // Already authenticated this session
+  if (stored === correctHash) { screen.remove(); initApp(); return; }
+
+  screen.style.display = 'flex';
+
+  async function attempt() {
+    const h = await hashStr(input.value);
+    if (h === correctHash) {
+      sessionStorage.setItem(PW_SESSION_KEY, correctHash);
+      screen.style.opacity = '0';
+      screen.style.transition = 'opacity .3s';
+      setTimeout(() => { screen.remove(); initApp(); }, 300);
+    } else {
+      err.classList.add('show');
+      input.classList.add('shake');
+      input.value = '';
+      setTimeout(() => { input.classList.remove('shake'); err.classList.remove('show'); }, 2000);
+    }
+  }
+
+  btn.addEventListener('click', attempt);
+  input.addEventListener('keydown', e => { if(e.key==='Enter') attempt(); });
+  input.focus();
+}
+
+function initApp() {
+  loadLocal();
+  render();
+  updateSyncUI();
+  pullFirebase();
+}
+
+initPasswordGate();
+
+</script>
+</body>
+</html>

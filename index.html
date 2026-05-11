@@ -2,250 +2,249 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>PROD.CREW — 劇組管理</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>PROD.CREW</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a0a;--bg1:#111;--bg2:#141414;--bg3:#1a1a1a;--bd:#1e1e1e;--bd2:#242424;--text:#d8d8d8;--t2:#999;--t3:#666;--t4:#444;--amber:#e8961e;--green:#3eb87a;--red:#d95555;--sw:220px}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans TC','PingFang TC','Heiti TC',sans-serif;font-size:14px}
-::-webkit-scrollbar{width:0;height:0}
-input,textarea,select{font-family:inherit;outline:none;-webkit-appearance:none;appearance:none}
-button{cursor:pointer;font-family:inherit}
-a{color:inherit;text-decoration:none}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-
+/* ── Tokens ── */
+:root{
+  --c-bg:#080808;--c-s1:#0f0f0f;--c-s2:#151515;--c-s3:#1c1c1c;--c-s4:#252525;
+  --c-bd:#202020;--c-bd2:#2c2c2c;
+  --c-tx:#e0e0e0;--c-t2:#a0a0a0;--c-t3:#666;--c-t4:#404040;
+  --c-am:#e8961e;--c-am2:rgba(232,150,30,.14);--c-am3:rgba(232,150,30,.28);
+  --c-gn:#3eb87a;--c-gn2:rgba(62,184,122,.14);
+  --c-rd:#d95555;--c-rd2:rgba(217,85,85,.14);
+  --c-yw:#f0b429;--c-yw2:rgba(240,180,41,.14);
+  --c-bl:#4a9eff;--c-bl2:rgba(74,158,255,.14);
+  --c-gy:#5a5a5a;--c-gy2:rgba(90,90,90,.14);
+  --r:10px;--r2:14px;--r3:18px;
+  --sh:0 1px 3px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.4);
+  --sh2:0 4px 24px rgba(0,0,0,.6);
+  --sw:230px;--tb:52px;--bn:60px;
+  --ff:'Noto Sans TC','PingFang TC',sans-serif;
+  --fd:'Bebas Neue',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:var(--ff);background:var(--c-bg);color:var(--c-tx);font-size:14px;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:2px;height:2px}
+::-webkit-scrollbar-thumb{background:var(--c-s4);border-radius:2px}
+input,textarea,select,button{font-family:inherit;border:none;outline:none;-webkit-appearance:none;appearance:none;background:none;color:inherit}
+button{cursor:pointer}
+/* ── Animations ── */
+@keyframes fi{from{opacity:0}to{opacity:1}}
+@keyframes su{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes sus{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes bi{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes sk{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 /* ── Layout ── */
 #app{display:flex;height:100dvh;overflow:hidden}
-.sidebar{width:var(--sw);flex-shrink:0;background:#080808;border-right:1px solid #141414;display:flex;flex-direction:column;height:100dvh;overflow-y:auto}
-.sb-logo{padding:22px 18px 16px;border-bottom:1px solid #141414}
-.sb-wordmark{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--amber);letter-spacing:.14em}
-.sb-wordmark span{color:#2a2a2a}
-.sb-proj{font-size:11px;color:#3a3a3a;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-nav{padding:10px;flex:1}
-.sb-btn{width:100%;display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;margin-bottom:3px;background:none;color:var(--t4);border:1px solid transparent;font-size:13px;text-align:left;transition:all .12s}
-.sb-btn:hover{background:#111;color:var(--t3)}
-.sb-btn.active{background:rgba(232,150,30,.1);color:var(--amber);border-color:rgba(232,150,30,.2);font-weight:600}
-.sb-foot{padding:14px 18px;border-top:1px solid #141414}
+.sidebar{width:var(--sw);flex-shrink:0;background:var(--c-s1);border-right:1px solid var(--c-bd);display:flex;flex-direction:column;height:100dvh;overflow-y:auto}
+.sb-top{padding:20px 14px 14px;border-bottom:1px solid var(--c-bd)}
+.sb-mark{font-family:var(--fd);font-size:18px;color:var(--c-am);letter-spacing:.18em;line-height:1}
+.sb-mark b{color:var(--c-s4);font-weight:400}
+.sb-proj{font-size:11px;color:var(--c-t4);margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-nav{flex:1;padding:10px 8px}
+.nav-item{display:flex;align-items:center;gap:9px;width:100%;padding:9px 10px;border-radius:var(--r);margin-bottom:1px;font-size:13px;color:var(--c-t3);transition:background .1s,color .1s;text-align:left}
+.nav-item:hover{background:var(--c-s2);color:var(--c-t2)}
+.nav-item.on{background:var(--c-am2);color:var(--c-am);font-weight:600}
+.nav-item svg{flex-shrink:0;transition:transform .15s}
+.nav-item.on svg{transform:scale(1.05)}
+.sb-foot{padding:10px;border-top:1px solid var(--c-bd)}
+/* Profile chip in sidebar */
+.pf-chip{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--r);background:var(--c-s2);border:1px solid var(--c-bd);cursor:pointer;transition:border-color .1s;margin-bottom:8px}
+.pf-chip:hover{border-color:var(--c-bd2)}
+.pf-av{width:28px;height:28px;border-radius:50%;background:var(--c-am2);border:1px solid var(--c-am3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--c-am);flex-shrink:0}
+.pf-name{font-size:12px;color:var(--c-t2);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.pf-dept{font-size:10px;color:var(--c-t4);margin-top:1px}
+/* Main */
 .main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
-.topbar{flex-shrink:0;background:rgba(10,10,10,.96);backdrop-filter:blur(14px);border-bottom:1px solid #141414;padding:11px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--t3);letter-spacing:.12em}
-.topbar-logo span{color:var(--amber)}
-.topbar-label{font-size:13px;color:var(--t3)}
-.content{flex:1;overflow-y:auto}
-.page{padding:20px 18px 20px;max-width:1400px}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.97);backdrop-filter:blur(20px);border-top:1px solid #141414;display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:100}
-.bnav-btn{flex:1;background:none;border:none;padding:10px 0 12px;display:flex;flex-direction:column;align-items:center;gap:4px;color:#3a3a3a;font-size:10px;letter-spacing:.04em;transition:color .1s}
-.bnav-btn.active{color:var(--amber);font-weight:700}
-
+.topbar{flex-shrink:0;height:var(--tb);background:rgba(8,8,8,.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--c-bd);display:flex;align-items:center;padding:0 14px;gap:10px;position:sticky;top:0;z-index:50}
+.tb-logo{font-family:var(--fd);font-size:16px;color:var(--c-t3);letter-spacing:.15em}
+.tb-logo i{color:var(--c-am);font-style:normal}
+.tb-title{font-size:14px;font-weight:600;color:var(--c-t2);flex:1}
+.tb-av{width:28px;height:28px;border-radius:50%;background:var(--c-am2);border:1px solid var(--c-am3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--c-am);cursor:pointer;flex-shrink:0}
+.content{flex:1;overflow-y:auto;overflow-x:hidden}
+/* Bottom nav */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#080808;border-top:1px solid var(--c-bd);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:100}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 0;color:var(--c-t4);font-size:9px;letter-spacing:.03em;transition:color .15s}
+.bn svg{display:block;flex-shrink:0}
+.bn.on{color:var(--c-am)}
 /* ── Components ── */
-.card{background:var(--bg2);border-radius:13px;padding:14px 16px;border:1px solid var(--bd)}
-.slabel{font-size:10px;color:var(--t4);letter-spacing:.1em;text-transform:uppercase;margin:20px 0 10px}
-.ptitle{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;letter-spacing:.05em;margin-bottom:16px}
-.badge{border:none;border-radius:99px;padding:3px 11px;font-size:11px;font-weight:700;white-space:nowrap;min-width:58px;text-align:center;line-height:1.5}
-.chip{font-size:10px;padding:2px 8px;border-radius:99px;background:var(--bg3);color:var(--t3);border:1px solid #222;white-space:nowrap;display:inline-block}
-.chip.a{background:rgba(232,150,30,.12);color:var(--amber);border-color:rgba(232,150,30,.25)}
-.inp{width:100%;background:#181818;border:1px solid #2c2c2c;border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px}
-.inp:focus{border-color:#404040}
-.fl{font-size:10px;color:#555;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px}
+.page{padding:18px 14px 20px;max-width:1400px;margin:0 auto}
+.card{background:var(--c-s2);border-radius:var(--r2);padding:14px 15px;border:1px solid var(--c-bd)}
+.card+.card{margin-top:8px}
+.sec-label{font-size:10px;color:var(--c-t4);letter-spacing:.1em;text-transform:uppercase;margin:18px 0 9px;font-weight:500}
+.pg-title{font-family:var(--fd);font-size:22px;color:#fff;letter-spacing:.05em;margin-bottom:15px}
+.row{display:flex;align-items:center}
+.row-sb{display:flex;align-items:center;justify-content:space-between}
+/* Inputs */
+.inp{width:100%;background:var(--c-s1);border:1.5px solid var(--c-bd);border-radius:var(--r);padding:10px 12px;color:var(--c-tx);font-size:14px;transition:border-color .15s;line-height:1.4}
+.inp:focus{border-color:var(--c-am3);background:var(--c-bg)}
+.inp::placeholder{color:var(--c-t4)}
+select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
 .field{margin-bottom:12px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-
+.fl{font-size:10px;color:var(--c-t4);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;font-weight:500}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 /* Buttons */
-.btn-add{display:inline-flex;align-items:center;gap:6px;background:var(--amber);color:#000;border:none;border-radius:99px;padding:8px 16px;font-size:13px;font-weight:700;white-space:nowrap;flex-shrink:0}
-.btn-add:hover{background:#d4870e}
-.btn-icon{display:inline-flex;align-items:center;gap:6px;background:var(--bg3);color:var(--t3);border:1px solid var(--bd2);border-radius:99px;padding:5px 13px;font-size:12px}
-.btn-icon:hover{color:var(--t2)}
-.btn-icon.danger{color:var(--red);border-color:rgba(217,85,85,.3)}
-.btn-mini{display:inline-flex;align-items:center;gap:5px;background:var(--bg3);color:var(--t3);border:1px solid var(--bd2);border-radius:99px;padding:5px 11px;font-size:12px}
-.btn-tbl{display:inline-flex;align-items:center;background:none;border:none;color:var(--t4);padding:4px;border-radius:6px;transition:color .1s}
-.btn-tbl:hover{color:var(--t2)}
-.btn-tbl.danger:hover{color:var(--red)}
-
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:99px;font-weight:600;cursor:pointer;transition:opacity .15s,transform .1s;white-space:nowrap;flex-shrink:0;font-size:12px;padding:7px 16px;font-family:inherit}
+.btn:active{transform:scale(.96);opacity:.85}
+.btn-primary{background:var(--c-am);color:#000}
+.btn-secondary{background:var(--c-s3);color:var(--c-t2);border:1px solid var(--c-bd2)}
+.btn-ghost{background:none;color:var(--c-t3);border:1px solid var(--c-bd)}
+.btn-danger{background:var(--c-rd2);color:var(--c-rd);border:1px solid rgba(217,85,85,.25)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.btn-icon-sm{padding:5px 8px;background:var(--c-s3);border:1px solid var(--c-bd2);border-radius:var(--r);color:var(--c-t3)}
+.btn-full{display:flex;width:100%;justify-content:center;padding:13px 16px;font-size:14px;border-radius:var(--r)}
+.btn-submit{background:var(--c-am);color:#000;margin-top:16px}
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:4px 11px;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;min-width:64px;justify-content:center;font-family:inherit;border:none;transition:opacity .12s}
+.badge:active{opacity:.8}
+.chip{font-size:10px;padding:2px 8px;border-radius:99px;background:var(--c-s3);color:var(--c-t3);border:1px solid var(--c-bd2);white-space:nowrap;display:inline-block}
+.chip-am{background:var(--c-am2);color:var(--c-am);border-color:var(--c-am3)}
+.chip-gn{background:var(--c-gn2);color:var(--c-gn);border-color:rgba(62,184,122,.3)}
+.chip-rd{background:var(--c-rd2);color:var(--c-rd);border-color:rgba(217,85,85,.3)}
 /* Table */
-.tbl{width:100%;border-collapse:collapse;font-size:13px}
-.tbl th{padding:10px 16px;text-align:left;font-size:10px;color:#555;letter-spacing:.08em;text-transform:uppercase;font-weight:600;border-bottom:1px solid #1e1e1e;white-space:nowrap}
-.tbl td{padding:9px 16px;border-bottom:1px solid #181818;vertical-align:middle}
-.tbl tr:hover td{background:#141414}
-
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{padding:9px 14px;text-align:left;font-size:9px;color:var(--c-t4);letter-spacing:.1em;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--c-bd);white-space:nowrap}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--c-s2);color:var(--c-t2);vertical-align:middle;font-size:13px}
+.tbl tbody tr:hover td{background:var(--c-s1)}
+.tbl tbody tr:last-child td{border-bottom:none}
 /* Modal */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .15s}
-.overlay.center{align-items:center}
-.sheet{width:100%;max-width:720px;background:#111;border-radius:20px 20px 0 0;padding:20px;padding-bottom:max(28px,env(safe-area-inset-bottom));border:1px solid #242424;max-height:92dvh;overflow-y:auto;animation:slideUp .22s ease}
-.sh-handle{width:36px;height:4px;background:#2a2a2a;border-radius:99px;margin:0 auto 18px}
-.sh-title{font-family:'Bebas Neue',sans-serif;font-size:19px;color:#fff;letter-spacing:.06em}
-.sh-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.dialog{width:100%;max-width:360px;background:#111;border-radius:16px;padding:26px;border:1px solid #2a2a2a;text-align:center;animation:fadeIn .15s}
-.btn-submit{width:100%;margin-top:16px;padding:14px;background:var(--amber);color:#000;border:none;border-radius:11px;font-size:14px;font-weight:700}
-.btn-submit:hover{background:#d4870e}
-
-/* Script split */
-.script-pane{display:flex;height:calc(100dvh - 50px)}
-.script-list{width:270px;flex-shrink:0;border-right:1px solid #1a1a1a;overflow-y:auto;display:flex;flex-direction:column}
-.script-list-hdr{padding:15px 18px 12px;border-bottom:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.sc-row{padding:13px 18px;cursor:pointer;border-bottom:1px solid #181818;border-left:3px solid transparent;transition:background .1s}
-.sc-row:hover{background:#181818}
-.sc-row.active{background:#1e1e1e;border-left-color:var(--amber)}
-.script-detail{flex:1;overflow-y:auto;padding:24px}
-.script-empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
-
-/* Storyboard frame */
-.sb-frame{background:#080808;aspect-ratio:16/9;position:relative;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #1a1a1a;cursor:pointer;overflow:hidden}
-
-/* Sync dot */
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;flex-shrink:0}
-
-/* Empty state */
-.empty{text-align:center;padding:48px 20px}
-.empty-icon{margin-bottom:14px;display:flex;justify-content:center;opacity:.4}
-
-/* Status colors as CSS vars for JS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:400;display:flex;align-items:flex-end;justify-content:center;animation:fi .15s}
+.overlay.center{align-items:center;padding:20px}
+.sheet{width:100%;max-width:660px;background:var(--c-s1);border-radius:20px 20px 0 0;border:1px solid var(--c-bd2);border-bottom:none;padding:18px;padding-bottom:max(24px,env(safe-area-inset-bottom));max-height:92dvh;overflow-y:auto;animation:sus .22s cubic-bezier(.32,1,.56,1)}
+.sh-bar{width:36px;height:4px;background:var(--c-s4);border-radius:99px;margin:0 auto 16px}
+.sh-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.sh-title{font-family:var(--fd);font-size:20px;color:#fff;letter-spacing:.06em}
+.dialog{background:var(--c-s1);border-radius:var(--r3);border:1px solid var(--c-bd2);padding:26px;text-align:center;max-width:320px;width:100%;animation:bi .18s}
+/* ── Status system ── */
+/* shooting=red, ng=yellow, done=green, keep=blue, pending=gray */
+.st-pending {color:var(--c-gy);background:var(--c-gy2);border:1px solid rgba(90,90,90,.3)}
+.st-shooting{color:var(--c-rd);background:var(--c-rd2);border:1px solid rgba(217,85,85,.3)}
+.st-done    {color:var(--c-gn);background:var(--c-gn2);border:1px solid rgba(62,184,122,.3)}
+.st-ng      {color:var(--c-yw);background:var(--c-yw2);border:1px solid rgba(240,180,41,.3)}
+.st-keep    {color:var(--c-bl);background:var(--c-bl2);border:1px solid rgba(74,158,255,.3)}
+/* Shot card border by status */
+.sc-pending {border-color:var(--c-bd)!important;background:var(--c-s2)!important}
+.sc-shooting{border-color:rgba(217,85,85,.5)!important;background:rgba(217,85,85,.05)!important}
+.sc-done    {border-color:rgba(62,184,122,.4)!important;background:rgba(62,184,122,.04)!important}
+.sc-ng      {border-color:rgba(240,180,41,.4)!important;background:rgba(240,180,41,.04)!important}
+.sc-keep    {border-color:rgba(74,158,255,.4)!important;background:rgba(74,158,255,.04)!important}
+/* ── Scene cards ── */
+.scene-card{border-radius:var(--r2);padding:14px 15px;border:1.5px solid var(--c-bd);background:var(--c-s1);cursor:pointer;transition:border-color .2s;margin-bottom:0}
+.scene-card:hover{border-color:var(--c-bd2)}
+.scene-rd{border-color:rgba(217,85,85,.5)!important;background:rgba(217,85,85,.04)!important}
+.scene-yw{border-color:rgba(240,180,41,.4)!important;background:rgba(240,180,41,.03)!important}
+.scene-gn{border-color:rgba(62,184,122,.45)!important;background:rgba(62,184,122,.04)!important}
+/* ── Progress bar ── */
+.pbar{height:3px;background:var(--c-s4);border-radius:99px;overflow:hidden;margin-top:10px}
+.pbar-f{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.34,1,.56,1)}
+/* ── Empty state ── */
+.empty-state{text-align:center;padding:52px 20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.empty-icon{opacity:.25;margin-bottom:2px}
+.empty-text{font-size:14px;color:var(--c-t3)}
+/* ── Progress ring ── */
+.ring-wrap{position:relative;width:88px;height:88px;flex-shrink:0}
+.ring-wrap span{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--fd);font-size:22px;color:var(--c-am);line-height:1}
+.ring-wrap small{font-size:9px;color:var(--c-t4);font-family:var(--ff)}
+/* ── Storyboard frame ── */
+.sb-frame{aspect-ratio:16/9;background:#050505;border-bottom:1px solid var(--c-bd);position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
+.sb-grid{position:absolute;inset:0;pointer-events:none}
+/* ── Script ── */
+.sp-wrap{display:flex;height:calc(100dvh - var(--tb))}
+.sp-list{width:250px;flex-shrink:0;border-right:1px solid var(--c-bd);overflow-y:auto;display:flex;flex-direction:column}
+.sp-list-hdr{padding:12px 14px;border-bottom:1px solid var(--c-bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;background:var(--c-s1);z-index:1}
+.sp-row{padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--c-bd);border-left:3px solid transparent;transition:background .1s}
+.sp-row:hover{background:var(--c-s2)}
+.sp-row.on{background:var(--c-s2);border-left-color:var(--c-am)}
+.sp-detail{flex:1;overflow-y:auto;padding:20px}
+/* ── Call sheet ── */
+.cl-row{display:flex;align-items:center;gap:14px;padding:12px 15px;border-bottom:1px solid var(--c-bd);transition:background .1s}
+.cl-row:last-child{border-bottom:none}
+.cl-row:hover{background:var(--c-s1)}
+.cl-time{font-family:var(--fd);font-size:26px;color:var(--c-am);width:62px;text-align:center;flex-shrink:0;line-height:1}
+/* ── Announcement ── */
+.ann-card{border-radius:var(--r2);padding:14px 15px;border:1px solid var(--c-bd);margin-bottom:8px;background:var(--c-s2);animation:su .15s}
+.ann-card.imp{border-color:rgba(232,150,30,.3);background:linear-gradient(135deg,rgba(232,150,30,.06),var(--c-s2))}
+.ann-av{width:32px;height:32px;border-radius:50%;background:var(--c-s3);border:1px solid var(--c-bd2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--c-t2);flex-shrink:0}
+/* ── Broadcast ── */
+#bc{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+#bc.on{display:flex;animation:fi .2s}
+#bc-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#bc-box{position:relative;z-index:1;width:100%;max-width:420px;background:var(--c-s1);border-radius:var(--r3);border:1px solid var(--c-bd2);overflow:hidden;animation:bi .25s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--sh2)}
+#bc-imp{background:var(--c-rd);color:#fff;text-align:center;font-size:10px;font-weight:700;padding:5px 10px;letter-spacing:.1em;display:none}
+#bc-hdr{padding:16px;background:linear-gradient(135deg,rgba(20,10,0,1),rgba(30,16,0,1));border-bottom:1px solid rgba(232,150,30,.15);display:flex;align-items:center;gap:11px}
+#bc-av{width:36px;height:36px;border-radius:50%;background:var(--c-am2);border:1px solid var(--c-am3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--c-am);flex-shrink:0}
+#bc-body{padding:16px}
+#bc-foot{padding:12px 16px;border-top:1px solid var(--c-bd);display:flex;gap:8px}
+/* ── Password ── */
+#pw{position:fixed;inset:0;background:var(--c-bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
+#pw-box{width:100%;max-width:320px;text-align:center}
+#pw-logo{font-family:var(--fd);font-size:34px;color:var(--c-am);letter-spacing:.18em;margin-bottom:6px}
+#pw-sub{font-size:11px;color:var(--c-t4);margin-bottom:32px;letter-spacing:.04em}
+#pw-inp{width:100%;background:var(--c-s2);border:1.5px solid var(--c-bd2);border-radius:var(--r);padding:13px;color:var(--c-tx);font-size:17px;text-align:center;letter-spacing:.22em;transition:border-color .15s;margin-bottom:10px}
+#pw-inp:focus{border-color:var(--c-am3)}
+#pw-err{font-size:12px;color:var(--c-rd);margin-top:8px;opacity:0;transition:opacity .2s;min-height:16px}
+#pw-err.on{opacity:1}
+.sk{animation:sk .4s ease}
+/* ── Profile ── */
+#pf-screen{position:fixed;inset:0;background:var(--c-bg);z-index:9998;display:none;align-items:center;justify-content:center;padding:24px;animation:fi .2s}
+#pf-screen.on{display:flex}
+#pf-box{width:100%;max-width:360px}
+.dept-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:6px}
+.dept-btn{padding:10px 8px;border-radius:var(--r);background:var(--c-s2);border:1.5px solid var(--c-bd);color:var(--c-t3);font-size:13px;cursor:pointer;text-align:center;transition:all .12s}
+.dept-btn:hover{background:var(--c-s3);color:var(--c-t2)}
+.dept-btn.on{background:var(--c-am2);border-color:var(--c-am3);color:var(--c-am);font-weight:600}
+/* ── Sync ── */
+.sync{display:inline-flex;align-items:center;gap:5px;font-size:10px}
+.sync-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+/* ── Admin badge ── */
+.adm-badge{font-size:9px;background:var(--c-am2);color:var(--c-am);border:1px solid var(--c-am3);border-radius:99px;padding:1px 7px;flex-shrink:0}
 /* ── Responsive ── */
 @media(max-width:767px){
+  :root{--tb:46px;--bn:58px}
   .sidebar{display:none}
-  .topbar-label{display:none}
-  .content{padding-bottom:80px}
+  .tb-title{display:none}
+  .content{padding-bottom:var(--bn)}
+  .page{padding:14px 12px 18px}
+  .g3{grid-template-columns:1fr 1fr}
 }
 @media(min-width:768px){
-  .bottom-nav{display:none}
-  .topbar-logo{display:none}
+  .bnav{display:none}
+  .tb-logo{display:none}
 }
-@media(min-width:768px) and (max-width:1199px){:root{--sw:200px}}
+@media(min-width:768px) and (max-width:1199px){
+  :root{--sw:200px}
+}
 @media(min-width:1200px){
   :root{--sw:240px}
-  .page{padding:24px 28px}
+  .page{padding:22px 26px}
 }
-
-/* ── Password Screen ── */
-#pw-screen{position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Noto Sans TC','PingFang TC',sans-serif}
-#pw-box{width:100%;max-width:360px;text-align:center}
-#pw-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#e8961e;letter-spacing:.16em;margin-bottom:4px}
-#pw-sub{font-size:12px;color:#3a3a3a;margin-bottom:36px;letter-spacing:.06em}
-#pw-label{font-size:10px;color:#555;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;text-align:left}
-#pw-input{width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:13px 16px;color:#d8d8d8;font-size:15px;font-family:inherit;outline:none;text-align:center;letter-spacing:.15em;margin-bottom:14px;transition:border-color .2s}
-#pw-input:focus{border-color:#e8961e40}
-#pw-input.shake{animation:shake .4s ease}
-#pw-btn{width:100%;padding:13px;background:#e8961e;color:#000;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
-#pw-btn:hover{background:#d4870e}
-#pw-err{font-size:12px;color:#d95555;margin-top:10px;min-height:18px;opacity:0;transition:opacity .2s}
-#pw-err.show{opacity:1}
-#pw-hint{font-size:11px;color:#2a2a2a;margin-top:24px}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-
-
-/* ── Broadcast Overlay ── */
-#broadcast-overlay{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .25s ease}
-#broadcast-overlay.show{display:flex}
-#broadcast-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.92)}
-#broadcast-box{position:relative;width:100%;max-width:480px;background:#111;border-radius:20px;border:1px solid #e8961e40;overflow:hidden;animation:broadcastIn .3s cubic-bezier(.34,1.56,.64,1)}
-@keyframes broadcastIn{from{transform:scale(.85) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
-#broadcast-header{background:linear-gradient(135deg,#1a0f00,#2a1500);padding:20px 20px 16px;border-bottom:1px solid #e8961e25;display:flex;align-items:center;gap:12px}
-#broadcast-icon{width:42px;height:42px;border-radius:50%;background:rgba(232,150,30,.15);border:1px solid #e8961e40;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-#broadcast-badge{display:inline-block;font-size:10px;color:#e8961e;background:rgba(232,150,30,.12);border:1px solid #e8961e30;padding:2px 10px;border-radius:99px;margin-bottom:4px;letter-spacing:.08em}
-#broadcast-meta-name{font-size:14px;font-weight:700;color:#e0e0e0}
-#broadcast-meta-role{font-size:11px;color:#888}
-#broadcast-important-bar{background:#e8961e;color:#000;text-align:center;font-size:11px;font-weight:700;padding:5px;letter-spacing:.1em;display:none}
-#broadcast-body{padding:20px}
-#broadcast-time{font-size:10px;color:#555;letter-spacing:.06em;margin-bottom:10px;text-transform:uppercase}
-#broadcast-content{font-size:15px;color:#d8d8d8;line-height:1.85;white-space:pre-line}
-#broadcast-footer{padding:16px 20px;border-top:1px solid #1e1e1e;display:flex;gap:10px}
-#broadcast-dismiss{flex:1;padding:12px;background:#e8961e;color:#000;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
-#broadcast-dismiss:hover{background:#d4870e}
-#broadcast-view{flex:0 0 auto;padding:12px 18px;background:#1a1a1a;color:#888;border:1px solid #242424;border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit}
-#broadcast-counter{position:absolute;top:14px;right:16px;font-size:11px;color:#555}
-/* pulse ring for important */
-#broadcast-icon.important{background:rgba(217,85,85,.15);border-color:#d9555540}
-#broadcast-icon.important::after{content:'';position:absolute;width:52px;height:52px;border-radius:50%;border:2px solid #d95555;animation:pulseRing 1.5s ease infinite;pointer-events:none}
-@keyframes pulseRing{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.5);opacity:0}}
-
-
-/* ── Profile Setup Screen ── */
-#profile-screen{position:fixed;inset:0;background:#0a0a0a;z-index:9998;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s}
-#profile-screen.show{display:flex}
-#profile-box{width:100%;max-width:380px}
-#profile-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fff;letter-spacing:.06em;margin-bottom:4px}
-#profile-sub{font-size:13px;color:#555;margin-bottom:32px}
-.profile-dept-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
-.dept-btn{padding:11px 8px;border-radius:10px;background:#141414;border:1px solid #242424;color:#888;font-size:13px;cursor:pointer;font-family:inherit;text-align:center;transition:all .12s}
-.dept-btn:hover{background:#1e1e1e;color:#ccc}
-.dept-btn.selected{background:rgba(232,150,30,.12);border-color:#e8961e50;color:#e8961e;font-weight:600}
-#profile-name-inp{width:100%;background:#141414;border:1px solid #2a2a2a;border-radius:10px;padding:12px 14px;color:#d8d8d8;font-size:15px;font-family:inherit;outline:none;margin-top:6px}
-#profile-name-inp:focus{border-color:#e8961e40}
-#profile-confirm{width:100%;margin-top:20px;padding:14px;background:#e8961e;color:#000;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
-#profile-confirm:hover{background:#d4870e}
-/* Profile badge in sidebar/topbar */
-#profile-badge{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#141414;border-radius:10px;border:1px solid #1e1e1e;cursor:pointer;margin-bottom:8px}
-#profile-avatar{width:32px;height:32px;border-radius:50%;background:rgba(232,150,30,.15);border:1px solid #e8961e40;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#e8961e;flex-shrink:0}
-#profile-info{flex:1;min-width:0}
-#profile-name-lbl{font-size:13px;color:#d8d8d8;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#profile-role-lbl{font-size:10px;color:#666;margin-top:1px}
-#profile-edit-btn{font-size:10px;color:#555;flex-shrink:0}
-/* Mobile topbar profile */
-#topbar-profile{display:flex;align-items:center;gap:6px;cursor:pointer}
-#topbar-avatar{width:28px;height:28px;border-radius:50%;background:rgba(232,150,30,.15);border:1px solid #e8961e40;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#e8961e;flex-shrink:0}
-
-
-.chat-wrap{display:flex;flex-direction:column;height:calc(100dvh - 50px);overflow:hidden;position:relative}
-.chat-topbar{padding:10px 14px;border-bottom:1px solid #141414;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#0e0e0e}
-.chat-online{display:flex;align-items:center;gap:5px;font-size:11px;color:#3eb87a}
-.chat-msgs{flex:1;overflow-y:auto;padding:12px 14px 8px;display:flex;flex-direction:column;gap:2px}
-.chat-date-sep{text-align:center;font-size:10px;color:#444;letter-spacing:.06em;margin:12px 0 6px;position:relative}
-.chat-date-sep::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:#1a1a1a;z-index:0}
-.chat-date-sep span{background:#0a0a0a;padding:0 10px;position:relative;z-index:1}
-.cb{display:flex;gap:9px;align-items:flex-end;padding:1px 0}
-.cb.mine{flex-direction:row-reverse}
-.cb.cont .cb-av{visibility:hidden}
-.cb-av{width:30px;height:30px;border-radius:50%;background:#1a1a1a;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--amber);flex-shrink:0;cursor:pointer}
-.cb-av.admin{background:rgba(232,150,30,.2);border-color:#e8961e60}
-.cb-body{max-width:78%}
-.cb-meta{font-size:9px;color:#555;margin-bottom:3px;display:flex;align-items:center;gap:4px}
-.cb.mine .cb-meta{justify-content:flex-end}
-.cb-badge{font-size:8px;background:rgba(232,150,30,.2);color:var(--amber);padding:1px 5px;border-radius:99px;border:1px solid #e8961e40}
-.cb-reply-bar{background:#141414;border-left:2px solid var(--amber);padding:5px 10px;border-radius:4px;margin-bottom:4px;font-size:11px;color:#888}
-.cb-reply-bar b{color:var(--amber)}
-.cb-txt{background:#1c1c1c;border-radius:12px;border-top-left-radius:3px;padding:9px 12px;font-size:13px;color:var(--text);line-height:1.6;word-break:break-word;cursor:pointer}
-.cb-txt:hover{background:#222}
-.cb.mine .cb-txt{background:rgba(232,150,30,.12);border-top-left-radius:12px;border-top-right-radius:3px;border:1px solid rgba(232,150,30,.18)}
-.cb-txt.deleted{color:#555;font-style:italic}
-.cb-time{font-size:9px;color:#444;margin-top:2px;padding:0 2px}
-.cb.mine .cb-time{text-align:right}
-.cb-sys{text-align:center;font-size:11px;color:#555;background:#111;border:1px solid #1e1e1e;border-radius:99px;padding:4px 14px;margin:8px auto;max-width:300px}
-.chat-bar{padding:8px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom));border-top:1px solid #141414;display:flex;flex-direction:column;gap:7px;background:#0a0a0a;flex-shrink:0;width:100%}
-.chat-rp{display:none;background:#141414;border-left:2px solid var(--amber);border-radius:6px;padding:6px 10px;font-size:11px;color:#888;align-items:center;gap:8px}
-.chat-rp.show{display:flex}
-.chat-rp b{color:var(--amber)}
-.chat-inp-row{display:flex;gap:8px;align-items:flex-end}
-.chat-inp{flex:1;background:#181818;border:1px solid #2a2a2a;border-radius:10px;padding:9px 12px;color:var(--text);font-size:13px;resize:none;max-height:80px;font-family:inherit;outline:none}
-.chat-inp:focus{border-color:#3a3a3a}
-.chat-snd{width:36px;height:36px;border-radius:50%;background:var(--amber);border:none;color:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-.chat-snd:hover{background:#d4870e}
-.ctx-menu{position:fixed;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:6px;z-index:600;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.6);animation:fadeIn .12s}
-.ctx-btn{width:100%;background:none;border:none;color:#ccc;padding:8px 12px;border-radius:7px;font-size:13px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:inherit}
-.ctx-btn:hover{background:#252525}
-.ctx-btn.danger{color:var(--red)}
-.admin-badge{font-size:9px;background:rgba(232,150,30,.15);color:var(--amber);border:1px solid #e8961e30;border-radius:99px;padding:1px 7px;margin-left:4px}
-
 </style>
 </head>
 <body>
-
-<!-- ── PROFILE SETUP ── -->
-<div id="profile-screen">
-  <div id="profile-box">
-    <div id="profile-title">你是誰？</div>
-    <div id="profile-sub">設定後會自動填入公告的發布人</div>
-
-    <div class="field">
-      <div class="fl">你的姓名</div>
-      <input id="profile-name-inp" type="text" placeholder="輸入真實姓名" maxlength="20">
-    </div>
-
-    <div class="field" style="margin-top:14px">
-      <div class="fl">所屬組別</div>
-      <div class="profile-dept-grid" id="dept-grid">
+<!-- Password -->
+<div id="pw">
+  <div id="pw-box">
+    <div id="pw-logo">PROD<b style="color:var(--c-s4);font-weight:400">.</b>CREW</div>
+    <div id="pw-sub">劇組管理系統</div>
+    <input id="pw-inp" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" maxlength="32" autocomplete="off">
+    <button class="btn btn-primary btn-full" id="pw-btn">進入</button>
+    <div id="pw-err">密碼錯誤，請重試</div>
+  </div>
+</div>
+<!-- Profile Setup -->
+<div id="pf-screen">
+  <div id="pf-box">
+    <div style="font-family:var(--fd);font-size:28px;color:#fff;letter-spacing:.05em;margin-bottom:4px">你是誰？</div>
+    <div style="font-size:12px;color:var(--c-t3);margin-bottom:26px">設定後自動填入公告發布人</div>
+    <div class="field"><div class="fl">你的姓名</div><input id="pf-name" class="inp" placeholder="輸入真實姓名" maxlength="20"></div>
+    <div class="field" style="margin-top:14px"><div class="fl">所屬組別</div>
+      <div class="dept-grid" id="dept-grid">
         <button class="dept-btn" data-dept="導演組">導演組</button>
         <button class="dept-btn" data-dept="製片組">製片組</button>
         <button class="dept-btn" data-dept="攝影組">攝影組</button>
@@ -256,1640 +255,848 @@ a{color:inherit;text-decoration:none}
         <button class="dept-btn" data-dept="演員">演員</button>
       </div>
     </div>
-
-    <button id="profile-confirm">確認進入</button>
+    <button class="btn btn-primary btn-full" id="pf-confirm" style="margin-top:20px">確認進入</button>
   </div>
 </div>
-
-<!-- ── BROADCAST OVERLAY ── -->
-<div id="broadcast-overlay">
-  <div id="broadcast-backdrop" id="bc-backdrop"></div>
-  <div id="broadcast-box">
-    <div id="broadcast-important-bar">⚠ 重要公告</div>
-    <div id="broadcast-header">
-      <div id="broadcast-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8961e" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-      </div>
-      <div>
-        <div id="broadcast-badge">劇組公告</div>
-        <div id="broadcast-meta-name"></div>
-        <div id="broadcast-meta-role"></div>
-      </div>
-      <div id="broadcast-counter"></div>
-    </div>
-    <div id="broadcast-body">
-      <div id="broadcast-time"></div>
-      <div id="broadcast-content"></div>
-    </div>
-    <div id="broadcast-footer">
-      <button id="broadcast-view">查看全部公告</button>
-      <button id="broadcast-dismiss">我知道了</button>
+<!-- Broadcast -->
+<div id="bc"><div id="bc-bg"></div>
+  <div id="bc-box">
+    <div id="bc-imp">⚠ 重要公告</div>
+    <div id="bc-hdr"><div id="bc-av">?</div><div><div id="bc-nm" style="font-size:14px;font-weight:600;color:var(--c-tx)"></div><div id="bc-rl" style="font-size:10px;color:var(--c-t4);margin-top:1px"></div></div><div id="bc-ct" style="margin-left:auto;font-size:10px;color:var(--c-t4)"></div></div>
+    <div id="bc-body"><div id="bc-tm" style="font-size:9px;color:var(--c-t4);letter-spacing:.05em;margin-bottom:8px"></div><div id="bc-cn" style="font-size:14px;color:var(--c-t2);line-height:1.85;white-space:pre-line"></div></div>
+    <div id="bc-foot">
+      <button class="btn btn-ghost btn-sm" id="bc-view">查看公告</button>
+      <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center" id="bc-ok">我知道了</button>
     </div>
   </div>
 </div>
-
-<!-- ── PASSWORD GATE ── -->
-<div id="pw-screen">
-  <div id="pw-box">
-    <div id="pw-logo">PROD<span style="color:#2a2a2a">.</span>CREW</div>
-    <div id="pw-sub">劇組管理系統</div>
-    <div id="pw-label">請輸入密碼</div>
-    <input id="pw-input" type="password" placeholder="••••••••" autocomplete="off" maxlength="32">
-    <button id="pw-btn">進入</button>
-    <div id="pw-err">密碼錯誤，請重試</div>
-    <div id="pw-hint">PROD.CREW &copy; 2025</div>
-  </div>
-</div>
-
+<!-- App -->
 <div id="app">
   <nav class="sidebar">
-    <div class="sb-logo">
-      <div class="sb-wordmark">PROD<span>.</span>CREW</div>
-      <div class="sb-proj" id="sb-proj-name">設定項目資訊</div>
-    </div>
+    <div class="sb-top"><div class="sb-mark">PROD<b>.</b>CREW</div><div class="sb-proj" id="sb-proj">設定項目資訊</div></div>
     <div class="sb-nav" id="sb-nav"></div>
     <div class="sb-foot">
-      <div id="profile-badge">
-        <div id="profile-avatar">?</div>
-        <div id="profile-info">
-          <div id="profile-name-lbl">設定個人資訊</div>
-          <div id="profile-role-lbl">點此設定</div>
-        </div>
-        <div id="profile-edit-btn">✎</div>
+      <div class="pf-chip" id="pf-chip">
+        <div class="pf-av" id="sb-av">?</div>
+        <div style="flex:1;min-width:0"><div class="pf-name" id="sb-nm">設定個人資訊</div><div class="pf-dept" id="sb-dp">點此設定</div></div>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--c-t4)" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
       </div>
       <div id="sync-sb"></div>
-      <div style="font-size:10px;color:#2a2a2a;margin-top:5px" id="sync-mode-lbl"></div>
     </div>
   </nav>
-
   <div class="main">
-    <div class="topbar">
-      <div class="topbar-logo">PROD<span>.</span>CREW</div>
-      <div class="topbar-label" id="topbar-lbl"></div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div id="sync-top"></div>
-        <div id="topbar-profile">
-          <div id="topbar-avatar">?</div>
-        </div>
+    <div class="topbar" style="display:flex;align-items:center;justify-content:space-between">
+      <div class="tb-logo">PROD<i>.</i>CREW</div>
+      <div class="tb-title" id="tb-title" style="flex:1;padding:0 10px"></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto">
+        <div id="sync-tb"></div>
+        <button style="width:32px;height:32px;border-radius:50%;background:var(--c-s2);border:1px solid var(--c-bd2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;flex-shrink:0" data-nav="ann">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-t3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span id="ann-badge" style="display:none;position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--c-rd);border:1.5px solid #080808"></span>
+        </button>
+        <div class="tb-av" id="tb-av">?</div>
       </div>
     </div>
     <div class="content" id="content"></div>
   </div>
-
-  <nav class="bottom-nav" id="bnav"></nav>
-  <div id="modal-root"></div>
+  <nav class="bnav" id="bnav"></nav>
+  <div id="modal"></div>
 </div>
-
 <script>
-// ─── ICONS ────────────────────────────────────────────────────────────────
-const I = {
-  grid:    `<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>`,
-  clap:    `<path d="M4 11v8a2 2 0 002 2h12a2 2 0 002-2v-8H4z"/><path d="M4 11L2 6l4.5-1.5 2 4.5"/><path d="M11.5 11L9 5.5 13.5 4l2.5 5.5"/><path d="M18 11l2-5-4.5-1.5-2 4.5"/>`,
-  file:    `<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>`,
-  monitor: `<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>`,
-  bell:    `<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>`,
-  back:    `<polyline points="15 18 9 12 15 6"/>`,
-  plus:    `<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>`,
-  edit:    `<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>`,
-  trash:   `<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>`,
-  settings:`<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>`,
-  x:       `<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,
-  download:`<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>`,
-  upload:  `<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>`,
-  link:    `<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>`,
-  clock:   `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
-  chat:    `<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>`,
-  send:    `<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>`,
+// ── Icons ──
+const IC={
+  home:`<rect x="3" y="9" width="7" height="12" rx="1"/><rect x="14" y="5" width="7" height="16" rx="1"/><path d="M3 5l9-3 9 3"/>`,
+  clap:`<path d="M20 8v11a2 2 0 01-2 2H6a2 2 0 01-2-2V8"/><path d="M6 8V6a2 2 0 012-2h8a2 2 0 012 2v2"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/>`,
+  doc:`<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>`,
+  film:`<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>`,
+  clock:`<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
+  bell:`<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>`,
+  plus:`<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>`,
+  edit:`<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>`,
+  trash:`<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>`,
+  x:`<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,
+  back:`<polyline points="15 18 9 12 15 6"/>`,
+  set:`<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>`,
+  down:`<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>`,
+  up:`<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>`,
 };
-const svg = (name, size=20, color='currentColor') =>
-  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block">${I[name]}</svg>`;
+const ic=(n,s=18,c='currentColor')=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block">${IC[n]||''}</svg>`;
 
-// ─── STATUS ───────────────────────────────────────────────────────────────
-const ST = {
-  pending:  {label:'待拍',   color:'#606060', bg:'rgba(96,96,96,.15)',    icon:'○'},
-  shooting: {label:'拍攝中', color:'#d95555', bg:'rgba(217,85,85,.15)',   icon:'◉'},
-  done:     {label:'完成',   color:'#3eb87a', bg:'rgba(62,184,122,.14)',  icon:'✓'},
-  ng:       {label:'NG',    color:'#f5c518', bg:'rgba(245,197,24,.14)',   icon:'✕'},
-  keep:     {label:'KEEP',  color:'#4a9eff', bg:'rgba(74,158,255,.14)',   icon:'◈'},
+// ── Status ──
+const ST={
+  pending: {l:'待拍',  c:'var(--c-gy)',cl:'st-pending', sc:'sc-pending', i:'○'},
+  shooting:{l:'拍攝中',c:'var(--c-rd)',cl:'st-shooting',sc:'sc-shooting',i:'◉'},
+  done:    {l:'完成',  c:'var(--c-gn)',cl:'st-done',    sc:'sc-done',    i:'✓'},
+  ng:      {l:'NG',   c:'var(--c-yw)',cl:'st-ng',      sc:'sc-ng',      i:'✕'},
+  keep:    {l:'KEEP', c:'var(--c-bl)',cl:'st-keep',     sc:'sc-keep',    i:'◈'},
 };
-const ST_ORDER = ['pending','shooting','done','ng','keep'];
+const STO=['pending','shooting','done','ng','keep'];
 
-const TABS = [
-  {id:'dashboard', label:'首頁',   icon:'grid'},
-  {id:'shots',     label:'進度',   icon:'clap'},
-  {id:'script',    label:'劇本',   icon:'file'},
-  {id:'storyboard',label:'分鏡',   icon:'monitor'},
-  {id:'callsheet', label:'通告單', icon:'clock'},
-  {id:'chatroom',  label:'聊天室', icon:'chat'},
-  {id:'announce',  label:'公告',   icon:'bell'},
+// ── Tabs ──
+const TABS=[
+  {id:'dash',  label:'首頁',   icon:'home'},
+  {id:'shots', label:'進度',   icon:'clap'},
+  {id:'script',label:'劇本',   icon:'doc'},
+  {id:'sb',    label:'分鏡',   icon:'film'},
+  {id:'call',  label:'通告單', icon:'clock'},
 ];
 
-// ─── STATE ────────────────────────────────────────────────────────────────
-let state = {
-  tab: 'dashboard',
-  shots: [], script: [], storyboard: [], announcements: [], callsheet: [], chat: [],
-  info: {title:'',subtitle:'',shootDay:'',totalDays:'',director:'',location:''},
-  ui: {
-    filterScene: 'all',
-    expandShot: null, expandSb: null,
-    activeScript: null,
-    modal: null, editItem: null, delItem: null,
-  },
-  _ts: 0,
+// ── Config ──
+const FB='https://corsa2025zg1001-default-rtdb.firebaseio.com';
+const PWD='corsa2025';
+const ADM='1001';
+const LS='pc:v5';
+
+// ── State ──
+let D={tab:'dash',shots:[],script:[],sb:[],ann:[],call:[],info:{title:'',subtitle:'',day:'',days:'',dir:'',loc:''},_ts:0};
+let uiState={filter:'all',expShot:null,expSb:null,activeScript:null,editId:null};
+let prof={name:'',dept:'',isAdmin:false};
+let sync='local';
+let bcQ=[];let bcOn=false;
+let onlineUsers=[];
+
+// ── Helpers ──
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const uid=()=>`${Date.now()}_${Math.random().toString(36).slice(2,5)}`;
+const now_t=()=>{const d=new Date();return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;};
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+const $=id=>document.getElementById(id);
+const scenes=()=>[...new Set(D.shots.map(s=>s.scene).filter(Boolean))];
+const sceneColor=(shots)=>{
+  const done=shots.every(s=>s.status==='done');
+  const hasNg=shots.some(s=>s.status==='ng');
+  const active=shots.some(s=>s.status==='shooting');
+  if(done)return{cl:'scene-gn',bar:'var(--c-gn)',st:'完成',tc:'var(--c-gn)'};
+  if(hasNg)return{cl:'scene-yw',bar:'var(--c-yw)',st:'有NG',tc:'var(--c-yw)'};
+  if(active)return{cl:'scene-rd',bar:'var(--c-rd)',st:'拍攝中',tc:'var(--c-rd)'};
+  return{cl:'',bar:'var(--c-am)',st:'待拍',tc:'var(--c-t4)'};
 };
+const syncEl=s=>{
+  const m={local:['#303030','本地'],synced:['var(--c-gn)','已同步'],syncing:['var(--c-am)','同步中…'],error:['var(--c-rd)','連線失敗']};
+  const[c,t]=m[s]||m.local;
+  const anim=s==='syncing'?'animation:bl 1s infinite':'';
+  return `<span class="sync" style="color:${c}"><span class="sync-dot" style="background:${c};box-shadow:0 0 4px ${c};${anim}"></span>${t}</span>`;
+};
+const badge=(status,id)=>{const s=ST[status]||ST.pending;return`<button class="badge ${s.cl}" data-a="cycle" data-id="${esc(id)}">${s.i} ${s.l}</button>`;};
+const f=(l,c)=>`<div class="field"><div class="fl">${l}</div>${c}</div>`;
+const inp=(id,v,ph='',type='text')=>`<input class="inp" id="${id}" type="${type}" value="${esc(v||'')}" placeholder="${esc(ph)}">`;
+const slt=(id,v,opts)=>`<select class="inp" id="${id}">${opts.map(o=>`<option value="${o}"${v===o?' selected':''}>${o}</option>`).join('')}</select>`;
+const ta=(id,v,ph='',rows=3)=>`<textarea class="inp" id="${id}" rows="${rows}" placeholder="${esc(ph)}" style="resize:none">${esc(v||'')}</textarea>`;
+const DEPTS=['導演組','製片組','攝影組','燈光組','美術組','收音組','場務組','演員','其他'];
 
-let syncStatus = 'local'; // 'local' | 'synced' | 'syncing' | 'error'
-let firebaseUrl = 'https://corsa2025zg1001-default-rtdb.firebaseio.com';
-localStorage.setItem('prod:fb', firebaseUrl);
-
-// ─── STORAGE (localStorage + optional Firebase) ───────────────────────────
-const LS_KEY = 'prod:data:v4';
-
-function saveLocal() {
-  const {ui, ...data} = state;
-  localStorage.setItem(LS_KEY, JSON.stringify(data));
+// ── Storage ──
+function saveL(){const{_ts,...d}=D;localStorage.setItem(LS,JSON.stringify({...d,_ts:D._ts}));}
+function loadL(){try{const r=localStorage.getItem(LS);if(r)Object.assign(D,JSON.parse(r));}catch(e){}}
+async function push(){
+  sync='syncing';updateSync();
+  try{
+    const body={...D,_ts:Date.now()};
+    await fetch(FB+'/pc.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    D._ts=body._ts;sync='synced';
+  }catch{sync='error';}
+  updateSync();
 }
-
-function loadLocal() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return;
-    const data = JSON.parse(raw);
-    Object.assign(state, data);
-  } catch(e) {}
+async function pull(){
+  try{
+    const r=await fetch(FB+'/pc.json');
+    if(!r.ok)throw 0;
+    const d=await r.json();
+    if(!d||d._ts<=D._ts){sync='synced';updateSync();return;}
+    // New ann broadcast
+    const prevAnn=new Set((D.ann||[]).map(a=>a.id));
+    (d.ann||[]).filter(a=>!prevAnn.has(a.id)).forEach(a=>{if(D._ts>0)showBc(a);});
+    const t=D.tab;
+    Object.assign(D,{shots:d.shots||[],script:d.script||[],sb:d.sb||[],ann:d.ann||[],call:d.call||[],info:d.info||D.info,_ts:d._ts});
+    D.tab=t;saveL();sync='synced';updateSync();render();
+  }catch{sync='error';updateSync();}
 }
+function save(){saveL();push();}
+setInterval(pull,5000);
 
-async function pushFirebase() {
-  if (!firebaseUrl) return;
-  syncStatus = 'syncing'; updateSyncUI();
-  try {
-    const {ui, ...data} = state;
-    data._ts = Date.now();
-    await fetch(`${firebaseUrl}/prodcrew.json`, {
-      method: 'PUT',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(data),
-    });
-    state._ts = data._ts;
-    syncStatus = 'synced'; updateSyncUI();
-  } catch(e) { syncStatus = 'error'; updateSyncUI(); }
+// ── Profile ──
+function loadP(){try{const r=localStorage.getItem('pc:prof');if(r)prof=JSON.parse(r);}catch(e){}}
+function saveP(n,d){prof={...prof,name:n,dept:d};localStorage.setItem('pc:prof',JSON.stringify(prof));updateProfUI();}
+function updateProfUI(){
+  const ini=prof.name?prof.name[0].toUpperCase():'?';
+  ['sb-av','tb-av'].forEach(id=>{if($(id))$(id).textContent=ini;});
+  if($('sb-nm'))$('sb-nm').textContent=prof.name||'設定個人資訊';
+  if($('sb-dp'))$('sb-dp').innerHTML=(prof.dept||'點此設定')+(prof.isAdmin?` <span class="adm-badge">管理員</span>`:'');
+  if($('sb-proj'))$('sb-proj').textContent=D.info.title||'設定項目資訊';
 }
+function updateSync(){['sync-tb','sync-sb'].forEach(id=>{if($(id))$(id).innerHTML=syncEl(sync);});}
 
-async function pullFirebase() {
-  if (!firebaseUrl) return;
-  try {
-    const r = await fetch(`${firebaseUrl}/prodcrew.json`);
-    if (!r.ok) throw new Error(r.status);
-    const data = await r.json();
-    if (!data || data._ts <= state._ts) { syncStatus = 'synced'; updateSyncUI(); return; }
-    // Check for new announcements
-    const prevAnnIds = new Set((state.announcements||[]).map(a=>a.id));
-    const newAnns = (data.announcements||[]).filter(a => !prevAnnIds.has(a.id));
-    if (newAnns.length > 0 && state._ts > 0) {
-      newAnns.forEach(a => showNotification(a));
+// ── Password ──
+const PW_K='pc:auth';const PW_DAYS=30;
+async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
+function isAuth(h){try{const r=localStorage.getItem(PW_K);if(!r)return false;const{hash,exp}=JSON.parse(r);return hash===h&&Date.now()<exp;}catch{return false;}}
+async function initPW(){
+  const h=await sha(PWD);
+  if(isAuth(h)){$('pw').remove();initApp();return;}
+  $('pw').style.display='flex';
+  const go=async()=>{
+    const t=await sha($('pw-inp').value);
+    if(t===h){
+      localStorage.setItem(PW_K,JSON.stringify({hash:h,exp:Date.now()+PW_DAYS*864e5}));
+      $('pw').style.transition='opacity .3s';$('pw').style.opacity='0';
+      setTimeout(()=>{$('pw').remove();initApp();},300);
+    }else{
+      $('pw-err').classList.add('on');$('pw-inp').classList.add('sk');$('pw-inp').value='';
+      setTimeout(()=>{$('pw-inp').classList.remove('sk');$('pw-err').classList.remove('on');},2000);
     }
-    // Notify new chat
-    const prevChatIds = new Set((state.chat||[]).map(m=>m.id));
-    const newMsgs = (data.chat||[]).filter(m=>!prevChatIds.has(m.id)&&!m.sys&&!m.deleted);
-    if (newMsgs.length > 0 && state._ts > 0 && state.tab !== 'chatroom') {
-      newMsgs.forEach(m => {
-        if (m.author !== userProfile.name) showBrowserNotif(`💬 ${m.author || ''}`, m.content||'');
-      });
-    }
-    const prevTab = state.tab;
-    Object.assign(state, {
-      shots: data.shots||[], script: data.script||[],
-      storyboard: data.storyboard||[], announcements: data.announcements||[],
-      callsheet: data.callsheet||[], chat: data.chat||[],
-      info: data.info||state.info, _ts: data._ts,
-    });
-    state.tab = prevTab;
-    syncStatus = 'synced'; updateSyncUI();
-    render();
-  } catch(e) { syncStatus = 'error'; updateSyncUI(); }
-}
-
-// ─── NOTIFICATIONS & BROADCAST ───────────────────────────────────────────
-function requestNotificationPermission() {
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission();
-  }
-}
-
-// Queue of unread broadcasts
-let broadcastQueue = [];
-let broadcastShowing = false;
-
-function showNotification(ann) {
-  // Browser notification (background)
-  if ('Notification' in window && Notification.permission === 'granted') {
-    const title = ann.important ? `🔴 重要公告｜${ann.author||'劇組'}` : `📢 新公告｜${ann.author||'劇組'}`;
-    const body = ann.content.substring(0, 80) + (ann.content.length > 80 ? '…' : '');
-    try {
-      const n = new Notification(title, { body });
-      n.onclick = () => { window.focus(); n.close(); };
-      setTimeout(() => n.close(), 8000);
-    } catch(e) {}
-  }
-  // In-app broadcast overlay
-  broadcastQueue.push(ann);
-  if (!broadcastShowing) showNextBroadcast();
-}
-
-function showNextBroadcast() {
-  if (broadcastQueue.length === 0) { broadcastShowing = false; return; }
-  broadcastShowing = true;
-  const ann = broadcastQueue.shift();
-  const el = document.getElementById('broadcast-overlay');
-  const remaining = broadcastQueue.length;
-
-  // Important styling
-  const icon = document.getElementById('broadcast-icon');
-  const bar  = document.getElementById('broadcast-important-bar');
-  if (ann.important) {
-    icon.classList.add('important');
-    bar.style.display = 'block';
-    el.style.background = 'none';
-  } else {
-    icon.classList.remove('important');
-    bar.style.display = 'none';
-  }
-
-  document.getElementById('broadcast-meta-name').textContent = ann.author || '（匿名）';
-  document.getElementById('broadcast-meta-role').textContent = ann.role || '';
-  document.getElementById('broadcast-time').textContent = ann.time ? `發布於 ${ann.time}` : '';
-  document.getElementById('broadcast-content').textContent = ann.content;
-  document.getElementById('broadcast-counter').textContent = remaining > 0 ? `還有 ${remaining} 則` : '';
-
-  el.classList.add('show');
-
-  // Vibrate on mobile for important
-  if (ann.important && navigator.vibrate) navigator.vibrate([200,100,200]);
-}
-
-function dismissBroadcast() {
-  const el = document.getElementById('broadcast-overlay');
-  el.classList.remove('show');
-  setTimeout(() => {
-    if (broadcastQueue.length > 0) showNextBroadcast();
-    else broadcastShowing = false;
-  }, 250);
-}
-
-// Broadcast event listeners (attached once)
-document.getElementById('broadcast-dismiss').addEventListener('click', dismissBroadcast);
-document.getElementById('broadcast-view').addEventListener('click', () => {
-  dismissBroadcast();
-  state.tab = 'announce'; render();
-});
-document.getElementById('broadcast-backdrop').addEventListener('click', () => {
-  // Don't dismiss on backdrop click for important announcements
-  const ann = document.getElementById('broadcast-important-bar');
-  if (ann && ann.style.display === 'block') return;
-  dismissBroadcast();
-});
-
-function save() { saveLocal(); pushFirebase(); }
-setInterval(pullFirebase, 5000);
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────
-const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const uid = () => `${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
-const pct = (a,b) => b ? Math.round((a/b)*100) : 0;
-
-function badge(status, id) {
-  const s = ST[status]||ST.pending;
-  return `<button class="badge" data-action="cycle" data-id="${esc(id)}" style="color:${s.color};background:${s.bg};border:1px solid ${s.color}45" title="點擊切換">${s.icon} ${s.label}</button>`;
-}
-
-function syncDot(status) {
-  const cfg = {local:['#3a3a3a','本地'],synced:['#3eb87a','已同步'],syncing:['#e8961e','同步中'],error:['#d95555','連線失敗']};
-  const [c,t] = cfg[status]||cfg.local;
-  return `<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:${c}">
-    <span class="dot" style="background:${c};box-shadow:0 0 5px ${c};${status==='syncing'?'animation:blink 1s infinite':''}"></span>${t}</span>`;
-}
-
-function updateSyncUI() {
-  const mode = firebaseUrl ? '雲端同步' : '本地模式 — 設定Firebase可跨裝置';
-  document.getElementById('sync-top').innerHTML = syncDot(syncStatus);
-  document.getElementById('sync-sb').innerHTML = syncDot(syncStatus);
-  document.getElementById('sync-mode-lbl').textContent = mode;
-}
-
-function scenes() { return [...new Set(state.shots.map(s=>s.scene).filter(Boolean))]; }
-function shotCount() {
-  const c = {total:state.shots.length,done:0,shooting:0,pending:0,ng:0};
-  state.shots.forEach(s=>{if(c[s.status]!==undefined)c[s.status]++});
-  return c;
-}
-
-// ─── RENDER ───────────────────────────────────────────────────────────────
-function render() {
-  const info = state.info;
-  document.getElementById('sb-proj-name').textContent = info.title||'設定項目資訊';
-  document.getElementById('topbar-lbl').textContent = TABS.find(t=>t.id===state.tab)?.label||'';
-  renderNav();
-  document.getElementById('content').innerHTML = renderTab();
-  // Chat needs full height without bottom padding
-  const contentEl = document.getElementById('content');
-  if (state.tab === 'chatroom') {
-    contentEl.style.paddingBottom = '0';
-    contentEl.style.overflow = 'hidden';
-  } else {
-    contentEl.style.paddingBottom = '';
-    contentEl.style.overflow = '';
-  }
-  updateSyncUI();
-  if (state.tab === 'chatroom') attachChatListeners();
-  // Recording mode: red border on app when any shot is 'shooting'
-  const isRecording = state.shots.some(s=>s.status==='shooting');
-  const appEl = document.getElementById('app');
-  if (appEl) {
-    if (isRecording) {
-      appEl.style.outline = '3px solid #d95555';
-      appEl.style.outlineOffset = '-3px';
-      appEl.style.boxShadow = '0 0 0 3px rgba(217,85,85,.3), inset 0 0 30px rgba(217,85,85,.08)';
-    } else {
-      appEl.style.outline = '';
-      appEl.style.outlineOffset = '';
-      appEl.style.boxShadow = '';
-    }
-  }
-}
-
-function renderNav() {
-  const tabs = TABS.map(t => {
-    const a = state.tab===t.id;
-    return `<button class="sb-btn${a?' active':''}" data-nav="${t.id}">${svg(t.icon,17)} ${t.label}</button>`;
-  }).join('');
-  document.getElementById('sb-nav').innerHTML = tabs;
-
-  const bnav = TABS.map(t => {
-    const a = state.tab===t.id;
-    return `<button class="bnav-btn${a?' active':''}" data-nav="${t.id}">${svg(t.icon,21)}<span>${t.label}</span></button>`;
-  }).join('');
-  document.getElementById('bnav').innerHTML = bnav;
-}
-
-function renderTab() {
-  switch(state.tab) {
-    case 'shots':      return renderShots();
-    case 'script':     return renderScript();
-    case 'storyboard': return renderStoryboard();
-    case 'callsheet':  return renderCallsheet();
-    case 'chatroom':   return renderChatroom();
-    case 'announce':   return renderAnnounce();
-    default:           return renderDashboard();
-  }
-}
-
-// ─── DASHBOARD ────────────────────────────────────────────────────────────
-function renderDashboard() {
-  const info = state.info;
-  const c = shotCount();
-  const p = pct(c.done, c.total);
-  const isDesktop = window.innerWidth >= 1200;
-  const sceneCards = scenes().map(scn => {
-    const ss = state.shots.filter(s=>s.scene===scn);
-    const d  = ss.filter(s=>s.status==='done').length;
-    const ng = ss.filter(s=>s.status==='ng').length;
-    const sh = ss.filter(s=>s.status==='shooting').length;
-    const pp = pct(d, ss.length);
-
-    // Traffic light logic
-    // Green = all done, Red = has NG, Yellow = in progress, Dim = not started
-    const allDone    = pp === 100;
-    const hasNg      = ng > 0;
-    const inProgress = sh > 0 || (d > 0 && !allDone);
-    const borderColor = allDone ? '#3eb87a' : hasNg ? '#d95555' : inProgress ? '#e8961e' : '#2a2a2a';
-    const glowColor   = allDone ? 'rgba(62,184,122,.12)' : hasNg ? 'rgba(217,85,85,.10)' : inProgress ? 'rgba(232,150,30,.10)' : 'transparent';
-    const statusLabel = allDone ? '完成' : hasNg ? 'NG' : inProgress ? '進行中' : '待拍';
-    const statusColor = allDone ? '#3eb87a' : hasNg ? '#d95555' : inProgress ? '#e8961e' : '#555';
-    const barColor    = allDone ? '#3eb87a' : hasNg ? '#d95555' : '#e8961e';
-
-    const mini = ST_ORDER.map(st=>{
-      const n = ss.filter(s=>s.status===st).length;
-      return n ? `<span style="font-size:10px;color:${ST[st].color}">${ST[st].icon} ${n}</span>` : '';
-    }).join('');
-
-    return `<div style="cursor:pointer;margin-bottom:10px;background:#111;border-radius:14px;border:1.5px solid ${borderColor};
-      box-shadow:0 0 16px ${glowColor};padding:14px 16px;transition:box-shadow .2s"
-      data-action="goto-shots" data-scene="${esc(scn)}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-        <div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--amber);letter-spacing:.06em">場景 ${esc(scn)}</span>
-            <span style="font-size:10px;font-weight:700;color:${statusColor};background:${glowColor||'rgba(255,255,255,.04)'};border:1px solid ${borderColor}50;padding:2px 9px;border-radius:99px">${statusLabel}</span>
-          </div>
-          <div style="font-size:12px;color:var(--t3)">${esc(ss[0]?.sceneTitle||'')}</div>
-        </div>
-        <span style="font-size:12px;color:${statusColor};font-weight:700;flex-shrink:0">${d}/${ss.length}</span>
-      </div>
-      <div style="height:4px;background:#1a1a1a;border-radius:99px;overflow:hidden;margin-bottom:10px">
-        <div style="height:100%;width:${pp}%;background:${barColor};border-radius:99px;transition:width .6s ease;
-          box-shadow:0 0 6px ${borderColor}60"></div>
-      </div>
-      <div style="display:flex;gap:10px;align-items:center">
-        ${mini}
-      </div>
-    </div>`;
-  }).join('');
-
-  const annHTML = state.announcements.slice(0,3).map(renderAnnCard).join('') ||
-    `<div class="card" style="text-align:center;padding:20px;font-size:12px;color:var(--t4)">尚無公告</div>`;
-
-  const progressCard = c.total > 0 ? `
-    <div class="card" style="margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:24px;margin-bottom:18px">
-        <div style="position:relative;width:96px;height:96px;flex-shrink:0">
-          <svg width="96" height="96" viewBox="0 0 96 96">
-            <circle cx="48" cy="48" r="40" fill="none" stroke="#1c1c1c" stroke-width="9"/>
-            <circle cx="48" cy="48" r="40" fill="none" stroke="var(--amber)" stroke-width="9"
-              stroke-dasharray="${2*Math.PI*40}"
-              stroke-dashoffset="${2*Math.PI*40*(1-p/100)}"
-              stroke-linecap="round" transform="rotate(-90 48 48)" style="transition:stroke-dashoffset 1s ease"/>
-          </svg>
-          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--amber);line-height:1">${p}%</span>
-            <span style="font-size:9px;color:#555;margin-top:2px;letter-spacing:.05em">DONE</span>
-          </div>
-        </div>
-        <div style="flex:1">
-          <div style="font-size:11px;color:var(--t3);margin-bottom:12px">拍攝進度 · 共 ${c.total} 個鏡頭</div>
-          <div style="display:grid;grid-template-columns:${isDesktop?'1fr 1fr 1fr 1fr':'1fr 1fr'};gap:10px 20px">
-            ${[['完成','done','#3eb87a'],['拍攝中','shooting','#e8961e'],['待拍','pending','#686868'],['NG','ng','#d95555']].map(([l,k,col])=>
-              `<div style="display:flex;align-items:center;gap:7px">
-                <span style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0"></span>
-                <span style="font-size:12px;color:var(--t3)">${l}</span>
-                <span style="font-size:15px;font-weight:700;color:${col};margin-left:auto">${c[k]}</span>
-              </div>`).join('')}
-          </div>
-        </div>
-      </div>
-      <div style="height:4px;background:#181818;border-radius:99px;overflow:hidden">
-        <div style="height:100%;width:${p}%;background:linear-gradient(90deg,#b8700e,#e8961e);border-radius:99px;transition:width 1s ease"></div>
-      </div>
-    </div>` : `<div class="card" style="text-align:center;padding:36px;font-size:13px;color:var(--t4)">前往「進度」標籤新增鏡頭</div>`;
-
-  return `<div class="page">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:26px">
-      <div style="border-left:3px solid var(--amber);padding-left:14px">
-        ${info.subtitle?`<div style="font-size:10px;color:var(--amber);letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px">${esc(info.subtitle)}</div>`:''}
-        ${info.title
-          ? `<div style="font-family:'Bebas Neue',sans-serif;font-size:${isDesktop?'38px':'30px'};color:#fff;letter-spacing:.04em;line-height:1">${esc(info.title)}</div>`
-          : `<div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#2a2a2a">點擊右上角 ⚙ 設定項目資訊</div>`}
-        ${(info.shootDay||info.director) ? `<div style="font-size:12px;color:#777;margin-top:8px">
-          ${info.shootDay&&info.totalDays?`第 ${esc(info.shootDay)} / ${esc(info.totalDays)} 拍攝日`:''}
-          ${info.director?` · 導演：${esc(info.director)}`:''}
-          ${info.location?` · 📍 ${esc(info.location)}`:''}
-        </div>`:''}
-      </div>
-      <button class="btn-icon" data-action="open-info" style="flex-shrink:0">${svg('settings',15)} ${isDesktop?'項目設定':''}</button>
-    </div>
-    <div style="display:grid;grid-template-columns:${isDesktop?'1fr 360px':'1fr'};gap:24px">
-      <div>
-        ${progressCard}
-        ${scenes().length ? `<div class="slabel">場景概況</div>
-        <div style="display:grid;grid-template-columns:${isDesktop?'1fr 1fr':'1fr'};gap:10px">${sceneCards}</div>` : ''}
-      </div>
-      <div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div class="slabel" style="margin-top:0">公告</div>
-          <button class="btn-mini" data-action="open-modal" data-modal="ann">${svg('plus',13)} 新增</button>
-        </div>
-        ${annHTML}
-      </div>
-    </div>
-  </div>`;
-}
-
-// ─── SHOTS ────────────────────────────────────────────────────────────────
-function renderShots() {
-  const {filterScene, expandShot} = state.ui;
-  const isDesktop = window.innerWidth >= 1200;
-  const list = filterScene==='all' ? state.shots : state.shots.filter(s=>s.scene===filterScene);
-  const chips = ['all',...scenes()].map(scn=>`
-    <button data-action="filter-scene" data-scene="${esc(scn)}"
-      style="padding:6px 15px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0;
-      background:${filterScene===scn?'var(--amber)':'#181818'};
-      color:${filterScene===scn?'#000':'#666'};
-      border:1px solid ${filterScene===scn?'var(--amber)':'#242424'}">
-      ${scn==='all'?'全部':`場景 ${esc(scn)}`}
-    </button>`).join('');
-
-  const emptyHTML = `<div class="card empty">
-    <div class="empty-icon">${svg('clap',32,'#e8961e')}</div>
-    <div style="font-size:14px;color:var(--t4);margin-bottom:16px">尚未新增任何鏡頭</div>
-    <button class="btn-add" data-action="open-modal" data-modal="shot">${svg('plus',14)} 新增第一個鏡頭</button>
-  </div>`;
-
-  let bodyHTML = '';
-  if (list.length === 0) {
-    bodyHTML = emptyHTML;
-  } else if (isDesktop) {
-    // Table view
-    let rows = '';
-    list.forEach((shot,i) => {
-      const showH = i===0 || list[i-1].scene!==shot.scene;
-      if (showH && shot.scene) {
-        rows += `<tr><td colspan="8" style="padding:10px 16px 6px;font-size:10px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;background:rgba(232,150,30,.03);border-top:1px solid #1e1e1e">▸ 場景 ${esc(shot.scene)}${shot.sceneTitle?` — ${esc(shot.sceneTitle)}`:''}</td></tr>`;
-      }
-      rows += `<tr>
-        <td style="font-family:'Bebas Neue',sans-serif;color:var(--amber);font-size:14px;letter-spacing:.05em;white-space:nowrap">${esc(shot.shot||'—')}</td>
-        <td style="max-width:280px">
-          <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)">${esc(shot.desc||'—')}</div>
-          ${shot.notes?`<div style="font-size:11px;color:var(--t4);margin-top:2px">備注：${esc(shot.notes)}</div>`:''}
-        </td>
-        <td style="color:var(--t3);white-space:nowrap">${esc(shot.type||'—')}</td>
-        <td style="color:var(--t3);white-space:nowrap">${esc(shot.lens||'—')}</td>
-        <td style="color:var(--t3);white-space:nowrap">${esc(shot.dir||'—')}</td>
-        <td style="color:var(--t4);white-space:nowrap">${esc(shot.scene||'—')}</td>
-        <td>${badge(shot.status,shot.id)}</td>
-        <td>
-          <div style="display:flex;gap:4px">
-            <button class="btn-tbl" data-action="edit-shot" data-id="${esc(shot.id)}" title="編輯">${svg('edit',14)}</button>
-            <button class="btn-tbl danger" data-action="del-confirm" data-type="shot" data-id="${esc(shot.id)}" title="刪除">${svg('trash',14)}</button>
-          </div>
-        </td>
-      </tr>`;
-    });
-    bodyHTML = `<div class="card" style="padding:0;overflow:hidden">
-      <div style="overflow-x:auto">
-        <table class="tbl">
-          <thead><tr>
-            <th>編號</th><th>描述</th><th>鏡別</th><th>鏡頭</th>
-            <th>運鏡</th><th>場景</th><th>狀態</th><th></th>
-          </tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>`;
-  } else {
-    // Card view
-    let cards = '';
-    list.forEach((shot,i) => {
-      const showH = i===0 || list[i-1].scene!==shot.scene;
-      const expanded = expandShot===shot.id;
-      const borderColor = shot.status==='shooting'?'#d9555550':shot.status==='done'?'#3eb87a35':shot.status==='ng'?'#f5c51835':shot.status==='keep'?'#4a9eff35':'#1e1e1e';
-      const bgCard = shot.status==='shooting'?'rgba(217,85,85,.06)':shot.status==='ng'?'rgba(245,197,24,.04)':shot.status==='keep'?'rgba(74,158,255,.04)':shot.status==='done'?'rgba(62,184,122,.04)':'var(--bg2)';
-      if (showH && shot.scene) {
-        cards += `<div style="font-size:10px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;margin-top:${i>0?'16px':'0'}">▸ 場景 ${esc(shot.scene)}${shot.sceneTitle?` — ${esc(shot.sceneTitle)}`:''}
-        </div>`;
-      }
-      const expandedHTML = expanded ? `
-        <div style="padding:0 14px 14px;border-top:1px solid #181818">
-          ${(shot.type||shot.lens||shot.dir)?`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px">
-            ${[['鏡別',shot.type],['鏡頭',shot.lens],['運鏡',shot.dir]].map(([l,v])=>`
-              <div style="background:#0e0e0e;border-radius:7px;padding:7px 10px">
-                <div style="font-size:9px;color:#555;margin-bottom:3px">${l}</div>
-                <div style="font-size:12px;color:#bbb">${esc(v||'—')}</div>
-              </div>`).join('')}
-          </div>`:''}
-          ${shot.notes?`<div style="background:#0e0e0e;border-radius:7px;padding:8px 10px;margin-top:8px">
-            <div style="font-size:9px;color:#555;margin-bottom:3px">備注</div>
-            <div style="font-size:12px;color:#aaa">${esc(shot.notes)}</div>
-          </div>`:''}
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
-            ${ST_ORDER.map(st=>`
-              <button data-action="set-status" data-id="${esc(shot.id)}" data-status="${st}"
-                style="padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600;
-                color:${ST[st].color};background:${shot.status===st?ST[st].bg:'#0e0e0e'};
-                border:1px solid ${ST[st].color}40;cursor:pointer;font-family:inherit">
-                ${ST[st].icon} ${ST[st].label}
-              </button>`).join('')}
-            <button class="btn-icon" data-action="edit-shot" data-id="${esc(shot.id)}" style="margin-left:auto">${svg('edit',13)} 編輯</button>
-            <button class="btn-icon danger" data-action="del-confirm" data-type="shot" data-id="${esc(shot.id)}">${svg('trash',13)} 刪除</button>
-          </div>
-        </div>` : '';
-      cards += `<div style="background:${bgCard};border-radius:13px;margin-bottom:8px;border:1.5px solid ${borderColor};overflow:hidden">
-        <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer" data-action="expand-shot" data-id="${esc(shot.id)}">
-          <div style="width:42px;height:42px;border-radius:9px;background:#0e0e0e;border:1px solid #242424;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-family:'Bebas Neue',sans-serif;color:var(--amber)">${esc(shot.shot||'—')}</div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;color:#d8d8d8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px">${esc(shot.desc||'（無描述）')}</div>
-            <div style="font-size:11px;color:#555">${[shot.type,shot.lens,shot.dir].filter(Boolean).map(esc).join(' · ')||'點擊展開'}</div>
-          </div>
-          ${badge(shot.status,shot.id)}
-        </div>
-        ${expandedHTML}
-      </div>`;
-    });
-    bodyHTML = cards;
-  }
-
-  return `<div class="page">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div class="ptitle" style="margin-bottom:0">拍攝進度表</div>
-      <button class="btn-add" data-action="open-modal" data-modal="shot">${svg('plus',14)} 新增鏡頭</button>
-    </div>
-    ${state.shots.length>0?`<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px">${chips}</div>`:''}
-    ${bodyHTML}
-  </div>`;
-}
-
-// ─── SCRIPT ───────────────────────────────────────────────────────────────
-function renderScript() {
-  const isDesktop = window.innerWidth >= 1200;
-  const {activeScript} = state.ui;
-
-  const sceneList = (selectedId) => state.script.length===0
-    ? `<div style="padding:32px 16px;text-align:center">
-        <div style="font-size:12px;color:var(--t4);margin-bottom:6px">尚未新增場景</div>
-        <div style="font-size:10px;color:#444;margin-bottom:12px">支援格式：純文字貼入 / PDF 轉文字後貼入</div>
-        <button class="btn-add" data-action="open-modal" data-modal="script">${svg('plus',14)} 新增</button>
-      </div>`
-    : state.script.map(sc=>`
-      <div class="sc-row${sc.id===selectedId?' active':''}" data-action="select-script" data-id="${esc(sc.id)}">
-        <div style="display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap">
-          ${sc.scene?`<span style="font-size:11px;font-family:'Bebas Neue',sans-serif;color:var(--amber);letter-spacing:.05em">場景 ${esc(sc.scene)}</span>`:''}
-          ${sc.int?`<span class="chip">${esc(sc.int)}</span>`:''}
-          ${sc.time?`<span class="chip">${esc(sc.time)}</span>`:''}
-        </div>
-        <div style="font-size:13px;color:#ccc">${esc(sc.title||'（未命名）')}</div>
-        ${sc.cast?.length?`<div style="font-size:11px;color:#555;margin-top:3px">${esc(Array.isArray(sc.cast)?sc.cast.join('、'):sc.cast)}</div>`:''}
-      </div>`).join('');
-
-  const sceneDetail = (sc) => {
-    if (!sc) return `<div class="script-empty">
-      ${svg('file',40,'#222')}
-      <div style="font-size:13px;color:var(--t4)">選擇左側場景查看劇本</div>
-    </div>`;
-    const tags = [sc.scene&&`場景 ${sc.scene}`,sc.int,sc.time,sc.page].filter(Boolean).map((t,i)=>
-      `<span class="chip${i===0?' a':''}">${esc(t)}</span>`).join('');
-    return `<div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
-        <div style="display:flex;gap:7px;flex-wrap:wrap">${tags}</div>
-        <div style="display:flex;gap:7px;flex-shrink:0">
-          <button class="btn-icon" data-action="edit-script" data-id="${esc(sc.id)}">${svg('edit',13)} 編輯</button>
-          <button class="btn-icon danger" data-action="del-confirm" data-type="script" data-id="${esc(sc.id)}">${svg('trash',13)} 刪除</button>
-        </div>
-      </div>
-      <div style="font-size:${isDesktop?'20px':'17px'};font-weight:700;color:#e4e4e4;margin-bottom:6px">${esc(sc.title)}</div>
-      ${sc.cast?.length?`<div style="font-size:12px;color:#666;margin-bottom:18px">演員：${esc(Array.isArray(sc.cast)?sc.cast.join('、'):sc.cast)}</div>`:''}
-      ${sc.content
-        ? `<div style="font-family:'Courier New',monospace;font-size:13px;color:#c0c0c0;line-height:2.2;white-space:pre-line;background:#0a0a0a;border-radius:10px;padding:${isDesktop?'20px':'14px'}">${esc(sc.content)}</div>`
-        : `<div style="font-size:13px;color:var(--t4);text-align:center;padding:32px">尚未輸入劇本內容</div>`}
-    </div>`;
   };
-
-  if (isDesktop) {
-    return `<div class="script-pane">
-      <div class="script-list">
-        <div class="script-list-hdr">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:#fff;letter-spacing:.06em">劇本</div>
-          <button class="btn-mini" data-action="open-modal" data-modal="script">${svg('plus',13)} 新增</button>
-        </div>
-        ${sceneList(activeScript?.id)}
-      </div>
-      <div class="script-detail">${sceneDetail(activeScript)}</div>
-    </div>`;
-  }
-
-  // Mobile/tablet: drill-in
-  if (activeScript) {
-    return `<div class="page">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <button class="btn-icon" data-action="back-script">${svg('back',15)} 返回</button>
-        <div style="display:flex;gap:8px">
-          <button class="btn-icon" data-action="edit-script" data-id="${esc(activeScript.id)}">${svg('edit',13)}</button>
-          <button class="btn-icon danger" data-action="del-confirm" data-type="script" data-id="${esc(activeScript.id)}">${svg('trash',13)}</button>
-        </div>
-      </div>
-      ${sceneDetail(activeScript)}
-    </div>`;
-  }
-  return `<div class="page">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div class="ptitle" style="margin-bottom:0">劇本</div>
-      <button class="btn-add" data-action="open-modal" data-modal="script">${svg('plus',14)} 新增場景</button>
-    </div>
-    ${state.script.length===0
-      ? `<div class="card empty"><div class="empty-icon">${svg('file',32,'#e8961e')}</div>
-         <div style="font-size:14px;color:var(--t4);margin-bottom:16px">尚未新增任何劇本場景</div>
-         <button class="btn-add" data-action="open-modal" data-modal="script">${svg('plus',14)} 新增場景</button></div>`
-      : `<div class="card" style="padding:0;overflow:hidden">${sceneList(null)}</div>`}
-  </div>`;
+  $('pw-btn').onclick=go;
+  $('pw-inp').onkeydown=e=>{if(e.key==='Enter')go();};
+  $('pw-inp').focus();
 }
 
-// ─── STORYBOARD ───────────────────────────────────────────────────────────
-function renderStoryboard() {
-  const {expandSb} = state.ui;
-  const w = window.innerWidth;
-  const cols = w>=1200 ? '1fr 1fr 1fr' : w>=768 ? '1fr 1fr' : '1fr';
+// ── Profile Setup ──
+$('dept-grid').onclick=e=>{
+  const b=e.target.closest('.dept-btn');if(!b)return;
+  document.querySelectorAll('.dept-btn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+};
+$('pf-confirm').onclick=()=>{
+  const n=$('pf-name').value.trim();if(!n){$('pf-name').focus();return;}
+  const d=document.querySelector('.dept-btn.on')?.dataset.dept||'';
+  saveP(n,d);$('pf-screen').classList.remove('on');
+};
+$('pf-name').onkeydown=e=>{if(e.key==='Enter')$('pf-confirm').click();};
+function showPF(){
+  $('pf-name').value=prof.name||'';
+  document.querySelectorAll('.dept-btn').forEach(b=>b.classList.toggle('on',b.dataset.dept===prof.dept));
+  $('pf-screen').classList.add('on');setTimeout(()=>$('pf-name').focus(),100);
+}
+$('pf-chip').onclick=showPF;
+$('tb-av').onclick=showPF;
 
-  const cards = state.storyboard.map(item => {
-    const expanded = expandSb===item.id;
-    const detailHTML = expanded ? `
-      <div style="padding:0 13px 13px;border-top:1px solid #141414">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px">
-          ${item.desc?`<div style="background:#0a0a0a;border-radius:7px;padding:8px 10px;grid-column:1/-1">
-            <div style="font-size:9px;color:#555;margin-bottom:3px">完整描述</div>
-            <div style="font-size:12px;color:#aaa;line-height:1.5">${esc(item.desc)}</div>
-          </div>`:''}
-          ${item.mood?`<div style="background:#0a0a0a;border-radius:7px;padding:8px 10px">
-            <div style="font-size:9px;color:#555;margin-bottom:3px">情感氛圍</div>
-            <div style="font-size:12px;color:#aaa">${esc(item.mood)}</div>
-          </div>`:''}
-          ${item.sfx?`<div style="background:#0a0a0a;border-radius:7px;padding:8px 10px">
-            <div style="font-size:9px;color:#555;margin-bottom:3px">音效</div>
-            <div style="font-size:12px;color:#aaa">${esc(item.sfx)}</div>
-          </div>`:''}
+// ── Broadcast ──
+function showBc(ann){bcQ.push(ann);if(!bcOn)nextBc();}
+function nextBc(){
+  if(!bcQ.length){bcOn=false;return;}
+  bcOn=true;const a=bcQ.shift();
+  $('bc-imp').style.display=a.important?'block':'none';
+  $('bc-av').textContent=(a.author||'?')[0];
+  $('bc-nm').textContent=a.author||'（匿名）';
+  $('bc-rl').textContent=a.role||'';
+  $('bc-tm').textContent=a.time?`發布於 ${a.time}`:'';
+  $('bc-cn').textContent=a.content;
+  $('bc-ct').textContent=bcQ.length>0?`還有 ${bcQ.length} 則`:'';
+  $('bc').classList.add('on');
+  if(a.important&&navigator.vibrate)navigator.vibrate([200,100,200]);
+}
+function hideBc(){$('bc').classList.remove('on');setTimeout(()=>{if(bcQ.length)nextBc();else bcOn=false;},220);}
+$('bc-ok').onclick=hideBc;
+$('bc-view').onclick=()=>{hideBc();D.tab='ann';render();};
+$('bc-bg').onclick=()=>{if($('bc-imp').style.display==='block')return;hideBc();};
+
+// ── Heartbeat ──
+async function heartbeat(){
+  if(!prof.name)return;
+  try{
+    const k=prof.name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g,'_');
+    await fetch(`${FB}/online/${k}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:prof.name,dept:prof.dept||'',isAdmin:prof.isAdmin||false,ts:Date.now()})});
+  }catch{}
+}
+async function fetchOnline(){
+  try{const r=await fetch(FB+'/online.json');const d=await r.json();if(!d){onlineUsers=[];return;}const now=Date.now();onlineUsers=Object.values(d).filter(u=>now-(u.ts||0)<90000);}catch{onlineUsers=[];}
+}
+
+// ── Render ──
+function render(){
+  const isMob=window.innerWidth<768;
+  const isDsk=window.innerWidth>=1200;
+  // Sidebar nav
+  const navHTML=TABS.map(t=>`<button class="nav-item${D.tab===t.id?' on':''}" data-nav="${t.id}">${ic(t.icon,16)} ${t.label}</button>`).join('');
+  $('sb-nav').innerHTML=navHTML;
+  // Bottom nav
+  $('bnav').innerHTML=TABS.map(t=>`<button class="bn${D.tab===t.id?' on':''}" data-nav="${t.id}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[t.icon]||''}</svg><span>${t.label}</span></button>`).join('');
+  $('tb-title').textContent=TABS.find(t=>t.id===D.tab)?.label||'';
+  updateSync();updateProfUI();
+  // Recording border
+  const rec=D.shots.some(s=>s.status==='shooting');
+  const app=$('app');
+  if(app){
+    app.style.border=rec?'10px solid var(--c-rd)':'';
+    app.style.boxSizing=rec?'border-box':'';
+  }
+  // Ann badge
+  const annBadge=$('ann-badge');
+  if(annBadge)annBadge.style.display=D.ann.length>0&&D.tab!=='ann'?'block':'none';
+  // Content
+  switch(D.tab){
+    case 'shots': $('content').innerHTML=renderShots(isDsk);break;
+    case 'script':$('content').innerHTML=renderScript(isDsk);break;
+    case 'sb':    $('content').innerHTML=renderSB(isDsk,window.innerWidth>=768);break;
+    case 'call':  $('content').innerHTML=renderCall();break;
+    case 'ann':   $('content').innerHTML=renderAnn();break;
+    default:      $('content').innerHTML=renderDash(isDsk);
+  }
+  attachScriptClick();
+}
+
+// ── DASHBOARD ──
+function renderDash(isDsk){
+  const info=D.info;
+  const c={total:D.shots.length,done:0,shooting:0,pending:0,ng:0,keep:0};
+  D.shots.forEach(s=>{if(c[s.status]!==undefined)c[s.status]++;});
+  const p=pct(c.done,c.total);
+  const scn=scenes().map(scn=>{
+    const ss=D.shots.filter(s=>s.scene===scn);
+    const d=ss.filter(s=>s.status==='done').length;
+    const pp=pct(d,ss.length);
+    const{cl,bar,st,tc}=sceneColor(ss);
+    return`<div class="scene-card ${cl}" data-a="go-shots" data-scene="${esc(scn)}">
+      <div class="row-sb">
+        <div><span style="font-family:var(--fd);font-size:16px;color:var(--c-am);letter-spacing:.05em;margin-right:7px">場景 ${esc(scn)}</span><span style="font-size:11px;color:var(--c-t3)">${esc(ss[0]?.sceneTitle||'')}</span></div>
+        <div class="row" style="gap:8px">
+          <span style="font-size:10px;font-weight:700;color:${tc}">${st}</span>
+          <span style="font-size:12px;font-weight:700;color:${tc}">${d}/${ss.length}</span>
         </div>
-        <div style="display:flex;gap:7px;margin-top:10px">
-          <button class="btn-icon" data-action="edit-sb" data-id="${esc(item.id)}">${svg('edit',13)} 編輯</button>
-          <button class="btn-icon danger" data-action="del-confirm" data-type="sb" data-id="${esc(item.id)}">${svg('trash',13)} 刪除</button>
-        </div>
-      </div>` : '';
-    return `<div style="background:var(--bg2);border-radius:13px;border:1px solid var(--bd);overflow:hidden">
-      <div class="sb-frame" data-action="expand-sb" data-id="${esc(item.id)}">
-        <div class="sb-frame-grid-h" style="top:33%"></div>
-        <div class="sb-frame-grid-h" style="top:66%"></div>
-        <div class="sb-frame-grid-v" style="left:33%"></div>
-        <div class="sb-frame-grid-v" style="left:66%"></div>
-        <div class="sb-frame-border"></div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#1e1e1e;letter-spacing:.06em;z-index:1;text-align:center;padding:10px;line-height:1.3">${esc(item.frame||item.shot||'分鏡')}</div>
-        ${item.shot?`<div style="position:absolute;top:9px;left:11px;font-size:10px;font-family:'Bebas Neue',sans-serif;color:var(--amber)">${esc(item.shot)}</div>`:''}
-        ${item.scene?`<div style="position:absolute;top:9px;right:11px;font-size:10px;color:#3a3a3a">場景${esc(item.scene)}</div>`:''}
-        ${item.dur?`<div style="position:absolute;bottom:9px;right:11px;font-size:10px;color:#555">${esc(item.dur)}</div>`:''}
       </div>
-      <div style="padding:11px 13px">
-        ${item.desc?`<div style="font-size:12px;color:#c0c0c0;margin-bottom:6px;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${esc(item.desc)}</div>`:''}
-        <div style="display:flex;gap:5px;flex-wrap:wrap">
-          ${item.camera?`<span class="chip">📷 ${esc(item.camera)}</span>`:''}
-          ${item.move?`<span class="chip">⟳ ${esc(item.move)}</span>`:''}
-        </div>
+      <div class="pbar"><div class="pbar-f" style="width:${pp}%;background:${bar}"></div></div>
+      <div class="row" style="gap:8px;margin-top:8px">
+        ${STO.filter(st=>ss.some(s=>s.status===st)).map(st=>`<span style="font-size:10px;color:${ST[st].c}">${ST[st].i} ${ss.filter(s=>s.status===st).length}</span>`).join('')}
       </div>
-      ${detailHTML}
     </div>`;
   }).join('');
 
-  return `<div class="page">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div class="ptitle" style="margin-bottom:0">分鏡板</div>
-      <button class="btn-add" data-action="open-modal" data-modal="sb">${svg('plus',14)} 新增分鏡</button>
+  const lastAnn=D.ann[0];
+  const annEl=lastAnn?`<div class="ann-card${lastAnn.important?' imp':''}">
+    <div class="row-sb" style="margin-bottom:8px">
+      <div class="row" style="gap:8px"><div class="ann-av">${esc((lastAnn.author||'?')[0])}</div>
+        <div><div style="font-size:13px;font-weight:600">${esc(lastAnn.author||'匿名')}</div><div style="font-size:10px;color:var(--c-t4)">${esc(lastAnn.role||'')} · ${esc(lastAnn.time||'')}</div></div>
+      </div>
+      ${lastAnn.important?'<span class="chip chip-am" style="font-size:9px">重要</span>':''}
     </div>
-    ${state.storyboard.length===0
-      ? `<div class="card empty"><div class="empty-icon">${svg('monitor',32,'#e8961e')}</div>
-         <div style="font-size:14px;color:var(--t4);margin-bottom:16px">尚未新增任何分鏡</div>
-         <button class="btn-add" data-action="open-modal" data-modal="sb">${svg('plus',14)} 新增第一個分鏡</button></div>`
-      : `<div style="display:grid;grid-template-columns:${cols};gap:14px">${cards}</div>`}
+    <div style="font-size:13px;color:var(--c-t2);line-height:1.7">${esc(lastAnn.content)}</div>
+  </div>`:'<div style="font-size:12px;color:var(--c-t4);padding:16px;text-align:center">尚無公告</div>';
+
+  const statsRow=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px">
+    ${[['完成','done','var(--c-gn)'],['拍攝中','shooting','var(--c-rd)'],['待拍','pending','var(--c-gy)'],['NG','ng','var(--c-yw)']].map(([l,k,col])=>`
+    <div style="background:var(--c-s1);border:1px solid var(--c-bd);border-radius:var(--r);padding:10px;text-align:center">
+      <div style="font-family:var(--fd);font-size:24px;color:${col};line-height:1">${c[k]}</div>
+      <div style="font-size:10px;color:var(--c-t4);margin-top:3px">${l}</div>
+    </div>`).join('')}
+  </div>`;
+
+  return`<div class="page">
+    <div class="row-sb" style="margin-bottom:22px">
+      <div style="border-left:3px solid var(--c-am);padding-left:13px">
+        ${info.subtitle?`<div style="font-size:9px;color:var(--c-am);letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px">${esc(info.subtitle)}</div>`:''}
+        ${info.title?`<div style="font-family:var(--fd);font-size:${isDsk?'36px':'28px'};color:#fff;letter-spacing:.04em;line-height:1">${esc(info.title)}</div>`
+          :`<div style="font-family:var(--fd);font-size:22px;color:var(--c-s4);letter-spacing:.04em">設定項目資訊</div>`}
+        ${(info.day||info.dir)?`<div style="font-size:11px;color:var(--c-t3);margin-top:6px">${info.day&&info.days?`第 ${esc(info.day)}/${esc(info.days)} 拍攝日`:''} ${info.dir?`· 導演：${esc(info.dir)}`:''} ${info.loc?`· 📍${esc(info.loc)}`:''}</div>`:''}
+      </div>
+      <button class="btn btn-ghost btn-sm" data-a="open-info">${ic('set',14)} ${isDsk?'項目設定':''}</button>
+    </div>
+    <div style="display:grid;grid-template-columns:${isDsk?'1fr 320px':'1fr'};gap:20px">
+      <div>
+        ${c.total>0?`<div class="card" style="margin-bottom:12px">
+          <div class="row" style="gap:20px">
+            <div class="ring-wrap"><svg width="88" height="88" viewBox="0 0 88 88">
+              <circle cx="44" cy="44" r="36" fill="none" stroke="var(--c-s4)" stroke-width="8"/>
+              <circle cx="44" cy="44" r="36" fill="none" stroke="var(--c-am)" stroke-width="8"
+                stroke-dasharray="${2*Math.PI*36}" stroke-dashoffset="${2*Math.PI*36*(1-p/100)}"
+                stroke-linecap="round" transform="rotate(-90 44 44)" style="transition:stroke-dashoffset 1s ease"/>
+            </svg><span>${p}%<small>完成</small></span></div>
+            <div style="flex:1"><div style="font-size:11px;color:var(--c-t3);margin-bottom:10px">拍攝進度 · ${c.total} 個鏡頭</div>${statsRow.replace('margin-top:14px','margin-top:0')}</div>
+          </div>
+          <div class="pbar" style="margin-top:14px"><div class="pbar-f" style="width:${p}%;background:linear-gradient(90deg,#b8700e,var(--c-am))"></div></div>
+        </div>`:`<div class="card" style="text-align:center;padding:28px;font-size:13px;color:var(--c-t4)">前往「進度」新增鏡頭</div>`}
+        ${scenes().length?`<div class="sec-label">場景概況</div><div style="display:grid;grid-template-columns:${isDsk?'1fr 1fr':'1fr'};gap:8px">${scn}</div>`:''}
+      </div>
+      <div>
+        <div class="row-sb"><div class="sec-label" style="margin-top:0">最新公告</div>
+          <button class="btn btn-ghost btn-sm" data-nav="ann">${ic('bell',12)} 查看全部</button>
+        </div>
+        ${annEl}
+      </div>
+    </div>
   </div>`;
 }
 
-// ─── ANNOUNCE ─────────────────────────────────────────────────────────────
-// ─── CALLSHEET ────────────────────────────────────────────────────────────
-function renderCallsheet() {
-  const rows = state.callsheet.map((item,i) => `
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:${i===state.callsheet.length-1?'none':'1px solid #181818'}">
-      <div style="text-align:center;flex-shrink:0;width:54px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--amber);line-height:1">${esc(item.time||'—')}</div>
-        ${item.date?`<div style="font-size:9px;color:#555;margin-top:1px">${esc(item.date)}</div>`:''}
+// ── SHOTS ──
+function renderShots(isDsk){
+  const f=uiState.filter;
+  const list=f==='all'?D.shots:D.shots.filter(s=>s.scene===f);
+  const chips=['all',...scenes()].map(s=>`<button data-a="filter" data-scene="${esc(s)}"
+    style="padding:6px 14px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;cursor:pointer;
+    background:${f===s?'var(--c-am)':'var(--c-s3)'};color:${f===s?'#000':'var(--c-t3)'};border:1px solid ${f===s?'var(--c-am)':'var(--c-bd2)'}">
+    ${s==='all'?'全部':`場景 ${esc(s)}`}</button>`).join('');
+
+  let body='';
+  if(!list.length){
+    body=`<div class="empty-state"><div class="empty-icon">${ic('clap',36,'var(--c-am)')}</div><div class="empty-text">尚未新增任何鏡頭</div>
+      <button class="btn btn-primary btn-sm" data-a="open-modal" data-m="shot">${ic('plus',13)} 新增第一個鏡頭</button></div>`;
+  } else if(isDsk){
+    let rows='';
+    list.forEach((s,i)=>{
+      if(i===0||list[i-1].scene!==s.scene)
+        rows+=`<tr><td colspan="8" style="padding:8px 14px 4px;font-size:9px;color:var(--c-am);letter-spacing:.1em;text-transform:uppercase;background:rgba(232,150,30,.03);border-top:1px solid var(--c-bd)">▸ 場景 ${esc(s.scene)}${s.sceneTitle?` — ${esc(s.sceneTitle)}`:''}</td></tr>`;
+      rows+=`<tr><td style="font-family:var(--fd);color:var(--c-am);font-size:14px;white-space:nowrap">${esc(s.shot||'—')}</td>
+        <td><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px;color:var(--c-tx)">${esc(s.desc||'—')}</div>${s.notes?`<div style="font-size:10px;color:var(--c-t4);margin-top:1px">備注：${esc(s.notes)}</div>`:''}</td>
+        <td>${esc(s.type||'—')}</td><td>${esc(s.lens||'—')}</td><td>${esc(s.dir||'—')}</td>
+        <td>${badge(s.status,s.id)}</td>
+        <td><div class="row" style="gap:4px">
+          <button class="btn-icon-sm" data-a="edit-shot" data-id="${esc(s.id)}">${ic('edit',13)}</button>
+          <button class="btn-icon-sm" style="color:var(--c-rd)" data-a="del" data-type="shot" data-id="${esc(s.id)}">${ic('trash',13)}</button>
+        </div></td></tr>`;
+    });
+    body=`<div class="card" style="padding:0;overflow:hidden"><div style="overflow-x:auto">
+      <table class="tbl"><thead><tr><th>編號</th><th>描述</th><th>鏡別</th><th>鏡頭</th><th>運鏡</th><th>狀態</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table></div></div>`;
+  } else {
+    let cards='';
+    list.forEach((s,i)=>{
+      const show=i===0||list[i-1].scene!==s.scene;
+      const exp=uiState.expShot===s.id;
+      if(show&&s.scene)cards+=`<div style="font-size:9px;color:var(--c-am);letter-spacing:.1em;text-transform:uppercase;margin:${i?'14px':0} 0 7px">▸ 場景 ${esc(s.scene)}${s.sceneTitle?` — ${esc(s.sceneTitle)}`:''}</div>`;
+      const expH=exp?`<div style="padding:0 13px 12px;border-top:1px solid var(--c-bd)">
+        <div class="g3" style="gap:7px;margin-top:10px">
+          ${[['鏡別',s.type],['鏡頭',s.lens],['運鏡',s.dir]].map(([l,v])=>`<div style="background:var(--c-s1);border-radius:var(--r);padding:7px 9px"><div style="font-size:9px;color:var(--c-t4);margin-bottom:2px">${l}</div><div style="font-size:12px;color:var(--c-t2)">${esc(v||'—')}</div></div>`).join('')}
+        </div>
+        ${s.notes?`<div style="background:var(--c-s1);border-radius:var(--r);padding:8px 10px;margin-top:7px"><div style="font-size:9px;color:var(--c-t4);margin-bottom:2px">備注</div><div style="font-size:12px;color:var(--c-t2)">${esc(s.notes)}</div></div>`:''}
+        <div class="row" style="gap:5px;flex-wrap:wrap;margin-top:10px">
+          ${STO.map(st=>`<button class="badge ${ST[st].cl}" data-a="set-st" data-id="${esc(s.id)}" data-st="${st}" style="${s.status===st?'':'opacity:.45'}">${ST[st].i} ${ST[st].l}</button>`).join('')}
+        </div>
+        <div class="row" style="gap:7px;margin-top:10px">
+          <button class="btn btn-ghost btn-sm" data-a="edit-shot" data-id="${esc(s.id)}">${ic('edit',12)} 編輯</button>
+          <button class="btn btn-danger btn-sm" data-a="del" data-type="shot" data-id="${esc(s.id)}">${ic('trash',12)} 刪除</button>
+        </div>
+      </div>`:'';
+      cards+=`<div class="card ${s.sc||'sc-'+s.status}" style="margin-bottom:7px;padding:0;overflow:hidden;border-width:1.5px">
+        <div class="row" style="gap:11px;padding:12px 13px;cursor:pointer" data-a="exp-shot" data-id="${esc(s.id)}">
+          <div style="width:40px;height:40px;border-radius:var(--r);background:var(--c-s1);border:1px solid var(--c-bd2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-family:var(--fd);color:var(--c-am);letter-spacing:.03em">${esc(s.shot||'—')}</div>
+          <div style="flex:1;min-width:0"><div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px">${esc(s.desc||'（無描述）')}</div>
+          <div style="font-size:10px;color:var(--c-t4)">${[s.type,s.lens,s.dir].filter(Boolean).map(esc).join(' · ')||'點擊展開'}</div></div>
+          ${badge(s.status,s.id)}
+        </div>${expH}</div>`;
+    });
+    body=cards;
+  }
+  return`<div class="page">
+    <div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">拍攝進度表</div>
+      <button class="btn btn-primary btn-sm" data-a="open-modal" data-m="shot">${ic('plus',13)} 新增鏡頭</button>
+    </div>
+    ${D.shots.length?`<div class="row" style="gap:7px;overflow-x:auto;padding-bottom:8px;margin-bottom:13px;scrollbar-width:none">${chips}</div>`:''}
+    ${body}</div>`;
+}
+
+// ── SCRIPT ──
+function renderScript(isDsk){
+  const sc=uiState.activeScript;
+  const listHTML=D.script.length===0
+    ?`<div class="empty-state" style="padding:28px"><div class="empty-text" style="font-size:13px">尚未新增場景</div><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="script">${ic('plus',13)} 新增</button></div>`
+    :D.script.map(s=>`<div class="sp-row${s.id===sc?.id?' on':''}" data-a="sel-sc" data-id="${esc(s.id)}">
+      <div class="row" style="gap:5px;margin-bottom:4px;flex-wrap:wrap">
+        ${s.scene?`<span style="font-size:10px;font-family:var(--fd);color:var(--c-am);letter-spacing:.04em">場景 ${esc(s.scene)}</span>`:''}
+        ${s.int?`<span class="chip" style="font-size:9px">${esc(s.int)}</span>`:''}
+        ${s.time?`<span class="chip" style="font-size:9px">${esc(s.time)}</span>`:''}
       </div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">${esc(item.who||'—')}</div>
-        <div style="font-size:11px;color:var(--t3)">${[item.location,item.notes].filter(Boolean).map(esc).join(' · ')}</div>
-      </div>
-      <div style="display:flex;gap:4px;flex-shrink:0">
-        <button class="btn-tbl" data-action="edit-call" data-id="${esc(item.id)}" title="編輯">${svg('edit',14)}</button>
-        <button class="btn-tbl danger" data-action="del-confirm" data-type="call" data-id="${esc(item.id)}" title="刪除">${svg('trash',14)}</button>
-      </div>
+      <div style="font-size:13px;color:var(--c-t2)">${esc(s.title||'（未命名）')}</div>
+      ${s.cast?.length?`<div style="font-size:10px;color:var(--c-t4);margin-top:3px">${esc(Array.isArray(s.cast)?s.cast.join('、'):s.cast)}</div>`:''}
     </div>`).join('');
 
-  return `<div class="page">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div class="ptitle" style="margin-bottom:0">通告單</div>
-      <button class="btn-add" data-action="open-modal" data-modal="call">${svg('plus',14)} 新增通告</button>
+  const detailHTML=sc?`
+    <div class="row-sb" style="margin-bottom:14px">
+      <div class="row" style="gap:6px;flex-wrap:wrap">
+        ${[sc.scene&&`場景 ${sc.scene}`,sc.int,sc.time,sc.page].filter(Boolean).map((t,i)=>`<span class="chip ${i===0?'chip-am':''}">${esc(t)}</span>`).join('')}
+      </div>
+      <div class="row" style="gap:6px;flex-shrink:0">
+        <button class="btn btn-ghost btn-sm" data-a="edit-sc" data-id="${esc(sc.id)}">${ic('edit',12)} 編輯</button>
+        <button class="btn btn-danger btn-sm" data-a="del" data-type="script" data-id="${esc(sc.id)}">${ic('trash',12)}</button>
+      </div>
     </div>
-    ${state.callsheet.length===0
-      ? `<div class="card empty"><div class="empty-icon">${svg('clock',30,'#e8961e')}</div>
-         <div style="font-size:14px;color:var(--t4);margin-bottom:16px">尚未新增任何通告</div>
-         <button class="btn-add" data-action="open-modal" data-modal="call">${svg('plus',14)} 新增第一筆</button></div>`
-      : `<div class="card" style="padding:0;overflow:hidden">${rows}</div>`}
+    <div style="font-size:${isDsk?'20px':'17px'};font-weight:700;margin-bottom:7px">${esc(sc.title)}</div>
+    ${sc.cast?.length?`<div style="font-size:12px;color:var(--c-t3);margin-bottom:16px">演員：${esc(Array.isArray(sc.cast)?sc.cast.join('、'):sc.cast)}</div>`:''}
+    ${sc.content?`<div style="font-family:'Courier New',monospace;font-size:13px;color:#b8b8b8;line-height:2.1;white-space:pre-line;background:var(--c-bg);border-radius:var(--r);padding:${isDsk?'18px':'12px'};border:1px solid var(--c-bd)">${esc(sc.content)}</div>`
+    :`<div style="font-size:13px;color:var(--c-t4);text-align:center;padding:30px">尚未輸入劇本內容</div>`}`
+  :`<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;opacity:.3">${ic('doc',40,'var(--c-am)')}<div style="font-size:13px;color:var(--c-t3)">選擇左側場景</div></div>`;
+
+  if(isDsk) return`<div class="sp-wrap">
+    <div class="sp-list">
+      <div class="sp-list-hdr">
+        <div style="font-family:var(--fd);font-size:16px;color:#fff;letter-spacing:.05em">劇本</div>
+        <button class="btn btn-primary btn-sm" data-a="open-modal" data-m="script">${ic('plus',12)} 新增</button>
+      </div>
+      <div style="flex:1;overflow-y:auto">${listHTML}</div>
+    </div>
+    <div class="sp-detail">${detailHTML}</div>
+  </div>`;
+
+  if(sc) return`<div class="page">
+    <div class="row-sb" style="margin-bottom:14px">
+      <button class="btn btn-ghost btn-sm" data-a="back-sc">${ic('back',14)} 返回</button>
+      <div class="row" style="gap:7px">
+        <button class="btn btn-ghost btn-sm" data-a="edit-sc" data-id="${esc(sc.id)}">${ic('edit',12)}</button>
+        <button class="btn btn-danger btn-sm" data-a="del" data-type="script" data-id="${esc(sc.id)}">${ic('trash',12)}</button>
+      </div>
+    </div>
+    ${detailHTML}</div>`;
+
+  return`<div class="page">
+    <div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">劇本</div>
+      <button class="btn btn-primary btn-sm" data-a="open-modal" data-m="script">${ic('plus',13)} 新增場景</button>
+    </div>
+    ${D.script.length===0?`<div class="empty-state">${ic('doc',34,'var(--c-am)')}<div class="empty-text">尚未新增場景</div><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="script">${ic('plus',13)} 新增場景</button></div>`
+    :`<div class="card" style="padding:0;overflow:hidden">${listHTML}</div>`}
   </div>`;
 }
+function attachScriptClick(){
+  document.querySelectorAll('[data-a="sel-sc"]').forEach(el=>el.addEventListener('click',()=>{uiState.activeScript=D.script.find(s=>s.id===el.dataset.id)||null;render();}));
+}
 
-// ─── CHATROOM ─────────────────────────────────────────────────────────────
-function renderChatroom() {
-  const msgs = state.chat.filter(m=>!m.deleted).map((m, i, arr) => {
-    const mine = m.author === userProfile.name;
-    const prev = arr[i-1];
-    const isCont = prev && prev.author===m.author && !m.replyTo;
-    const isAdmin = m.isAdmin;
-    const replyMsg = m.replyTo ? state.chat.find(x=>x.id===m.replyTo) : null;
-    const replyHTML = replyMsg
-      ? `<div class="cb-reply-bar"><b>${esc(replyMsg.author)}</b>：${esc(replyMsg.content.substring(0,40))}${replyMsg.content.length>40?'…':''}</div>`
-      : '';
-    const metaHTML = isCont ? '' : `<div class="cb-meta">
-      ${!mine?`<span class="cb-name">${esc(m.author||'?')}</span>`:'' }
-      ${m.dept&&!mine?`<span class="cb-dept">${esc(m.dept)}</span>`:''}
-      ${isAdmin?`<span class="cb-badge">管理員</span>`:''}
-      <span style="color:#444">${esc(m.time||'')}</span>
-    </div>`;
-    return `<div class="cb${mine?' mine':''}${isCont?' cont':''}" data-msgid="${esc(m.id)}">
-      <div class="cb-av${isAdmin?' admin':''}">${esc((m.author||'?')[0])}</div>
-      <div class="cb-body">
-        ${metaHTML}
-        ${replyHTML}
-        <div class="cb-txt${m.deleted?' deleted':''}" data-msgid="${esc(m.id)}">${esc(m.content)}</div>
-        ${isCont?'':''}`
-        + (i===arr.length-1||arr[i+1]?.author!==m.author ? `<div class="cb-time">${esc(m.time||'')}</div>` : '')
-        + `</div>
+// ── STORYBOARD ──
+function renderSB(isDsk,isTab){
+  const cols=isDsk?'1fr 1fr 1fr':isTab?'1fr 1fr':'1fr';
+  if(!D.sb.length) return`<div class="page"><div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">分鏡板</div><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="sb">${ic('plus',13)} 新增分鏡</button></div>
+    <div class="empty-state">${ic('film',34,'var(--c-am)')}<div class="empty-text">尚未新增任何分鏡</div><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="sb">${ic('plus',13)} 新增</button></div></div>`;
+  const cards=D.sb.map(s=>{
+    const exp=uiState.expSb===s.id;
+    const gw=`<svg class="sb-grid" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="33" y1="0" x2="33" y2="100" stroke="#111" stroke-width=".5"/>
+      <line x1="67" y1="0" x2="67" y2="100" stroke="#111" stroke-width=".5"/>
+      <line x1="0" y1="33" x2="100" y2="33" stroke="#111" stroke-width=".5"/>
+      <line x1="0" y1="67" x2="100" y2="67" stroke="#111" stroke-width=".5"/>
+      <rect x="8" y="8" width="84" height="84" fill="none" stroke="#161616" stroke-width=".5"/>
+    </svg>`;
+    const det=exp?`<div style="padding:0 13px 13px;border-top:1px solid var(--c-bd)">
+      <div class="g2" style="gap:7px;margin-top:10px">
+        ${s.desc?`<div style="background:var(--c-s1);border-radius:var(--r);padding:8px 10px;grid-column:1/-1"><div style="font-size:9px;color:var(--c-t4);margin-bottom:3px">完整描述</div><div style="font-size:12px;color:var(--c-t2);line-height:1.5">${esc(s.desc)}</div></div>`:''}
+        ${s.mood?`<div style="background:var(--c-s1);border-radius:var(--r);padding:8px 10px"><div style="font-size:9px;color:var(--c-t4);margin-bottom:3px">情感氛圍</div><div style="font-size:12px;color:var(--c-t2)">${esc(s.mood)}</div></div>`:''}
+        ${s.sfx?`<div style="background:var(--c-s1);border-radius:var(--r);padding:8px 10px"><div style="font-size:9px;color:var(--c-t4);margin-bottom:3px">音效</div><div style="font-size:12px;color:var(--c-t2)">${esc(s.sfx)}</div></div>`:''}
+      </div>
+      <div class="row" style="gap:7px;margin-top:10px">
+        <button class="btn btn-ghost btn-sm" data-a="edit-sb" data-id="${esc(s.id)}">${ic('edit',12)} 編輯</button>
+        <button class="btn btn-danger btn-sm" data-a="del" data-type="sb" data-id="${esc(s.id)}">${ic('trash',12)} 刪除</button>
+      </div>
+    </div>`:'';
+    return`<div class="card" style="padding:0;overflow:hidden">
+      <div class="sb-frame" data-a="exp-sb" data-id="${esc(s.id)}">${gw}
+        <div style="font-family:var(--fd);font-size:18px;color:#1c1c1c;z-index:1;text-align:center;padding:8px;letter-spacing:.05em">${esc(s.frame||s.shot||'分鏡')}</div>
+        ${s.shot?`<div style="position:absolute;top:8px;left:10px;font-size:9px;font-family:var(--fd);color:var(--c-am);letter-spacing:.05em">${esc(s.shot)}</div>`:''}
+        ${s.dur?`<div style="position:absolute;bottom:8px;right:10px;font-size:9px;color:var(--c-t4)">${esc(s.dur)}</div>`:''}
+      </div>
+      <div style="padding:11px 13px">
+        ${s.desc?`<div style="font-size:12px;color:var(--c-t2);margin-bottom:7px;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${esc(s.desc)}</div>`:''}
+        <div class="row" style="gap:5px;flex-wrap:wrap">
+          ${s.camera?`<span class="chip" style="font-size:9px">📷 ${esc(s.camera)}</span>`:''}
+          ${s.move?`<span class="chip" style="font-size:9px">⟳ ${esc(s.move)}</span>`:''}
+        </div>
+      </div>${det}
     </div>`;
   }).join('');
+  return`<div class="page"><div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">分鏡板</div><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="sb">${ic('plus',13)} 新增分鏡</button></div>
+    <div style="display:grid;grid-template-columns:${cols};gap:12px">${cards}</div></div>`;
+}
 
-  const sysmsgs = state.chat.filter(m=>m.sys).map(m=>
-    `<div class="cb-sys">${esc(m.content)}</div>`
-  );
-
-  const empty = state.chat.filter(m=>!m.deleted).length===0
-    ? `<div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;opacity:.3;padding-top:60px">${svg('chat',34,'#e8961e')}<div style="font-size:12px;color:var(--t4)">還沒有任何訊息</div></div>`
-    : '';
-
-  return `<div class="chat-wrap">
-    <div class="chat-topbar">
-      <div style="font-size:13px;font-weight:600;color:var(--text)">聊天室</div>
-      <div class="chat-online">${svg('users',13,'#3eb87a')} ${state.chat.length} 則訊息</div>
+// ── CALLSHEET ──
+function renderCall(){
+  const rows=D.call.map((c,i)=>`<div class="cl-row">
+    <div class="cl-time">${esc(c.time||'—')}</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:14px;font-weight:600;margin-bottom:2px">${esc(c.who||'—')}</div>
+      <div style="font-size:11px;color:var(--c-t3)">${[c.date,c.location,c.notes].filter(Boolean).map(esc).join(' · ')}</div>
     </div>
-    <div class="chat-msgs" id="chat-msgs">${empty}${msgs}</div>
-    <div class="chat-bar">
-      <div class="chat-rp" id="chat-rp">
-        <div style="flex:1;min-width:0"><b id="rp-name"></b>：<span id="rp-preview"></span></div>
-        <button onclick="cancelReply()" style="background:none;border:none;color:#555;cursor:pointer;flex-shrink:0">${svg('x',14)}</button>
-      </div>
-      <div class="chat-inp-row">
-        <textarea class="chat-inp" id="chat-inp" rows="1"
-          placeholder="${esc(userProfile.name ? userProfile.name+'，說點什麼…' : '請先設定個人資訊再聊天')}"></textarea>
-        <button class="chat-snd" id="chat-snd">${svg('send',14,'#000')}</button>
-      </div>
+    <div class="row" style="gap:5px;flex-shrink:0">
+      <button class="btn-icon-sm" data-a="edit-call" data-id="${esc(c.id)}">${ic('edit',13)}</button>
+      <button class="btn-icon-sm" style="color:var(--c-rd)" data-a="del" data-type="call" data-id="${esc(c.id)}">${ic('trash',13)}</button>
     </div>
+  </div>`).join('');
+  return`<div class="page"><div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">通告單</div>
+    <button class="btn btn-primary btn-sm" data-a="open-modal" data-m="call">${ic('plus',13)} 新增</button></div>
+    ${D.call.length?`<div class="card" style="padding:0;overflow:hidden">${rows}</div>`
+    :`<div class="empty-state">${ic('clock',34,'var(--c-am)')}<div class="empty-text">尚未新增任何通告</div><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="call">${ic('plus',13)} 新增第一筆</button></div>`}
   </div>`;
 }
 
-// ── Chat state
-let chatReplyTo = null;
-function cancelReply() { chatReplyTo=null; const rp=document.getElementById('chat-rp'); if(rp)rp.classList.remove('show'); }
-
-function attachChatListeners() {
-  const inp = document.getElementById('chat-inp');
-  const snd = document.getElementById('chat-snd');
-  const msgs = document.getElementById('chat-msgs');
-  if (!inp) return;
-  if (msgs) msgs.scrollTop = msgs.scrollHeight;
-
-  async function send() {
-    const content = inp.value.trim();
-    if (!content) return;
-    if (!userProfile.name) { showProfileScreen(); return; }
-    const msg = {
-      id: `c${Date.now()}`,
-      author: userProfile.name,
-      dept: userProfile.dept||'',
-      isAdmin: userProfile.isAdmin||false,
-      content,
-      time: new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),
-      replyTo: chatReplyTo||null,
-    };
-    chatReplyTo = null;
-    const rp = document.getElementById('chat-rp'); if(rp) rp.classList.remove('show');
-    setSyncStatus('syncing'); updateSyncUI();
-    const next = [...state.chat, msg];
-    state.chat = next;
-    inp.value = ''; inp.style.height = 'auto';
-    render(); // re-renders chat
-    setTimeout(()=>{ const m=document.getElementById('chat-msgs'); if(m)m.scrollTop=m.scrollHeight; },50);
-    try { await pushFirebase(); } catch { setSyncStatus('error'); updateSyncUI(); }
-  }
-
-  // Long-press / right-click context menu
-  let pressTimer = null;
-  function showCtx(msgId, x, y) {
-    closeCtx();
-    const msg = state.chat.find(m=>m.id===msgId);
-    if (!msg) return;
-    const isMine = msg.author===userProfile.name;
-    const canDel = isMine || userProfile.isAdmin;
-    const menu = document.createElement('div');
-    menu.className = 'ctx-menu'; menu.id = 'ctx-menu';
-    menu.style.left = Math.min(x, window.innerWidth-170)+'px';
-    menu.style.top = Math.min(y, window.innerHeight-120)+'px';
-    menu.innerHTML = `
-      <button class="ctx-btn" id="ctx-reply">${svg('back',14)} 回覆</button>
-      ${canDel?`<button class="ctx-btn danger" id="ctx-del">${svg('trash',14)} 刪除訊息</button>`:''}
-    `;
-    document.body.appendChild(menu);
-    document.getElementById('ctx-reply').onclick = () => {
-      chatReplyTo = msgId;
-      const rp = document.getElementById('chat-rp');
-      const name = document.getElementById('rp-name');
-      const prev = document.getElementById('rp-preview');
-      if (rp&&name&&prev) { name.textContent=msg.author; prev.textContent=msg.content.substring(0,40); rp.classList.add('show'); }
-      closeCtx(); inp.focus();
-    };
-    const delBtn = document.getElementById('ctx-del');
-    if (delBtn) delBtn.onclick = async () => {
-      state.chat = state.chat.map(m=>m.id===msgId?{...m,content:'已撤回此訊息',deleted:true}:m);
-      closeCtx(); render();
-      setTimeout(()=>{ const m=document.getElementById('chat-msgs'); if(m)m.scrollTop=m.scrollHeight; },50);
-      try { await pushFirebase(); } catch {}
-    };
-  }
-  function closeCtx() { const m=document.getElementById('ctx-menu'); if(m)m.remove(); }
-  document.addEventListener('click', closeCtx, {once:false});
-
-  // Bind long-press & right-click on messages
-  function bindMsgEvents() {
-    msgs.querySelectorAll('.cb-txt[data-msgid]').forEach(el => {
-      el.addEventListener('contextmenu', e => { e.preventDefault(); showCtx(el.dataset.msgid, e.clientX, e.clientY); });
-      el.addEventListener('touchstart', e => { pressTimer=setTimeout(()=>showCtx(el.dataset.msgid, e.touches[0].clientX, e.touches[0].clientY),500); }, {passive:true});
-      el.addEventListener('touchend', () => clearTimeout(pressTimer));
-      el.addEventListener('touchmove', () => clearTimeout(pressTimer));
-    });
-  }
-  setTimeout(bindMsgEvents, 100);
-
-  snd.addEventListener('click', send);
-  inp.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); } });
-  inp.addEventListener('input', () => { inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,80)+'px'; });
+// ── ANNOUNCE ──
+function renderAnn(){
+  const cards=D.ann.map(a=>`<div class="ann-card${a.important?' imp':''}">
+    <div class="row-sb" style="margin-bottom:9px">
+      <div class="row" style="gap:9px">
+        <div class="ann-av">${esc((a.author||'?')[0])}</div>
+        <div><div style="font-size:13px;font-weight:600">${esc(a.author||'匿名')}</div>
+          <div style="font-size:10px;color:var(--c-t4)">${esc(a.role||'')} · ${esc(a.time||'')}</div></div>
+      </div>
+      <div class="row" style="gap:7px;flex-shrink:0">
+        ${a.important?'<span class="chip chip-am" style="font-size:9px">重要</span>':''}
+        <button class="btn-icon-sm" style="color:var(--c-rd)" data-a="del" data-type="ann" data-id="${esc(a.id)}">${ic('trash',13)}</button>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--c-t2);line-height:1.75">${esc(a.content)}</div>
+  </div>`).join('');
+  return`<div class="page"><div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">劇組公告</div>
+    <button class="btn btn-primary btn-sm" data-a="open-modal" data-m="ann">${ic('plus',13)} 發佈公告</button></div>
+    ${D.ann.length?cards:`<div class="empty-state">${ic('bell',34,'var(--c-am)')}<div class="empty-text">尚未有任何公告</div><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="ann">${ic('plus',13)} 發佈</button></div>`}
+  </div>`;
 }
+// ── Modals ──
+function showM(html,center){$('modal').innerHTML=`<div class="overlay${center?' center':''}" id="ov">${html}</div>`;}
+function closeM(){$('modal').innerHTML='';uiState.editId=null;}
+const val=id=>$(id)?.value?.trim()||'';
+const chk=id=>$(id)?.checked||false;
 
-// ─── CALL MODAL ───────────────────────────────────────────────────────────
-function renderCallModal(item={}) {
-  return `<div class="sheet" id="sheet">
-    <div class="sh-handle"></div>
-    <div class="sh-hdr">
-      <div class="sh-title">${item.id?'編輯通告':'新增通告'}</div>
-      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
-    </div>
-    <div class="grid2">
-      <div class="field"><div class="fl">日期</div><input class="inp" id="ca-date" value="${esc(item.date||'')}" placeholder="例：05/15"></div>
-      <div class="field"><div class="fl">時間 *</div><input class="inp" id="ca-time" value="${esc(item.time||'')}" placeholder="08:00"></div>
-    </div>
-    <div class="field"><div class="fl">對象 / 誰 *</div><input class="inp" id="ca-who" value="${esc(item.who||'')}" placeholder="例：攝影組、演員 A、全體劇組"></div>
-    <div class="field"><div class="fl">集合地點</div><input class="inp" id="ca-location" value="${esc(item.location||'')}" placeholder="地點"></div>
-    <div class="field"><div class="fl">備注 / 注意事項</div><input class="inp" id="ca-notes" value="${esc(item.notes||'')}" placeholder="例：請帶好器材、著裝要求等"></div>
-    <button class="btn-submit" data-action="save-call">${item.id?'儲存變更':'新增通告'}</button>
+function sheetWrap(title,body,act,lbl='儲存'){
+  return`<div class="sheet"><div class="sh-bar"></div>
+    <div class="sh-hdr"><div class="sh-title">${title}</div><button class="btn-icon-sm" data-a="close-modal">${ic('x',16)}</button></div>
+    ${body}
+    <button class="btn btn-primary btn-full btn-submit" data-a="${act}">${lbl}</button>
   </div>`;
 }
 
-async function saveCall() {
-  const who = val('ca-who'); const time = val('ca-time');
-  if (!who || !time) return;
-  const item = { date:val('ca-date'), time, who, location:val('ca-location'), notes:val('ca-notes') };
-  let next;
-  if (state.ui.editItem) {
-    next = state.callsheet.map(s => s.id===state.ui.editItem ? {...item, id:state.ui.editItem} : s);
-  } else {
-    next = [...state.callsheet, {...item, id:`ca${Date.now()}`}];
-  }
+// Shot modal
+function shotModal(s={}){
+  const stBtns=STO.map(st=>`<button type="button" data-pick="${st}"
+    style="flex:1;padding:6px 3px;border-radius:99px;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;
+    color:${ST[st].c};background:${(s.status||'pending')===st?'currentColor':'var(--c-s2)'};
+    background:${(s.status||'pending')===st?ST[st].cl.replace('st-','var(--c-').replace('-','2)'):'var(--c-s2)'};
+    border:1.5px solid ${(s.status||'pending')===st?ST[st].c:'var(--c-bd2)'}">
+    ${ST[st].i} ${ST[st].l}</button>`).join('');
+  const scOpts=Array.from({length:99},(_,i)=>`<option value="S${i+1}"${s.scene===`S${i+1}`?' selected':''}>S${i+1}</option>`).join('');
+  const tkOpts=Array.from({length:99},(_,i)=>`<option value="Take ${i+1}"${s.shot===`Take ${i+1}`?' selected':''}>Take ${i+1}</option>`).join('');
+  return sheetWrap(s.id?'編輯鏡頭':'新增鏡頭',`
+    <div class="g2">${f('場景',`<select class="inp" id="s-sc">${scOpts}</select>`)}${f('Take',`<select class="inp" id="s-sh">${tkOpts}</select>`)}</div>
+    ${f('場景名稱',inp('s-st',s.sceneTitle,'例：賽道清晨'))}
+    ${f('畫面描述 *',inp('s-ds',s.desc,'描述這個鏡頭'))}
+    <div class="g3">${f('鏡別',inp('s-tp',s.type,'WS/CU'))}${f('鏡頭',inp('s-ln',s.lens,'50mm'))}${f('運鏡',inp('s-dr',s.dir,'固定'))}</div>
+    ${f('備注',inp('s-nt',s.notes,''))}
+    <div class="field"><div class="fl">狀態</div><div id="st-pick" style="display:flex;gap:5px">${stBtns}</div></div>
+    <input type="hidden" id="s-st2" value="${esc(s.status||'pending')}">
+  `,'save-shot',s.id?'儲存變更':'新增鏡頭');
+}
+function saveShot(){
+  if(!val('s-ds'))return;
+  const item={shot:val('s-sh'),scene:val('s-sc'),sceneTitle:val('s-st'),desc:val('s-ds'),type:val('s-tp'),lens:val('s-ln'),dir:val('s-dr'),notes:val('s-nt'),status:val('s-st2')||'pending'};
+  D.shots=uiState.editId?D.shots.map(s=>s.id===uiState.editId?{...item,id:uiState.editId}:s):[...D.shots,{...item,id:uid()}];
+  closeM();save();render();
+}
+
+// Script modal
+function scriptModal(s={}){
+  const cast=Array.isArray(s.cast)?s.cast.join('、'):(s.cast||'');
+  return sheetWrap(s.id?'編輯場景':'新增劇本場景',`
+    <div class="g2">${f('場景代號',inp('sc-sc',s.scene,'A'))}${f('頁數',inp('sc-pg',s.page,'P.1'))}</div>
+    ${f('場景標題 *',inp('sc-ti',s.title,'場景名稱'))}
+    <div class="g2">${f('內外景',slt('sc-in',s.int||'INT',['INT','EXT','INT/EXT']))}${f('時間',inp('sc-tm',s.time,'日/夜/清晨'))}</div>
+    ${f('演員（逗號分隔）',inp('sc-ca',cast,'主角、配角'))}
+    ${f('劇本內容',ta('sc-co',s.content,'在此輸入場景劇本…',7))}
+  `,'save-script',s.id?'儲存變更':'新增場景');
+}
+function saveScript(){
+  if(!val('sc-ti'))return;
+  const item={scene:val('sc-sc'),title:val('sc-ti'),page:val('sc-pg'),int:val('sc-in')||'INT',time:val('sc-tm'),cast:val('sc-ca').split(/[,，、]/).map(s=>s.trim()).filter(Boolean),content:val('sc-co')};
+  D.script=uiState.editId?D.script.map(s=>s.id===uiState.editId?{...item,id:uiState.editId}:s):[...D.script,{...item,id:uid()}];
+  if(uiState.activeScript?.id===uiState.editId)uiState.activeScript={...item,id:uiState.editId};
+  closeM();save();render();
+}
+
+// SB modal
+function sbModal(s={}){
+  return sheetWrap(s.id?'編輯分鏡':'新增分鏡',`
+    <div class="g2">${f('場景代號',inp('sb-sc',s.scene,'A'))}${f('分鏡編號 *',inp('sb-sh',s.shot,'A01'))}</div>
+    ${f('構圖描述',inp('sb-fr',s.frame,'EWS 俯角'))}
+    ${f('畫面描述',ta('sb-ds',s.desc,'詳細描述…',3))}
+    <div class="g2">${f('攝影機/鏡頭',inp('sb-cm',s.camera,'85mm f1.8'))}${f('運鏡',inp('sb-mv',s.move,'Dolly in'))}</div>
+    <div class="g2">${f('時長',inp('sb-dr',s.dur,'5s'))}${f('情感氛圍',inp('sb-md',s.mood,'緊張'))}</div>
+    ${f('音效',inp('sb-sx',s.sfx,''))}
+  `,'save-sb',s.id?'儲存變更':'新增分鏡');
+}
+function saveSb(){
+  if(!val('sb-sh'))return;
+  const item={scene:val('sb-sc'),shot:val('sb-sh'),frame:val('sb-fr'),desc:val('sb-ds'),camera:val('sb-cm'),move:val('sb-mv'),dur:val('sb-dr'),mood:val('sb-md'),sfx:val('sb-sx')};
+  D.sb=uiState.editId?D.sb.map(s=>s.id===uiState.editId?{...item,id:uiState.editId}:s):[...D.sb,{...item,id:uid()}];
+  closeM();save();render();
+}
+
+// Call modal
+function callModal(c={}){
+  return sheetWrap(c.id?'編輯通告':'新增通告',`
+    <div class="g2">${f('日期',inp('ca-dt',c.date,'05/15'))}${f('時間 *',inp('ca-tm',c.time,'08:00'))}</div>
+    ${f('對象 / 誰 *',inp('ca-wh',c.who,'例：攝影組、全體'))}
+    ${f('集合地點',inp('ca-lc',c.location,''))}
+    ${f('備注',inp('ca-nt',c.notes,''))}
+  `,'save-call',c.id?'儲存變更':'新增通告');
+}
+function saveCall(){
+  if(!val('ca-wh')||!val('ca-tm'))return;
+  const item={date:val('ca-dt'),time:val('ca-tm'),who:val('ca-wh'),location:val('ca-lc'),notes:val('ca-nt')};
+  let next=uiState.editId?D.call.map(c=>c.id===uiState.editId?{...item,id:uiState.editId}:c):[...D.call,{...item,id:uid()}];
   next.sort((a,b)=>a.time.localeCompare(b.time));
-  state.callsheet = next; closeModal();
-  setSyncStatus('syncing'); updateSyncUI();
-  saveLocal();
-  try { await pushFirebase(); } catch { setSyncStatus('error'); }
-  updateSyncUI(); render();
+  D.call=next;closeM();save();render();
 }
 
-async function deleteCall(id) {
-  const next = state.callsheet.filter(s=>s.id!==id);
-  state.callsheet = next; setDelItem(null); closeModal();
-  saveLocal();
-  try { await pushFirebase(); } catch {}
-  render();
-}
-
-function renderAnnCard(a, showDel=true) {
-  return `<div class="card" style="margin-bottom:10px;border:1px solid ${a.important?'#e8961e28':'var(--bd)'};background:${a.important?'rgba(232,150,30,.04)':'var(--bg2)'}">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:9px">
-        <div style="width:34px;height:34px;border-radius:50%;background:var(--bg3);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:13px;color:#aaa;font-weight:700;flex-shrink:0">${esc(a.author?.[0]||'?')}</div>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:#d8d8d8">${esc(a.author||'（匿名）')}</div>
-          <div style="font-size:11px;color:var(--t3)">${esc(a.role||'')}</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
-        ${a.important?`<span class="chip a">重要</span>`:''}
-        <span style="font-size:11px;color:#555">${esc(a.time||'')}</span>
-        ${showDel?`<button class="btn-tbl danger" data-action="del-confirm" data-type="ann" data-id="${esc(a.id)}" title="刪除">${svg('trash',14)}</button>`:''}
-      </div>
-    </div>
-    <div style="font-size:13px;color:#bbb;line-height:1.8">${esc(a.content)}</div>
-  </div>`;
-}
-
-function renderAnnounce() {
-  return `<div class="page">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div class="ptitle" style="margin-bottom:0">劇組公告</div>
-      <button class="btn-add" data-action="open-modal" data-modal="ann">${svg('plus',14)} 新增公告</button>
-    </div>
-    ${state.announcements.length===0
-      ? `<div class="card empty"><div class="empty-icon">${svg('bell',32,'#e8961e')}</div>
-         <div style="font-size:14px;color:var(--t4);margin-bottom:16px">尚未有任何公告</div>
-         <button class="btn-add" data-action="open-modal" data-modal="ann">${svg('plus',14)} 發佈第一則公告</button></div>`
-      : state.announcements.map(a=>renderAnnCard(a,true)).join('')}
-  </div>`;
-}
-
-// ─── MODALS ───────────────────────────────────────────────────────────────
-function showModal(html, center=false) {
-  document.getElementById('modal-root').innerHTML =
-    `<div class="overlay${center?' center':''}" id="overlay">${html}</div>`;
-}
-function closeModal() { document.getElementById('modal-root').innerHTML=''; state.ui.modal=null; state.ui.editItem=null; }
-
-function inp(id, val, placeholder='', type='text') {
-  return `<input class="inp" id="${id}" type="${type}" value="${esc(val||'')}" placeholder="${esc(placeholder)}">`;
-}
-function ta(id, val, placeholder='', rows=4) {
-  return `<textarea class="inp" id="${id}" placeholder="${esc(placeholder)}" rows="${rows}" style="resize:none">${esc(val||'')}</textarea>`;
-}
-function sel(id, val, opts) {
-  return `<select class="inp" id="${id}">${opts.map(o=>`<option value="${o}"${val===o?' selected':''}>${o}</option>`).join('')}</select>`;
-}
-function fld(label, content) {
-  return `<div class="field"><div class="fl">${label}</div>${content}</div>`;
-}
-
-function renderShotModal(item={}) {
-  const stBtns = ST_ORDER.map(st=>`
-    <button type="button" data-pick-status="${st}" style="flex:1;padding:7px 4px;border-radius:99px;font-size:11px;font-weight:600;
-      color:${ST[st].color};background:${(item.status||'pending')===st?ST[st].bg:'#141414'};
-      border:1px solid ${(item.status||'pending')===st?ST[st].color+'55':'#252525'};font-family:inherit">
-      ${ST[st].icon}
-    </button>`).join('');
-  return `<div class="sheet" id="sheet">
-    <div class="sh-handle"></div>
-    <div class="sh-hdr">
-      <div class="sh-title">${item.id?'編輯鏡頭':'新增鏡頭'}</div>
-      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
-    </div>
-    <div class="grid2">
-      ${fld('場景',`<select class="inp" id="s-scene">
-        ${Array.from({length:99},(_,i)=>`<option value="S${i+1}"${item.scene===`S${i+1}`?' selected':''}>S${i+1}</option>`).join('')}
-      </select>`)}
-      ${fld('Take 數',`<select class="inp" id="s-shot">
-        ${Array.from({length:99},(_,i)=>{
-          const val='Take '+(i+1);
-          return `<option value="${val}"${item.shot===val?' selected':''}>${val}</option>`;
-        }).join('')}
-      </select>`)}
-    </div>
-    ${fld('場景名稱',inp('s-sceneTitle',item.sceneTitle,'例：賽道清晨'))}
-    ${fld('畫面描述 *',inp('s-desc',item.desc,'描述這個鏡頭拍什麼'))}
-    <div class="grid3">${fld('鏡別',inp('s-type',item.type,'WS / CU'))}${fld('鏡頭',inp('s-lens',item.lens,'50mm'))}${fld('運鏡',inp('s-dir',item.dir,'固定'))}</div>
-    ${fld('備注',inp('s-notes',item.notes,'特殊需求、器材等'))}
-    <div class="field"><div class="fl">狀態</div><div style="display:flex;gap:6px" id="status-pick">${stBtns}</div></div>
-    <input type="hidden" id="s-status" value="${esc(item.status||'pending')}">
-    <button class="btn-submit" data-action="save-shot">${item.id?'儲存變更':'新增鏡頭'}</button>
-  </div>`;
-}
-
-function renderScriptModal(item={}) {
-  const cast = Array.isArray(item.cast) ? item.cast.join('、') : (item.cast||'');
-  return `<div class="sheet" id="sheet">
-    <div class="sh-handle"></div>
-    <div class="sh-hdr">
-      <div class="sh-title">${item.id?'編輯場景':'新增劇本場景'}</div>
-      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
-    </div>
-    <div class="grid2">${fld('場景代號 *',inp('sc-scene',item.scene,'A'))}${fld('頁數',inp('sc-page',item.page,'P.1'))}</div>
-    ${fld('場景標題 *',inp('sc-title',item.title,'場景名稱'))}
-    <div class="grid2">${fld('內外景',sel('sc-int',item.int||'INT',['INT','EXT','INT/EXT']))}${fld('時間',inp('sc-time',item.time,'日 / 夜 / 清晨'))}</div>
-    ${fld('演員（逗號分隔）',inp('sc-cast',cast,'主角、配角'))}
-    ${fld('劇本內容',ta('sc-content',item.content,'在此輸入場景劇本…\n\n角色名\n（動作）\n台詞內容',7))}
-    <button class="btn-submit" data-action="save-script">${item.id?'儲存變更':'新增場景'}</button>
-  </div>`;
-}
-
-function renderSbModal(item={}) {
-  return `<div class="sheet" id="sheet">
-    <div class="sh-handle"></div>
-    <div class="sh-hdr">
-      <div class="sh-title">${item.id?'編輯分鏡':'新增分鏡'}</div>
-      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
-    </div>
-    <div class="grid2">${fld('場景代號',inp('sb-scene',item.scene,'A'))}${fld('分鏡編號 *',inp('sb-shot',item.shot,'A01'))}</div>
-    ${fld('構圖描述（顯示於框格）',inp('sb-frame',item.frame,'例：EWS 俯角 / CU 特寫'))}
-    ${fld('畫面描述',ta('sb-desc',item.desc,'詳細描述畫面內容、構圖、動作等',3))}
-    <div class="grid2">${fld('攝影機 / 鏡頭',inp('sb-camera',item.camera,'例：85mm f1.8'))}${fld('運鏡方式',inp('sb-move',item.move,'例：Dolly in'))}</div>
-    <div class="grid2">${fld('時長',inp('sb-dur',item.dur,'例：5s'))}${fld('情感氛圍',inp('sb-mood',item.mood,'例：緊張、壓迫'))}</div>
-    ${fld('音效 / 音樂',inp('sb-sfx',item.sfx,'例：低頻電子音效'))}
-    <button class="btn-submit" data-action="save-sb">${item.id?'儲存變更':'新增分鏡'}</button>
-  </div>`;
-}
-
-function renderAnnModal() {
-  return `<div class="sheet" id="sheet">
-    <div class="sh-handle"></div>
-    <div class="sh-hdr">
-      <div class="sh-title">發佈公告</div>
-      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
-    </div>
-    <div class="grid2">
-      ${fld('你的姓名',inp('an-author',userProfile.name,'姓名'))}
-      ${fld('身分組別',`<select class="inp" id="an-role">
-        <option value="">選擇身分</option>
-        ${['導演組','製片組','攝影組','燈光組','美術組','收音組','場務組','演員','其他'].map(d=>`<option value="${d}"${userProfile.dept===d?' selected':''}>${d}</option>`).join('')}
-      </select>`)}
-    </div>
-    ${fld('公告內容 *',ta('an-content','','輸入公告內容…',4))}
-    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:4px">
-      <input type="checkbox" id="an-important" style="width:17px;height:17px;accent-color:var(--amber)">
-      <span style="font-size:13px;color:#aaa">標記為重要公告</span>
+// Ann modal
+function annModal(){
+  const dOpts=DEPTS.map(d=>`<option value="${d}"${prof.dept===d?' selected':''}>${d}</option>`).join('');
+  return sheetWrap('發佈公告',`
+    <div class="g2">${f('你的姓名',inp('an-au',prof.name,'姓名'))}${f('身分組別',`<select class="inp" id="an-ro"><option value="">選擇身分</option>${dOpts}</select>`)}</div>
+    ${f('公告內容 *',ta('an-cn','','輸入公告內容…',4))}
+    <label style="display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:4px">
+      <input type="checkbox" id="an-im" style="width:17px;height:17px;accent-color:var(--c-am)">
+      <span style="font-size:13px;color:var(--c-t2)">標記為重要公告</span>
     </label>
-    <button class="btn-submit" data-action="save-ann">發佈公告</button>
-  </div>`;
+  `,'save-ann','發佈公告');
+}
+function saveAnn(){
+  const cn=val('an-cn');if(!cn)return;
+  const item={id:uid(),author:val('an-au')||prof.name,role:val('an-ro')||prof.dept,content:cn,important:chk('an-im'),time:now_t()};
+  D.ann=[item,...D.ann];closeM();save();render();
 }
 
-function renderInfoModal(info={}) {
-  return `<div class="sheet" id="sheet">
-    <div class="sh-handle"></div>
-    <div class="sh-hdr">
-      <div class="sh-title">項目設定</div>
-      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
+// Info modal
+function infoModal(){
+  const info=D.info;
+  return sheetWrap('項目設定',`
+    ${f('片名',inp('in-ti',info.title,'作品名稱'))}
+    ${f('副標題/類型',inp('in-sb',info.subtitle,'例：短片製作'))}
+    <div class="g2">${f('今天第幾拍攝日',inp('in-dy',info.day,'1','number'))}${f('總拍攝天數',inp('in-ds',info.days,'5','number'))}</div>
+    ${f('導演',inp('in-dr',info.dir,'導演姓名'))}
+    ${f('拍攝地點',inp('in-lc',info.loc,''))}
+    <div style="margin-top:10px;padding:13px;background:var(--c-bg);border-radius:var(--r);border:1px solid var(--c-bd)">
+      <div style="font-size:10px;color:var(--c-am);font-weight:600;margin-bottom:5px">管理員設定</div>
+      ${prof.isAdmin
+        ?`<div style="font-size:12px;color:var(--c-gn);margin-bottom:8px">✓ 你目前擁有管理員權限</div>
+          <button class="btn btn-danger btn-sm" data-a="revoke-adm">取消管理員</button>`
+        :`<div style="display:flex;gap:8px;align-items:center">
+            <input class="inp" id="adm-code" type="password" placeholder="輸入管理員代碼" style="flex:1;font-size:13px">
+            <button class="btn btn-ghost btn-sm" data-a="verify-adm">驗證</button>
+          </div>
+          <div id="adm-err" style="font-size:11px;color:var(--c-rd);margin-top:5px;display:none">代碼錯誤</div>`}
     </div>
-    ${fld('片名',inp('in-title',info.title,'作品名稱'))}
-    ${fld('副標題 / 類型',inp('in-subtitle',info.subtitle,'例：短片製作 / 畢製'))}
-    <div class="grid2">${fld('今天是第幾拍攝日',inp('in-day',info.shootDay,'1','number'))}${fld('總拍攝天數',inp('in-total',info.totalDays,'5','number'))}</div>
-    ${fld('導演',inp('in-dir',info.director,'導演姓名'))}
-    ${fld('拍攝地點',inp('in-loc',info.location,'拍攝地點'))}
-    <div style="margin-top:8px;padding:14px;background:#0e0e0e;border-radius:10px;border:1px solid #1e1e1e">
-      <div style="font-size:11px;color:var(--amber);margin-bottom:4px;font-weight:600">🔗 Firebase 同步</div>
-      <div style="font-size:11px;color:#3eb87a">● 已連線：corsa2025zg1001</div>
-    </div>
-    <div style="margin-top:10px;padding:14px;background:#0e0e0e;border-radius:10px;border:1px solid ${userProfile.isAdmin?'#e8961e40':'#1e1e1e'}">
-      <div style="font-size:11px;color:${userProfile.isAdmin?'var(--amber)':'#666'};margin-bottom:8px;font-weight:600">
-        ${userProfile.isAdmin?'👑 管理員模式已啟用':'🔒 管理員'}
+    <div style="margin-top:10px;padding:13px;background:var(--c-bg);border-radius:var(--r);border:1px solid var(--c-bd)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:10px;color:var(--c-gn);font-weight:600">目前在線使用者</div>
+        <button class="btn btn-ghost btn-sm" id="refresh-online">更新</button>
       </div>
-      ${userProfile.isAdmin
-        ? `<div style="font-size:11px;color:#3eb87a;margin-bottom:8px">你目前擁有管理員權限</div>
-           <button class="btn-icon danger" data-action="revoke-admin" style="font-size:11px">取消管理員</button>`
-        : `<div style="display:flex;gap:8px">
-             <input class="inp" id="admin-code" type="password" placeholder="輸入管理員代碼" style="flex:1;font-size:13px">
-             <button class="btn-icon" data-action="verify-admin" style="font-size:11px">驗證</button>
-           </div>
-           <div id="admin-err" style="font-size:11px;color:var(--red);margin-top:6px;display:none">代碼錯誤</div>`}
+      <div id="online-list" style="font-size:12px;color:var(--c-t4)">點更新載入</div>
     </div>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn-icon" data-action="export-json" style="flex:1">${svg('download',14)} 匯出 JSON 備份</button>
-      <label class="btn-icon" style="flex:1;cursor:pointer;display:flex;align-items:center;gap:6px;justify-content:center">
-        ${svg('upload',14)} 匯入 JSON
-        <input type="file" id="import-file" accept=".json" style="display:none">
-      </label>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" data-a="export">${ic('down',13)} 匯出備份</button>
+      <label class="btn btn-ghost btn-sm" style="flex:1;justify-content:center;cursor:pointer">${ic('up',13)} 匯入備份<input type="file" id="import-f" accept=".json" style="display:none"></label>
     </div>
-    <button class="btn-submit" data-action="save-info">儲存設定</button>
-  </div>`;
+  `,'save-info','儲存設定');
+}
+function saveInfo(){
+  D.info={title:val('in-ti'),subtitle:val('in-sb'),day:val('in-dy'),days:val('in-ds'),dir:val('in-dr'),loc:val('in-lc')};
+  closeM();save();render();
 }
 
-function renderDelModal(type, id) {
-  const labels = {shot:'鏡頭',script:'場景',sb:'分鏡',ann:'公告'};
-  return `<div class="dialog">
-    <div style="color:var(--red);margin-bottom:14px;display:flex;justify-content:center">${svg('trash',26,'#d95555')}</div>
-    <div style="font-size:15px;color:#ddd;margin-bottom:6px">確認刪除此${labels[type]||'項目'}？</div>
-    <div style="font-size:12px;color:#555;margin-bottom:24px">此操作無法復原</div>
-    <div style="display:flex;gap:10px">
-      <button class="btn-icon" data-action="close-modal" style="flex:1;justify-content:center;padding:12px">取消</button>
-      <button data-action="confirm-del" data-type="${type}" data-id="${esc(id)}"
-        style="flex:1;padding:12px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit">刪除</button>
+// Del dialog
+function delDialog(type,id){
+  const labels={shot:'鏡頭',script:'場景',sb:'分鏡',call:'通告',ann:'公告'};
+  showM(`<div class="dialog">
+    <div style="color:var(--c-rd);margin-bottom:14px;display:flex;justify-content:center">${ic('trash',26,'var(--c-rd)')}</div>
+    <div style="font-size:15px;font-weight:600;margin-bottom:6px">確認刪除此${labels[type]||'項目'}？</div>
+    <div style="font-size:12px;color:var(--c-t3);margin-bottom:22px">此操作無法復原</div>
+    <div style="display:flex;gap:9px">
+      <button class="btn btn-ghost" style="flex:1;justify-content:center" data-a="close-modal">取消</button>
+      <button class="btn btn-danger" style="flex:1;justify-content:center" data-a="confirm-del" data-type="${type}" data-id="${esc(id)}">刪除</button>
     </div>
-  </div>`;
+  </div>`,true);
 }
-
-// ─── val helper ─────────────────────────────────────────────────────────
-const val = id => document.getElementById(id)?.value?.trim()||'';
-const checked = id => document.getElementById(id)?.checked||false;
-
-// ─── CRUD ─────────────────────────────────────────────────────────────────
-function saveShot() {
-  const desc = val('s-desc');
-  if (!desc) return;
-  const item = { shot:val('s-shot'), scene:val('s-scene'), sceneTitle:val('s-sceneTitle'), desc, type:val('s-type'), lens:val('s-lens'), dir:val('s-dir'), notes:val('s-notes'), status:val('s-status')||'pending' };
-  if (state.ui.editItem) {
-    state.shots = state.shots.map(s => s.id===state.ui.editItem ? {...item,id:state.ui.editItem} : s);
-  } else {
-    state.shots = [...state.shots, {...item, id:uid()}];
-  }
-  closeModal(); save(); render();
+function confirmDel(type,id){
+  if(type==='shot'){D.shots=D.shots.filter(s=>s.id!==id);if(uiState.expShot===id)uiState.expShot=null;}
+  else if(type==='script'){D.script=D.script.filter(s=>s.id!==id);if(uiState.activeScript?.id===id)uiState.activeScript=null;}
+  else if(type==='sb'){D.sb=D.sb.filter(s=>s.id!==id);if(uiState.expSb===id)uiState.expSb=null;}
+  else if(type==='call')D.call=D.call.filter(s=>s.id!==id);
+  else if(type==='ann')D.ann=D.ann.filter(s=>s.id!==id);
+  closeM();save();render();
 }
+function exportJ(){const b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`prodcrew_${Date.now()}.json`;a.click();}
+function importJ(file){const r=new FileReader();r.onload=e=>{try{Object.assign(D,JSON.parse(e.target.result));save();render();}catch{alert('格式錯誤');}};r.readAsText(file);}
 
-function saveScript() {
-  const title = val('sc-title');
-  if (!title) return;
-  const item = { scene:val('sc-scene'), title, page:val('sc-page'), int:val('sc-int')||'INT', time:val('sc-time'), cast:val('sc-cast').split(/[,，、]/).map(s=>s.trim()).filter(Boolean), content:val('sc-content') };
-  if (state.ui.editItem) {
-    state.script = state.script.map(s => s.id===state.ui.editItem ? {...item,id:state.ui.editItem} : s);
-  } else {
-    state.script = [...state.script, {...item, id:uid()}];
-  }
-  closeModal(); save(); render();
-}
-
-function saveSb() {
-  const shot = val('sb-shot');
-  if (!shot) return;
-  const item = { scene:val('sb-scene'), shot, frame:val('sb-frame'), camera:val('sb-camera'), move:val('sb-move'), dur:val('sb-dur'), desc:val('sb-desc'), mood:val('sb-mood'), sfx:val('sb-sfx') };
-  if (state.ui.editItem) {
-    state.storyboard = state.storyboard.map(s => s.id===state.ui.editItem ? {...item,id:state.ui.editItem} : s);
-  } else {
-    state.storyboard = [...state.storyboard, {...item, id:uid()}];
-  }
-  closeModal(); save(); render();
-}
-
-function saveAnn() {
-  const content = val('an-content');
-  if (!content) return;
-  const now = new Date();
-  const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  const item = { id:uid(), author:val('an-author'), role:val('an-role'), content, important:checked('an-important'), time };
-  state.announcements = [item, ...state.announcements];
-  closeModal(); save(); render();
-}
-
-function saveInfo() {
-  const fb = document.getElementById('in-firebase')?.value?.trim()||'';
-  if (fb !== firebaseUrl) { firebaseUrl = fb; localStorage.setItem('prod:fb', fb); }
-  state.info = { title:val('in-title'), subtitle:val('in-subtitle'), shootDay:val('in-day'), totalDays:val('in-total'), director:val('in-dir'), location:val('in-loc') };
-  closeModal(); save(); render();
-}
-
-function confirmDel(type, id) {
-  if (type==='shot') { state.shots = state.shots.filter(s=>s.id!==id); if(state.ui.expandShot===id) state.ui.expandShot=null; }
-  if (type==='script') { state.script = state.script.filter(s=>s.id!==id); if(state.ui.activeScript?.id===id) state.ui.activeScript=null; }
-  if (type==='sb') { state.storyboard = state.storyboard.filter(s=>s.id!==id); if(state.ui.expandSb===id) state.ui.expandSb=null; }
-  if (type==='ann') { state.announcements = state.announcements.filter(a=>a.id!==id); }
-  closeModal(); save(); render();
-}
-
-function cycleStatus(id) {
-  state.shots = state.shots.map(s => {
-    if (s.id!==id) return s;
-    return {...s, status: ST_ORDER[(ST_ORDER.indexOf(s.status)+1)%4]};
-  });
-  save(); render();
-}
-
-function setStatus(id, status) {
-  state.shots = state.shots.map(s => s.id!==id ? s : {...s, status});
-  save(); render();
-}
-
-// Export / Import
-function exportJSON() {
-  const {ui,...data} = state;
-  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `prodcrew_${Date.now()}.json`;
-  a.click();
-}
-function importJSON(file) {
-  const r = new FileReader();
-  r.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      Object.assign(state, {shots:data.shots||[],script:data.script||[],storyboard:data.storyboard||[],announcements:data.announcements||[],info:data.info||state.info});
-      closeModal(); save(); render();
-    } catch(err) { alert('JSON 格式錯誤'); }
-  };
-  r.readAsText(file);
-}
-
-// ─── EVENT DELEGATION ─────────────────────────────────────────────────────
-document.addEventListener('click', (e) => {
-  // Nav
-  const nav = e.target.closest('[data-nav]');
-  if (nav) { state.tab = nav.dataset.nav; state.ui.filterScene='all'; render(); return; }
-
-  const btn = e.target.closest('[data-action]');
-  if (!btn) return;
-  const act = btn.dataset.action;
-  const {id, type, modal, scene, status} = btn.dataset;
-
-  switch(act) {
+// ── Events ──
+let _editId=null;
+document.addEventListener('click',e=>{
+  const nav=e.target.closest('[data-nav]');
+  if(nav){D.tab=nav.dataset.nav;render();return;}
+  const el=e.target.closest('[data-a]');
+  if(!el)return;
+  const{a,id,type,m,scene,st}=el.dataset;
+  switch(a){
     case 'open-modal':
-      state.ui.editItem = null;
-      if (modal==='shot')   showModal(renderShotModal());
-      if (modal==='script') showModal(renderScriptModal());
-      if (modal==='sb')     showModal(renderSbModal());
-      if (modal==='ann')    showModal(renderAnnModal());
-      if (modal==='call')   showModal(renderCallModal());
+      uiState.editId=null;
+      if(m==='shot')showM(shotModal());
+      else if(m==='script')showM(scriptModal());
+      else if(m==='sb')showM(sbModal());
+      else if(m==='call')showM(callModal());
+      else if(m==='ann')showM(annModal());
       break;
-    case 'edit-call': {
-      const _call = state.callsheet.find(s=>s.id===id);
-      if (!_call) break;
-      state.ui.editItem = id;
-      showModal(renderCallModal(_call));
-      break;
-    }
-    case 'save-call': saveCall(); break;
-    case 'open-info': fetchOnlineUsers().then(()=>{ showModal(renderInfoModal(state.info)); attachImportHandler(); }); break;
-    case 'close-modal': closeModal(); render(); break;
-
-    // Shot
-    case 'expand-shot': state.ui.expandShot = state.ui.expandShot===id ? null : id; render(); break;
-    case 'cycle': cycleStatus(id); break;
-    case 'set-status': setStatus(id, status); break;
-    case 'edit-shot': {
-      const shot = state.shots.find(s=>s.id===id);
-      if (!shot) break;
-      state.ui.editItem = id;
-      showModal(renderShotModal(shot));
-      break;
-    }
-    case 'save-shot': saveShot(); break;
-
-    // Script
-    case 'select-script': state.ui.activeScript = state.script.find(s=>s.id===id)||null; render(); break;
-    case 'back-script': state.ui.activeScript = null; render(); break;
-    case 'edit-script': {
-      const sc = state.script.find(s=>s.id===id);
-      if (!sc) break;
-      state.ui.editItem = id;
-      showModal(renderScriptModal(sc));
+    case 'open-info': infoModal_open();break;
+    case 'close-modal':closeM();render();break;
+    case 'save-shot':saveShot();break;
+    case 'save-script':saveScript();break;
+    case 'save-sb':saveSb();break;
+    case 'save-call':saveCall();break;
+    case 'save-ann':saveAnn();break;
+    case 'save-info':saveInfo();break;
+    case 'exp-shot':uiState.expShot=uiState.expShot===id?null:id;render();break;
+    case 'exp-sb':uiState.expSb=uiState.expSb===id?null:id;render();break;
+    case 'cycle':{const s=D.shots.find(x=>x.id===id);if(!s)break;e.stopPropagation();D.shots=D.shots.map(x=>x.id===id?{...x,status:STO[(STO.indexOf(x.status)+1)%STO.length]}:x);save();render();break;}
+    case 'set-st':D.shots=D.shots.map(x=>x.id===id?{...x,status:st}:x);save();render();break;
+    case 'edit-shot':{uiState.editId=id;const s=D.shots.find(x=>x.id===id);showM(shotModal(s||{}));break;}
+    case 'edit-sc':{uiState.editId=id;const s=D.script.find(x=>x.id===id);showM(scriptModal(s||{}));break;}
+    case 'edit-sb':{uiState.editId=id;const s=D.sb.find(x=>x.id===id);showM(sbModal(s||{}));break;}
+    case 'edit-call':{uiState.editId=id;const c=D.call.find(x=>x.id===id);showM(callModal(c||{}));break;}
+    case 'back-sc':uiState.activeScript=null;render();break;
+    case 'del':delDialog(type,id);break;
+    case 'confirm-del':confirmDel(type,id);break;
+    case 'go-shots':D.tab='shots';uiState.filter=el.dataset.scene||'all';render();break;
+    case 'filter':uiState.filter=el.dataset.scene;render();break;
+    case 'export':exportJ();break;
+    case 'verify-adm':{
+      const code=$('adm-code')?.value?.trim();
+      if(code===ADM){prof.isAdmin=true;localStorage.setItem('pc:prof',JSON.stringify(prof));closeM();render();showM(infoModal_raw());}
+      else{const err=$('adm-err');if(err)err.style.display='block';}
       break;
     }
-    case 'save-script': saveScript(); break;
-
-    // Storyboard
-    case 'expand-sb': state.ui.expandSb = state.ui.expandSb===id ? null : id; render(); break;
-    case 'edit-sb': {
-      const s = state.storyboard.find(x=>x.id===id);
-      if (!s) break;
-      state.ui.editItem = id;
-      showModal(renderSbModal(s));
-      break;
-    }
-    case 'save-sb': saveSb(); break;
-
-    // Ann
-    case 'save-ann': saveAnn(); break;
-
-    // Info
-    case 'save-info': saveInfo(); setTimeout(()=>attachImportHandler(),0); break;
-    case 'export-json': exportJSON(); break;
-    case 'refresh-online': {
-      fetchOnlineUsers().then(()=>{
-        const el = document.getElementById('online-users-list');
-        if (!el) return;
-        el.innerHTML = onlineUsers.length===0
-          ? `<div style="font-size:11px;color:#444">沒有在線使用者</div>`
-          : onlineUsers.map(u=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-              <div style="width:7px;height:7px;border-radius:50%;background:#3eb87a;box-shadow:0 0 4px #3eb87a;flex-shrink:0"></div>
-              <span style="font-size:13px;color:#d8d8d8">${esc(u.name)}</span>
-              ${u.dept?`<span style="font-size:10px;color:#555">${esc(u.dept)}</span>`:''}
-              ${u.isAdmin?`<span class="admin-badge">管理員</span>`:''}
-            </div>`).join('');
-      });
-      break;
-    }
-    case 'verify-admin': {
-      const code = document.getElementById('admin-code')?.value?.trim();
-      if (code === '1001') {
-        userProfile.isAdmin = true;
-        localStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
-        const err = document.getElementById('admin-err'); if(err) err.style.display='none';
-        closeModal(); render();
-        showModal(renderInfoModal(state.info)); attachImportHandler();
-        // System message in chat
-        const sysMsg = {id:`sys${Date.now()}`,author:'系統',content:`${userProfile.name} 已成為管理員`,time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),sys:true,isAdmin:false};
-        state.chat=[...state.chat,sysMsg];
-        pushFirebase().catch(()=>{});
-      } else {
-        const err = document.getElementById('admin-err'); if(err) err.style.display='block';
-      }
-      break;
-    }
-    case 'revoke-admin': {
-      userProfile.isAdmin = false;
-      localStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
-      closeModal(); render();
-      showModal(renderInfoModal(state.info)); attachImportHandler();
-      break;
-    }
-
-    // Del
-    case 'del-confirm': showModal(renderDelModal(type,id),true); break;
-    case 'confirm-del': confirmDel(type, id); break;
-
-    // Dashboard goto
-    case 'goto-shots': state.tab='shots'; state.ui.filterScene=scene||'all'; render(); break;
-
-    // Scene filter
-    case 'filter-scene': state.ui.filterScene = scene; render(); break;
+    case 'revoke-adm':prof.isAdmin=false;localStorage.setItem('pc:prof',JSON.stringify(prof));closeM();render();showM(infoModal_raw());break;
   }
 });
-
-// Overlay click to close
-document.addEventListener('click', (e) => {
-  if (e.target.id==='overlay') closeModal();
-});
-
 // Status pick in shot modal
-document.addEventListener('click', (e) => {
-  const pick = e.target.closest('[data-pick-status]');
-  if (!pick) return;
-  const st = pick.dataset.pickStatus;
-  const inp = document.getElementById('s-status');
-  if (inp) inp.value = st;
-  document.querySelectorAll('[data-pick-status]').forEach(b => {
-    const s = ST[b.dataset.pickStatus];
-    b.style.background = b.dataset.pickStatus===st ? s.bg : '#141414';
-    b.style.borderColor = b.dataset.pickStatus===st ? `${s.color}55` : '#252525';
+document.addEventListener('click',e=>{
+  const p=e.target.closest('[data-pick]');if(!p)return;
+  const st=p.dataset.pick;const inp=$('s-st2');if(inp)inp.value=st;
+  document.querySelectorAll('[data-pick]').forEach(b=>{
+    const s=ST[b.dataset.pick];
+    const on=b.dataset.pick===st;
+    b.style.opacity=on?'1':'0.4';
+    b.style.fontWeight=on?'700':'600';
   });
 });
-
-function attachImportHandler() {
-  const fileInput = document.getElementById('import-file');
-  if (fileInput) fileInput.addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (file) importJSON(file);
+// Overlay close
+document.addEventListener('click',e=>{if(e.target.id==='ov')closeM();});
+// Import
+document.addEventListener('change',e=>{if(e.target.id==='import-f'&&e.target.files[0])importJ(e.target.files[0]);});
+// Online users
+document.addEventListener('click',e=>{
+  if(e.target.id!=='refresh-online')return;
+  fetchOnline().then(()=>{
+    const el=$('online-list');if(!el)return;
+    el.innerHTML=onlineUsers.length===0?'<span style="color:var(--c-t4)">目前沒有在線使用者</span>'
+      :onlineUsers.map(u=>`<div class="row" style="gap:7px;margin-bottom:6px">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--c-gn);box-shadow:0 0 4px var(--c-gn);flex-shrink:0;display:inline-block"></span>
+        <span style="font-size:13px">${esc(u.name)}</span>
+        ${u.dept?`<span style="font-size:10px;color:var(--c-t4)">${esc(u.dept)}</span>`:''}
+        ${u.isAdmin?'<span class="adm-badge">管理員</span>':''}
+      </div>`).join('');
   });
-}
-
-// ─── INIT ─────────────────────────────────────────────────────────────────
-window.addEventListener('resize', () => {
-  if (state.tab === 'shots' || state.tab === 'storyboard' || state.tab === 'script') render();
 });
+function infoModal_raw(){return infoModal();}
+function infoModal_open(){showM(infoModal());setTimeout(()=>{const f=$('import-f');if(f)f.addEventListener('change',e=>{if(e.target.files[0])importJ(e.target.files[0]);});},50);}
+window.addEventListener('resize',()=>{if(['shots','sb','script'].includes(D.tab))render();});
 
-
-// ─── PASSWORD GATE ───────────────────────────────────────────────────────
-// 修改密碼：把下面的字串改成你想要的密碼
-const CREW_PASSWORD = 'corsa2025';
-const PW_SESSION_KEY = 'prod:auth:v1';
-
-async function hashStr(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+// ── Init ──
+function initApp(){
+  loadP();loadL();render();updateSync();updateProfUI();
+  pull();
+  if(!prof.name)setTimeout(showPF,400);
+  heartbeat();setInterval(heartbeat,30000);
+  setInterval(pull,5000);
+  if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
 }
 
-// 記住登入天數（0 = 不記住，每次都要輸入）
-const REMEMBER_DAYS = 30;
-
-async function initPasswordGate() {
-  const screen = document.getElementById('pw-screen');
-  const input  = document.getElementById('pw-input');
-  const btn    = document.getElementById('pw-btn');
-  const err    = document.getElementById('pw-err');
-
-  const correctHash = await hashStr(CREW_PASSWORD);
-
-  // Check localStorage for saved auth
-  function isAuthed() {
-    if (REMEMBER_DAYS === 0) return false;
-    try {
-      const raw = localStorage.getItem(PW_SESSION_KEY);
-      if (!raw) return false;
-      const { hash, expires } = JSON.parse(raw);
-      return hash === correctHash && Date.now() < expires;
-    } catch(e) { return false; }
-  }
-
-  function saveAuth(hash) {
-    if (REMEMBER_DAYS === 0) return;
-    const expires = Date.now() + REMEMBER_DAYS * 24 * 60 * 60 * 1000;
-    localStorage.setItem(PW_SESSION_KEY, JSON.stringify({ hash, expires }));
-  }
-
-  // Already authenticated
-  if (isAuthed()) { screen.remove(); initApp(); return; }
-
-  screen.style.display = 'flex';
-
-  async function attempt() {
-    const h = await hashStr(input.value);
-    if (h === correctHash) {
-      saveAuth(h);
-      screen.style.opacity = '0';
-      screen.style.transition = 'opacity .3s';
-      setTimeout(() => { screen.remove(); initApp(); }, 300);
-    } else {
-      err.classList.add('show');
-      input.classList.add('shake');
-      input.value = '';
-      setTimeout(() => { input.classList.remove('shake'); err.classList.remove('show'); }, 2000);
-    }
-  }
-
-  btn.addEventListener('click', attempt);
-  input.addEventListener('keydown', e => { if(e.key==='Enter') attempt(); });
-  input.focus();
-}
-
-// ─── PROFILE ─────────────────────────────────────────────────────────────
-const PROFILE_KEY = 'prod:profile:v1';
-let userProfile = { name: '', dept: '', isAdmin: false };
-
-function loadProfile() {
-  try {
-    const raw = localStorage.getItem(PROFILE_KEY);
-    if (raw) userProfile = JSON.parse(raw);
-  } catch(e) {}
-}
-
-function saveProfile(name, dept) {
-  userProfile = { ...userProfile, name, dept };
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
-  updateProfileUI();
-}
-
-function updateProfileUI() {
-  const { name, dept } = userProfile;
-  const initial = name ? name[0].toUpperCase() : '?';
-  // Sidebar
-  const av = document.getElementById('profile-avatar');
-  const nl = document.getElementById('profile-name-lbl');
-  const rl = document.getElementById('profile-role-lbl');
-  if (av) av.textContent = initial;
-  if (nl) nl.textContent = name || '設定個人資訊';
-  if (rl) rl.innerHTML = (dept || '點此設定') + (userProfile.isAdmin ? '<span class="admin-badge">管理員</span>' : '');
-  // Topbar
-  const tav = document.getElementById('topbar-avatar');
-  if (tav) tav.textContent = initial;
-}
-
-function showProfileScreen() {
-  const screen = document.getElementById('profile-screen');
-  const nameInp = document.getElementById('profile-name-inp');
-  nameInp.value = userProfile.name || '';
-  // Restore selected dept
-  document.querySelectorAll('.dept-btn').forEach(b => {
-    b.classList.toggle('selected', b.dataset.dept === userProfile.dept);
-  });
-  screen.classList.add('show');
-  nameInp.focus();
-}
-
-function hideProfileScreen() {
-  document.getElementById('profile-screen').classList.remove('show');
-}
-
-// Dept button selection
-document.getElementById('dept-grid').addEventListener('click', e => {
-  const btn = e.target.closest('.dept-btn');
-  if (!btn) return;
-  document.querySelectorAll('.dept-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-});
-
-// Confirm profile
-document.getElementById('profile-confirm').addEventListener('click', () => {
-  const name = document.getElementById('profile-name-inp').value.trim();
-  const dept = document.querySelector('.dept-btn.selected')?.dataset.dept || '';
-  if (!name) { document.getElementById('profile-name-inp').focus(); return; }
-  saveProfile(name, dept);
-  hideProfileScreen();
-});
-
-// Profile name input enter key
-document.getElementById('profile-name-inp').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('profile-confirm').click();
-});
-
-// Edit profile on click
-document.getElementById('profile-badge')?.addEventListener('click', showProfileScreen);
-document.getElementById('topbar-profile')?.addEventListener('click', showProfileScreen);
-
-let onlineUsers = [];
-
-async function registerHeartbeat() {
-  if (!userProfile.name || !firebaseUrl) return;
-  try {
-    const key = userProfile.name.replace(/[^a-zA-Z0-9]/g,'_');
-    await fetch(firebaseUrl+'/online/'+key+'.json', {
-      method:'PUT', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ name:userProfile.name, dept:userProfile.dept||'', isAdmin:userProfile.isAdmin||false, ts:Date.now() }),
-    });
-  } catch {}
-}
-
-async function fetchOnlineUsers() {
-  if (!firebaseUrl) return;
-  try {
-    const r = await fetch(firebaseUrl+'/online.json');
-    const data = await r.json();
-    if (!data) { onlineUsers=[]; return; }
-    const now = Date.now();
-    onlineUsers = Object.values(data).filter(u => now-(u.ts||0)<90000);
-  } catch { onlineUsers=[]; }
-}
-
-function initApp() {
-  loadProfile();
-  loadLocal();
-  render();
-  updateSyncUI();
-  updateProfileUI();
-  setInterval(pullFirebase, 4000);
-  pullFirebase();
-  requestNotificationPermission();
-  if (!userProfile.name) { setTimeout(showProfileSetup, 400); }
-  registerHeartbeat();
-  setInterval(registerHeartbeat, 30000);
-}
-
-initPasswordGate();
-
-</script>
-</body>
-</html>
+initPW();
+</script></body></html>

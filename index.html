@@ -188,20 +188,45 @@ a{color:inherit;text-decoration:none}
 #topbar-avatar{width:28px;height:28px;border-radius:50%;background:rgba(232,150,30,.15);border:1px solid #e8961e40;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#e8961e;flex-shrink:0}
 
 
-/* ── Chat ── */
-.chat-wrap{display:flex;flex-direction:column;height:calc(100dvh - 50px)}
-.chat-msgs{flex:1;overflow-y:auto;padding:12px 14px 8px;display:flex;flex-direction:column;gap:10px}
-.cb{display:flex;gap:9px;align-items:flex-end}
+.chat-wrap{display:flex;flex-direction:column;height:calc(100dvh - 50px);overflow:hidden;position:relative}
+.chat-topbar{padding:10px 14px;border-bottom:1px solid #141414;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#0e0e0e}
+.chat-online{display:flex;align-items:center;gap:5px;font-size:11px;color:#3eb87a}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px 14px 8px;display:flex;flex-direction:column;gap:2px}
+.chat-date-sep{text-align:center;font-size:10px;color:#444;letter-spacing:.06em;margin:12px 0 6px;position:relative}
+.chat-date-sep::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:#1a1a1a;z-index:0}
+.chat-date-sep span{background:#0a0a0a;padding:0 10px;position:relative;z-index:1}
+.cb{display:flex;gap:9px;align-items:flex-end;padding:1px 0}
 .cb.mine{flex-direction:row-reverse}
-.cb-av{width:30px;height:30px;border-radius:50%;background:#1a1a1a;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--amber);flex-shrink:0}
-.cb-body{max-width:75%}
-.cb-meta{font-size:9px;color:#555;margin-bottom:3px}
-.cb.mine .cb-meta{text-align:right}
-.cb-txt{background:#1c1c1c;border-radius:12px;border-top-left-radius:3px;padding:9px 12px;font-size:13px;color:var(--text);line-height:1.6;word-break:break-word}
-.cb.mine .cb-txt{background:rgba(232,150,30,.14);border-top-left-radius:12px;border-top-right-radius:3px;border:1px solid rgba(232,150,30,.2)}
-.chat-bar{padding:9px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom));border-top:1px solid #141414;display:flex;gap:8px;align-items:flex-end;background:#0a0a0a;flex-shrink:0}
+.cb.cont .cb-av{visibility:hidden}
+.cb-av{width:30px;height:30px;border-radius:50%;background:#1a1a1a;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--amber);flex-shrink:0;cursor:pointer}
+.cb-av.admin{background:rgba(232,150,30,.2);border-color:#e8961e60}
+.cb-body{max-width:78%}
+.cb-meta{font-size:9px;color:#555;margin-bottom:3px;display:flex;align-items:center;gap:4px}
+.cb.mine .cb-meta{justify-content:flex-end}
+.cb-badge{font-size:8px;background:rgba(232,150,30,.2);color:var(--amber);padding:1px 5px;border-radius:99px;border:1px solid #e8961e40}
+.cb-reply-bar{background:#141414;border-left:2px solid var(--amber);padding:5px 10px;border-radius:4px;margin-bottom:4px;font-size:11px;color:#888}
+.cb-reply-bar b{color:var(--amber)}
+.cb-txt{background:#1c1c1c;border-radius:12px;border-top-left-radius:3px;padding:9px 12px;font-size:13px;color:var(--text);line-height:1.6;word-break:break-word;cursor:pointer}
+.cb-txt:hover{background:#222}
+.cb.mine .cb-txt{background:rgba(232,150,30,.12);border-top-left-radius:12px;border-top-right-radius:3px;border:1px solid rgba(232,150,30,.18)}
+.cb-txt.deleted{color:#555;font-style:italic}
+.cb-time{font-size:9px;color:#444;margin-top:2px;padding:0 2px}
+.cb.mine .cb-time{text-align:right}
+.cb-sys{text-align:center;font-size:11px;color:#555;background:#111;border:1px solid #1e1e1e;border-radius:99px;padding:4px 14px;margin:8px auto;max-width:300px}
+.chat-bar{padding:8px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom));border-top:1px solid #141414;display:flex;flex-direction:column;gap:7px;background:#0a0a0a;flex-shrink:0;width:100%}
+.chat-rp{display:none;background:#141414;border-left:2px solid var(--amber);border-radius:6px;padding:6px 10px;font-size:11px;color:#888;align-items:center;gap:8px}
+.chat-rp.show{display:flex}
+.chat-rp b{color:var(--amber)}
+.chat-inp-row{display:flex;gap:8px;align-items:flex-end}
 .chat-inp{flex:1;background:#181818;border:1px solid #2a2a2a;border-radius:10px;padding:9px 12px;color:var(--text);font-size:13px;resize:none;max-height:80px;font-family:inherit;outline:none}
+.chat-inp:focus{border-color:#3a3a3a}
 .chat-snd{width:36px;height:36px;border-radius:50%;background:var(--amber);border:none;color:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.chat-snd:hover{background:#d4870e}
+.ctx-menu{position:fixed;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:6px;z-index:600;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.6);animation:fadeIn .12s}
+.ctx-btn{width:100%;background:none;border:none;color:#ccc;padding:8px 12px;border-radius:7px;font-size:13px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:inherit}
+.ctx-btn:hover{background:#252525}
+.ctx-btn.danger{color:var(--red)}
+.admin-badge{font-size:9px;background:rgba(232,150,30,.15);color:var(--amber);border:1px solid #e8961e30;border-radius:99px;padding:1px 7px;margin-left:4px}
 
 </style>
 </head>
@@ -424,10 +449,10 @@ async function pullFirebase() {
     }
     // Notify new chat
     const prevChatIds = new Set((state.chat||[]).map(m=>m.id));
-    const newMsgs = (data.chat||[]).filter(m=>!prevChatIds.has(m.id));
-    if (newMsgs.length > 0 && state._ts > 0) {
+    const newMsgs = (data.chat||[]).filter(m=>!prevChatIds.has(m.id)&&!m.sys&&!m.deleted);
+    if (newMsgs.length > 0 && state._ts > 0 && state.tab !== 'chatroom') {
       newMsgs.forEach(m => {
-        if (m.author !== userProfile.name) showBrowserNotif(`💬 ${m.author}`, m.content);
+        if (m.author !== userProfile.name) showBrowserNotif(`💬 ${m.author || ''}`, m.content||'');
       });
     }
     const prevTab = state.tab;
@@ -564,6 +589,15 @@ function render() {
   document.getElementById('topbar-lbl').textContent = TABS.find(t=>t.id===state.tab)?.label||'';
   renderNav();
   document.getElementById('content').innerHTML = renderTab();
+  // Chat needs full height without bottom padding
+  const contentEl = document.getElementById('content');
+  if (state.tab === 'chatroom') {
+    contentEl.style.paddingBottom = '0';
+    contentEl.style.overflow = 'hidden';
+  } else {
+    contentEl.style.paddingBottom = '';
+    contentEl.style.overflow = '';
+  }
   updateSyncUI();
   if (state.tab === 'chatroom') attachChatListeners();
 }
@@ -602,24 +636,47 @@ function renderDashboard() {
   const isDesktop = window.innerWidth >= 1200;
   const sceneCards = scenes().map(scn => {
     const ss = state.shots.filter(s=>s.scene===scn);
-    const d = ss.filter(s=>s.status==='done').length;
-    const pp = pct(d,ss.length);
+    const d  = ss.filter(s=>s.status==='done').length;
+    const ng = ss.filter(s=>s.status==='ng').length;
+    const sh = ss.filter(s=>s.status==='shooting').length;
+    const pp = pct(d, ss.length);
+
+    // Traffic light logic
+    // Green = all done, Red = has NG, Yellow = in progress, Dim = not started
+    const allDone    = pp === 100;
+    const hasNg      = ng > 0;
+    const inProgress = sh > 0 || (d > 0 && !allDone);
+    const borderColor = allDone ? '#3eb87a' : hasNg ? '#d95555' : inProgress ? '#e8961e' : '#2a2a2a';
+    const glowColor   = allDone ? 'rgba(62,184,122,.12)' : hasNg ? 'rgba(217,85,85,.10)' : inProgress ? 'rgba(232,150,30,.10)' : 'transparent';
+    const statusLabel = allDone ? '完成' : hasNg ? 'NG' : inProgress ? '進行中' : '待拍';
+    const statusColor = allDone ? '#3eb87a' : hasNg ? '#d95555' : inProgress ? '#e8961e' : '#555';
+    const barColor    = allDone ? '#3eb87a' : hasNg ? '#d95555' : '#e8961e';
+
     const mini = ST_ORDER.map(st=>{
       const n = ss.filter(s=>s.status===st).length;
       return n ? `<span style="font-size:10px;color:${ST[st].color}">${ST[st].icon} ${n}</span>` : '';
     }).join('');
-    return `<div class="card card-hover" style="cursor:pointer;margin-bottom:8px" data-action="goto-shots" data-scene="${esc(scn)}">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+
+    return `<div style="cursor:pointer;margin-bottom:10px;background:#111;border-radius:14px;border:1.5px solid ${borderColor};
+      box-shadow:0 0 16px ${glowColor};padding:14px 16px;transition:box-shadow .2s"
+      data-action="goto-shots" data-scene="${esc(scn)}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
         <div>
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--amber);margin-right:8px;letter-spacing:.05em">場景 ${esc(scn)}</span>
-          <span style="font-size:12px;color:var(--t3)">${esc(ss[0]?.sceneTitle||'')}</span>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--amber);letter-spacing:.06em">場景 ${esc(scn)}</span>
+            <span style="font-size:10px;font-weight:700;color:${statusColor};background:${glowColor||'rgba(255,255,255,.04)'};border:1px solid ${borderColor}50;padding:2px 9px;border-radius:99px">${statusLabel}</span>
+          </div>
+          <div style="font-size:12px;color:var(--t3)">${esc(ss[0]?.sceneTitle||'')}</div>
         </div>
-        <span style="font-size:11px;color:${pp===100?'#3eb87a':'#777'};font-weight:600">${d}/${ss.length}</span>
+        <span style="font-size:12px;color:${statusColor};font-weight:700;flex-shrink:0">${d}/${ss.length}</span>
       </div>
-      <div style="height:3px;background:#1c1c1c;border-radius:99px;overflow:hidden">
-        <div style="height:100%;width:${pp}%;background:${pp===100?'#3eb87a':'var(--amber)'};border-radius:99px"></div>
+      <div style="height:4px;background:#1a1a1a;border-radius:99px;overflow:hidden;margin-bottom:10px">
+        <div style="height:100%;width:${pp}%;background:${barColor};border-radius:99px;transition:width .6s ease;
+          box-shadow:0 0 6px ${borderColor}60"></div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:8px">${mini}</div>
+      <div style="display:flex;gap:10px;align-items:center">
+        ${mini}
+      </div>
     </div>`;
   }).join('');
 
@@ -995,30 +1052,64 @@ function renderCallsheet() {
 
 // ─── CHATROOM ─────────────────────────────────────────────────────────────
 function renderChatroom() {
-  const msgs = state.chat.map(m => {
+  const msgs = state.chat.filter(m=>!m.deleted).map((m, i, arr) => {
     const mine = m.author === userProfile.name;
-    return `<div class="cb${mine?' mine':''}">
-      <div class="cb-av">${esc((m.author||'?')[0])}</div>
+    const prev = arr[i-1];
+    const isCont = prev && prev.author===m.author && !m.replyTo;
+    const isAdmin = m.isAdmin;
+    const replyMsg = m.replyTo ? state.chat.find(x=>x.id===m.replyTo) : null;
+    const replyHTML = replyMsg
+      ? `<div class="cb-reply-bar"><b>${esc(replyMsg.author)}</b>：${esc(replyMsg.content.substring(0,40))}${replyMsg.content.length>40?'…':''}</div>`
+      : '';
+    const metaHTML = isCont ? '' : `<div class="cb-meta">
+      ${!mine?`<span class="cb-name">${esc(m.author||'?')}</span>`:'' }
+      ${m.dept&&!mine?`<span class="cb-dept">${esc(m.dept)}</span>`:''}
+      ${isAdmin?`<span class="cb-badge">管理員</span>`:''}
+      <span style="color:#444">${esc(m.time||'')}</span>
+    </div>`;
+    return `<div class="cb${mine?' mine':''}${isCont?' cont':''}" data-msgid="${esc(m.id)}">
+      <div class="cb-av${isAdmin?' admin':''}">${esc((m.author||'?')[0])}</div>
       <div class="cb-body">
-        <div class="cb-meta">${esc(m.author||'?')}${m.dept?` · ${esc(m.dept)}`:''} ${esc(m.time||'')}</div>
-        <div class="cb-txt">${esc(m.content)}</div>
-      </div>
+        ${metaHTML}
+        ${replyHTML}
+        <div class="cb-txt${m.deleted?' deleted':''}" data-msgid="${esc(m.id)}">${esc(m.content)}</div>
+        ${isCont?'':''}`
+        + (i===arr.length-1||arr[i+1]?.author!==m.author ? `<div class="cb-time">${esc(m.time||'')}</div>` : '')
+        + `</div>
     </div>`;
   }).join('');
 
-  const empty = state.chat.length===0
-    ? `<div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;opacity:.35;padding-top:60px">${svg('chat',34,'#e8961e')}<div style="font-size:12px;color:var(--t4)">還沒有任何訊息</div></div>`
+  const sysmsgs = state.chat.filter(m=>m.sys).map(m=>
+    `<div class="cb-sys">${esc(m.content)}</div>`
+  );
+
+  const empty = state.chat.filter(m=>!m.deleted).length===0
+    ? `<div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;opacity:.3;padding-top:60px">${svg('chat',34,'#e8961e')}<div style="font-size:12px;color:var(--t4)">還沒有任何訊息</div></div>`
     : '';
 
   return `<div class="chat-wrap">
+    <div class="chat-topbar">
+      <div style="font-size:13px;font-weight:600;color:var(--text)">聊天室</div>
+      <div class="chat-online">${svg('users',13,'#3eb87a')} ${state.chat.length} 則訊息</div>
+    </div>
     <div class="chat-msgs" id="chat-msgs">${empty}${msgs}</div>
     <div class="chat-bar">
-      <textarea class="chat-inp" id="chat-inp" rows="1"
-        placeholder="${esc(userProfile.name ? userProfile.name+'，說點什麼…' : '請先設定個人資訊再聊天')}"></textarea>
-      <button class="chat-snd" id="chat-snd">${svg('send',14,'#000')}</button>
+      <div class="chat-rp" id="chat-rp">
+        <div style="flex:1;min-width:0"><b id="rp-name"></b>：<span id="rp-preview"></span></div>
+        <button onclick="cancelReply()" style="background:none;border:none;color:#555;cursor:pointer;flex-shrink:0">${svg('x',14)}</button>
+      </div>
+      <div class="chat-inp-row">
+        <textarea class="chat-inp" id="chat-inp" rows="1"
+          placeholder="${esc(userProfile.name ? userProfile.name+'，說點什麼…' : '請先設定個人資訊再聊天')}"></textarea>
+        <button class="chat-snd" id="chat-snd">${svg('send',14,'#000')}</button>
+      </div>
     </div>
   </div>`;
 }
+
+// ── Chat state
+let chatReplyTo = null;
+function cancelReply() { chatReplyTo=null; const rp=document.getElementById('chat-rp'); if(rp)rp.classList.remove('show'); }
 
 function attachChatListeners() {
   const inp = document.getElementById('chat-inp');
@@ -1029,17 +1120,76 @@ function attachChatListeners() {
 
   async function send() {
     const content = inp.value.trim();
-    if (!content || !userProfile.name) { if(!userProfile.name) alert('請先設定姓名'); return; }
-    const msg = { id: `c${Date.now()}`, author: userProfile.name, dept: userProfile.dept||'', content, time: new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}) };
+    if (!content) return;
+    if (!userProfile.name) { showProfileScreen(); return; }
+    const msg = {
+      id: `c${Date.now()}`,
+      author: userProfile.name,
+      dept: userProfile.dept||'',
+      isAdmin: userProfile.isAdmin||false,
+      content,
+      time: new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),
+      replyTo: chatReplyTo||null,
+    };
+    chatReplyTo = null;
+    const rp = document.getElementById('chat-rp'); if(rp) rp.classList.remove('show');
     setSyncStatus('syncing'); updateSyncUI();
     const next = [...state.chat, msg];
     state.chat = next;
     inp.value = ''; inp.style.height = 'auto';
-    render();
+    render(); // re-renders chat
     setTimeout(()=>{ const m=document.getElementById('chat-msgs'); if(m)m.scrollTop=m.scrollHeight; },50);
     try { await window.storage.set(KEYS.chat, JSON.stringify(next), true); setSyncStatus('synced'); } catch { setSyncStatus('error'); }
     updateSyncUI();
   }
+
+  // Long-press / right-click context menu
+  let pressTimer = null;
+  function showCtx(msgId, x, y) {
+    closeCtx();
+    const msg = state.chat.find(m=>m.id===msgId);
+    if (!msg) return;
+    const isMine = msg.author===userProfile.name;
+    const canDel = isMine || userProfile.isAdmin;
+    const menu = document.createElement('div');
+    menu.className = 'ctx-menu'; menu.id = 'ctx-menu';
+    menu.style.left = Math.min(x, window.innerWidth-170)+'px';
+    menu.style.top = Math.min(y, window.innerHeight-120)+'px';
+    menu.innerHTML = `
+      <button class="ctx-btn" id="ctx-reply">${svg('back',14)} 回覆</button>
+      ${canDel?`<button class="ctx-btn danger" id="ctx-del">${svg('trash',14)} 刪除訊息</button>`:''}
+    `;
+    document.body.appendChild(menu);
+    document.getElementById('ctx-reply').onclick = () => {
+      chatReplyTo = msgId;
+      const rp = document.getElementById('chat-rp');
+      const name = document.getElementById('rp-name');
+      const prev = document.getElementById('rp-preview');
+      if (rp&&name&&prev) { name.textContent=msg.author; prev.textContent=msg.content.substring(0,40); rp.classList.add('show'); }
+      closeCtx(); inp.focus();
+    };
+    const delBtn = document.getElementById('ctx-del');
+    if (delBtn) delBtn.onclick = async () => {
+      state.chat = state.chat.map(m=>m.id===msgId?{...m,content:'已撤回此訊息',deleted:true}:m);
+      closeCtx(); render();
+      setTimeout(()=>{ const m=document.getElementById('chat-msgs'); if(m)m.scrollTop=m.scrollHeight; },50);
+      try { await window.storage.set(KEYS.chat, JSON.stringify(state.chat), true); } catch {}
+    };
+  }
+  function closeCtx() { const m=document.getElementById('ctx-menu'); if(m)m.remove(); }
+  document.addEventListener('click', closeCtx, {once:false});
+
+  // Bind long-press & right-click on messages
+  function bindMsgEvents() {
+    msgs.querySelectorAll('.cb-txt[data-msgid]').forEach(el => {
+      el.addEventListener('contextmenu', e => { e.preventDefault(); showCtx(el.dataset.msgid, e.clientX, e.clientY); });
+      el.addEventListener('touchstart', e => { pressTimer=setTimeout(()=>showCtx(el.dataset.msgid, e.touches[0].clientX, e.touches[0].clientY),500); }, {passive:true});
+      el.addEventListener('touchend', () => clearTimeout(pressTimer));
+      el.addEventListener('touchmove', () => clearTimeout(pressTimer));
+    });
+  }
+  setTimeout(bindMsgEvents, 100);
+
   snd.addEventListener('click', send);
   inp.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); } });
   inp.addEventListener('input', () => { inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,80)+'px'; });
@@ -1241,6 +1391,19 @@ function renderInfoModal(info={}) {
       <div style="font-size:11px;color:var(--amber);margin-bottom:4px;font-weight:600">🔗 Firebase 同步</div>
       <div style="font-size:11px;color:#3eb87a">● 已連線：corsa2025zg1001</div>
     </div>
+    <div style="margin-top:10px;padding:14px;background:#0e0e0e;border-radius:10px;border:1px solid ${userProfile.isAdmin?'#e8961e40':'#1e1e1e'}">
+      <div style="font-size:11px;color:${userProfile.isAdmin?'var(--amber)':'#666'};margin-bottom:8px;font-weight:600">
+        ${userProfile.isAdmin?'👑 管理員模式已啟用':'🔒 管理員'}
+      </div>
+      ${userProfile.isAdmin
+        ? `<div style="font-size:11px;color:#3eb87a;margin-bottom:8px">你目前擁有管理員權限</div>
+           <button class="btn-icon danger" data-action="revoke-admin" style="font-size:11px">取消管理員</button>`
+        : `<div style="display:flex;gap:8px">
+             <input class="inp" id="admin-code" type="password" placeholder="輸入管理員代碼" style="flex:1;font-size:13px">
+             <button class="btn-icon" data-action="verify-admin" style="font-size:11px">驗證</button>
+           </div>
+           <div id="admin-err" style="font-size:11px;color:var(--red);margin-top:6px;display:none">代碼錯誤</div>`}
+    </div>
     <div style="display:flex;gap:8px;margin-top:8px">
       <button class="btn-icon" data-action="export-json" style="flex:1">${svg('download',14)} 匯出 JSON 備份</button>
       <label class="btn-icon" style="flex:1;cursor:pointer;display:flex;align-items:center;gap:6px;justify-content:center">
@@ -1439,6 +1602,30 @@ document.addEventListener('click', (e) => {
     // Info
     case 'save-info': saveInfo(); setTimeout(()=>attachImportHandler(),0); break;
     case 'export-json': exportJSON(); break;
+    case 'verify-admin': {
+      const code = document.getElementById('admin-code')?.value?.trim();
+      if (code === '1001') {
+        userProfile.isAdmin = true;
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
+        const err = document.getElementById('admin-err'); if(err) err.style.display='none';
+        closeModal(); render();
+        showModal(renderInfoModal(state.info)); attachImportHandler();
+        // System message in chat
+        const sysMsg = {id:`sys${Date.now()}`,author:'系統',content:`${userProfile.name} 已成為管理員`,time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),sys:true,isAdmin:false};
+        state.chat=[...state.chat,sysMsg];
+        window.storage.set(KEYS.chat,JSON.stringify(state.chat),true).catch(()=>{});
+      } else {
+        const err = document.getElementById('admin-err'); if(err) err.style.display='block';
+      }
+      break;
+    }
+    case 'revoke-admin': {
+      userProfile.isAdmin = false;
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
+      closeModal(); render();
+      showModal(renderInfoModal(state.info)); attachImportHandler();
+      break;
+    }
 
     // Del
     case 'del-confirm': showModal(renderDelModal(type,id),true); break;
@@ -1550,7 +1737,7 @@ async function initPasswordGate() {
 
 // ─── PROFILE ─────────────────────────────────────────────────────────────
 const PROFILE_KEY = 'prod:profile:v1';
-let userProfile = { name: '', dept: '' };
+let userProfile = { name: '', dept: '', isAdmin: false };
 
 function loadProfile() {
   try {
@@ -1560,7 +1747,7 @@ function loadProfile() {
 }
 
 function saveProfile(name, dept) {
-  userProfile = { name, dept };
+  userProfile = { ...userProfile, name, dept };
   localStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
   updateProfileUI();
 }
@@ -1574,7 +1761,7 @@ function updateProfileUI() {
   const rl = document.getElementById('profile-role-lbl');
   if (av) av.textContent = initial;
   if (nl) nl.textContent = name || '設定個人資訊';
-  if (rl) rl.textContent = dept || '點此設定';
+  if (rl) rl.innerHTML = (dept || '點此設定') + (userProfile.isAdmin ? '<span class="admin-badge">管理員</span>' : '');
   // Topbar
   const tav = document.getElementById('topbar-avatar');
   if (tav) tav.textContent = initial;

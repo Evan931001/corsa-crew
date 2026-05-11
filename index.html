@@ -187,6 +187,22 @@ a{color:inherit;text-decoration:none}
 #topbar-profile{display:flex;align-items:center;gap:6px;cursor:pointer}
 #topbar-avatar{width:28px;height:28px;border-radius:50%;background:rgba(232,150,30,.15);border:1px solid #e8961e40;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#e8961e;flex-shrink:0}
 
+
+/* ── Chat ── */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100dvh - 50px)}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px 14px 8px;display:flex;flex-direction:column;gap:10px}
+.cb{display:flex;gap:9px;align-items:flex-end}
+.cb.mine{flex-direction:row-reverse}
+.cb-av{width:30px;height:30px;border-radius:50%;background:#1a1a1a;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--amber);flex-shrink:0}
+.cb-body{max-width:75%}
+.cb-meta{font-size:9px;color:#555;margin-bottom:3px}
+.cb.mine .cb-meta{text-align:right}
+.cb-txt{background:#1c1c1c;border-radius:12px;border-top-left-radius:3px;padding:9px 12px;font-size:13px;color:var(--text);line-height:1.6;word-break:break-word}
+.cb.mine .cb-txt{background:rgba(232,150,30,.14);border-top-left-radius:12px;border-top-right-radius:3px;border:1px solid rgba(232,150,30,.2)}
+.chat-bar{padding:9px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom));border-top:1px solid #141414;display:flex;gap:8px;align-items:flex-end;background:#0a0a0a;flex-shrink:0}
+.chat-inp{flex:1;background:#181818;border:1px solid #2a2a2a;border-radius:10px;padding:9px 12px;color:var(--text);font-size:13px;resize:none;max-height:80px;font-family:inherit;outline:none}
+.chat-snd{width:36px;height:36px;border-radius:50%;background:var(--amber);border:none;color:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+
 </style>
 </head>
 <body>
@@ -316,6 +332,9 @@ const I = {
   download:`<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>`,
   upload:  `<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>`,
   link:    `<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>`,
+  clock:   `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
+  chat:    `<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>`,
+  send:    `<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>`,
 };
 const svg = (name, size=20, color='currentColor') =>
   `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block">${I[name]}</svg>`;
@@ -330,17 +349,19 @@ const ST = {
 const ST_ORDER = ['pending','shooting','done','ng'];
 
 const TABS = [
-  {id:'dashboard', label:'首頁', icon:'grid'},
-  {id:'shots',     label:'進度', icon:'clap'},
-  {id:'script',    label:'劇本', icon:'file'},
-  {id:'storyboard',label:'分鏡', icon:'monitor'},
-  {id:'announce',  label:'公告', icon:'bell'},
+  {id:'dashboard', label:'首頁',   icon:'grid'},
+  {id:'shots',     label:'進度',   icon:'clap'},
+  {id:'script',    label:'劇本',   icon:'file'},
+  {id:'storyboard',label:'分鏡',   icon:'monitor'},
+  {id:'callsheet', label:'通告單', icon:'clock'},
+  {id:'chatroom',  label:'聊天室', icon:'chat'},
+  {id:'announce',  label:'公告',   icon:'bell'},
 ];
 
 // ─── STATE ────────────────────────────────────────────────────────────────
 let state = {
   tab: 'dashboard',
-  shots: [], script: [], storyboard: [], announcements: [],
+  shots: [], script: [], storyboard: [], announcements: [], callsheet: [], chat: [],
   info: {title:'',subtitle:'',shootDay:'',totalDays:'',director:'',location:''},
   ui: {
     filterScene: 'all',
@@ -401,10 +422,19 @@ async function pullFirebase() {
     if (newAnns.length > 0 && state._ts > 0) {
       newAnns.forEach(a => showNotification(a));
     }
+    // Notify new chat
+    const prevChatIds = new Set((state.chat||[]).map(m=>m.id));
+    const newMsgs = (data.chat||[]).filter(m=>!prevChatIds.has(m.id));
+    if (newMsgs.length > 0 && state._ts > 0) {
+      newMsgs.forEach(m => {
+        if (m.author !== userProfile.name) showBrowserNotif(`💬 ${m.author}`, m.content);
+      });
+    }
     const prevTab = state.tab;
     Object.assign(state, {
       shots: data.shots||[], script: data.script||[],
       storyboard: data.storyboard||[], announcements: data.announcements||[],
+      callsheet: data.callsheet||[], chat: data.chat||[],
       info: data.info||state.info, _ts: data._ts,
     });
     state.tab = prevTab;
@@ -535,6 +565,7 @@ function render() {
   renderNav();
   document.getElementById('content').innerHTML = renderTab();
   updateSyncUI();
+  if (state.tab === 'chatroom') attachChatListeners();
 }
 
 function renderNav() {
@@ -556,6 +587,8 @@ function renderTab() {
     case 'shots':      return renderShots();
     case 'script':     return renderScript();
     case 'storyboard': return renderStoryboard();
+    case 'callsheet':  return renderCallsheet();
+    case 'chatroom':   return renderChatroom();
     case 'announce':   return renderAnnounce();
     default:           return renderDashboard();
   }
@@ -929,6 +962,134 @@ function renderStoryboard() {
 }
 
 // ─── ANNOUNCE ─────────────────────────────────────────────────────────────
+// ─── CALLSHEET ────────────────────────────────────────────────────────────
+function renderCallsheet() {
+  const rows = state.callsheet.map((item,i) => `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:${i===state.callsheet.length-1?'none':'1px solid #181818'}">
+      <div style="text-align:center;flex-shrink:0;width:54px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--amber);line-height:1">${esc(item.time||'—')}</div>
+        ${item.date?`<div style="font-size:9px;color:#555;margin-top:1px">${esc(item.date)}</div>`:''}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">${esc(item.who||'—')}</div>
+        <div style="font-size:11px;color:var(--t3)">${[item.location,item.notes].filter(Boolean).map(esc).join(' · ')}</div>
+      </div>
+      <div style="display:flex;gap:4px;flex-shrink:0">
+        <button class="btn-tbl" data-action="edit-call" data-id="${esc(item.id)}" title="編輯">${svg('edit',14)}</button>
+        <button class="btn-tbl danger" data-action="del-confirm" data-type="call" data-id="${esc(item.id)}" title="刪除">${svg('trash',14)}</button>
+      </div>
+    </div>`).join('');
+
+  return `<div class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="ptitle" style="margin-bottom:0">通告單</div>
+      <button class="btn-add" data-action="open-modal" data-modal="call">${svg('plus',14)} 新增通告</button>
+    </div>
+    ${state.callsheet.length===0
+      ? `<div class="card empty"><div class="empty-icon">${svg('clock',30,'#e8961e')}</div>
+         <div style="font-size:14px;color:var(--t4);margin-bottom:16px">尚未新增任何通告</div>
+         <button class="btn-add" data-action="open-modal" data-modal="call">${svg('plus',14)} 新增第一筆</button></div>`
+      : `<div class="card" style="padding:0;overflow:hidden">${rows}</div>`}
+  </div>`;
+}
+
+// ─── CHATROOM ─────────────────────────────────────────────────────────────
+function renderChatroom() {
+  const msgs = state.chat.map(m => {
+    const mine = m.author === userProfile.name;
+    return `<div class="cb${mine?' mine':''}">
+      <div class="cb-av">${esc((m.author||'?')[0])}</div>
+      <div class="cb-body">
+        <div class="cb-meta">${esc(m.author||'?')}${m.dept?` · ${esc(m.dept)}`:''} ${esc(m.time||'')}</div>
+        <div class="cb-txt">${esc(m.content)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const empty = state.chat.length===0
+    ? `<div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;opacity:.35;padding-top:60px">${svg('chat',34,'#e8961e')}<div style="font-size:12px;color:var(--t4)">還沒有任何訊息</div></div>`
+    : '';
+
+  return `<div class="chat-wrap">
+    <div class="chat-msgs" id="chat-msgs">${empty}${msgs}</div>
+    <div class="chat-bar">
+      <textarea class="chat-inp" id="chat-inp" rows="1"
+        placeholder="${esc(userProfile.name ? userProfile.name+'，說點什麼…' : '請先設定個人資訊再聊天')}"></textarea>
+      <button class="chat-snd" id="chat-snd">${svg('send',14,'#000')}</button>
+    </div>
+  </div>`;
+}
+
+function attachChatListeners() {
+  const inp = document.getElementById('chat-inp');
+  const snd = document.getElementById('chat-snd');
+  const msgs = document.getElementById('chat-msgs');
+  if (!inp) return;
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+
+  async function send() {
+    const content = inp.value.trim();
+    if (!content || !userProfile.name) { if(!userProfile.name) alert('請先設定姓名'); return; }
+    const msg = { id: `c${Date.now()}`, author: userProfile.name, dept: userProfile.dept||'', content, time: new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}) };
+    setSyncStatus('syncing'); updateSyncUI();
+    const next = [...state.chat, msg];
+    state.chat = next;
+    inp.value = ''; inp.style.height = 'auto';
+    render();
+    setTimeout(()=>{ const m=document.getElementById('chat-msgs'); if(m)m.scrollTop=m.scrollHeight; },50);
+    try { await window.storage.set(KEYS.chat, JSON.stringify(next), true); setSyncStatus('synced'); } catch { setSyncStatus('error'); }
+    updateSyncUI();
+  }
+  snd.addEventListener('click', send);
+  inp.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); } });
+  inp.addEventListener('input', () => { inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,80)+'px'; });
+}
+
+// ─── CALL MODAL ───────────────────────────────────────────────────────────
+function renderCallModal(item={}) {
+  return `<div class="sheet" id="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-hdr">
+      <div class="sh-title">${item.id?'編輯通告':'新增通告'}</div>
+      <button class="btn-tbl" data-action="close-modal">${svg('x',18)}</button>
+    </div>
+    <div class="grid2">
+      <div class="field"><div class="fl">日期</div><input class="inp" id="ca-date" value="${esc(item.date||'')}" placeholder="例：05/15"></div>
+      <div class="field"><div class="fl">時間 *</div><input class="inp" id="ca-time" value="${esc(item.time||'')}" placeholder="08:00"></div>
+    </div>
+    <div class="field"><div class="fl">對象 / 誰 *</div><input class="inp" id="ca-who" value="${esc(item.who||'')}" placeholder="例：攝影組、演員 A、全體劇組"></div>
+    <div class="field"><div class="fl">集合地點</div><input class="inp" id="ca-location" value="${esc(item.location||'')}" placeholder="地點"></div>
+    <div class="field"><div class="fl">備注 / 注意事項</div><input class="inp" id="ca-notes" value="${esc(item.notes||'')}" placeholder="例：請帶好器材、著裝要求等"></div>
+    <button class="btn-submit" data-action="save-call">${item.id?'儲存變更':'新增通告'}</button>
+  </div>`;
+}
+
+async function saveCall() {
+  const who = val('ca-who'); const time = val('ca-time');
+  if (!who || !time) return;
+  const item = { date:val('ca-date'), time, who, location:val('ca-location'), notes:val('ca-notes') };
+  let next;
+  if (state.ui.editItem) {
+    next = state.callsheet.map(s => s.id===state.ui.editItem ? {...item, id:state.ui.editItem} : s);
+  } else {
+    next = [...state.callsheet, {...item, id:`ca${Date.now()}`}];
+  }
+  next.sort((a,b)=>a.time.localeCompare(b.time));
+  state.callsheet = next; closeModal();
+  setSyncStatus('syncing'); updateSyncUI();
+  saveLocal();
+  try { await window.storage.set(KEYS.callsheet, JSON.stringify(next), true); setSyncStatus('synced'); } catch { setSyncStatus('error'); }
+  updateSyncUI(); render();
+}
+
+async function deleteCall(id) {
+  const next = state.callsheet.filter(s=>s.id!==id);
+  state.callsheet = next; setDelItem(null); closeModal();
+  saveLocal();
+  try { await window.storage.set(KEYS.callsheet, JSON.stringify(next), true); } catch {}
+  render();
+}
+
 function renderAnnCard(a, showDel=true) {
   return `<div class="card" style="margin-bottom:10px;border:1px solid ${a.important?'#e8961e28':'var(--bd)'};background:${a.important?'rgba(232,150,30,.04)':'var(--bg2)'}">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
@@ -1223,7 +1384,16 @@ document.addEventListener('click', (e) => {
       if (modal==='script') showModal(renderScriptModal());
       if (modal==='sb')     showModal(renderSbModal());
       if (modal==='ann')    showModal(renderAnnModal());
+      if (modal==='call')   showModal(renderCallModal());
       break;
+    case 'edit-call': {
+      const _call = state.callsheet.find(s=>s.id===id);
+      if (!_call) break;
+      state.ui.editItem = id;
+      showModal(renderCallModal(_call));
+      break;
+    }
+    case 'save-call': saveCall(); break;
     case 'open-info': showModal(renderInfoModal(state.info)); attachImportHandler(); break;
     case 'close-modal': closeModal(); render(); break;
 
@@ -1325,6 +1495,9 @@ async function hashStr(str) {
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
+// 記住登入天數（0 = 不記住，每次都要輸入）
+const REMEMBER_DAYS = 30;
+
 async function initPasswordGate() {
   const screen = document.getElementById('pw-screen');
   const input  = document.getElementById('pw-input');
@@ -1332,17 +1505,33 @@ async function initPasswordGate() {
   const err    = document.getElementById('pw-err');
 
   const correctHash = await hashStr(CREW_PASSWORD);
-  const stored = sessionStorage.getItem(PW_SESSION_KEY);
 
-  // Already authenticated this session
-  if (stored === correctHash) { screen.remove(); initApp(); return; }
+  // Check localStorage for saved auth
+  function isAuthed() {
+    if (REMEMBER_DAYS === 0) return false;
+    try {
+      const raw = localStorage.getItem(PW_SESSION_KEY);
+      if (!raw) return false;
+      const { hash, expires } = JSON.parse(raw);
+      return hash === correctHash && Date.now() < expires;
+    } catch(e) { return false; }
+  }
+
+  function saveAuth(hash) {
+    if (REMEMBER_DAYS === 0) return;
+    const expires = Date.now() + REMEMBER_DAYS * 24 * 60 * 60 * 1000;
+    localStorage.setItem(PW_SESSION_KEY, JSON.stringify({ hash, expires }));
+  }
+
+  // Already authenticated
+  if (isAuthed()) { screen.remove(); initApp(); return; }
 
   screen.style.display = 'flex';
 
   async function attempt() {
     const h = await hashStr(input.value);
     if (h === correctHash) {
-      sessionStorage.setItem(PW_SESSION_KEY, correctHash);
+      saveAuth(h);
       screen.style.opacity = '0';
       screen.style.transition = 'opacity .3s';
       setTimeout(() => { screen.remove(); initApp(); }, 300);

@@ -235,6 +235,54 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .mb-av.other{background:var(--c-s3);border-color:var(--c-bd2);color:var(--c-t2)}
 .mb-online{width:6px;height:6px;border-radius:50%;background:var(--c-gn);box-shadow:0 0 4px var(--c-gn);flex-shrink:0}
 
+
+/* Recording border overlay - does not affect layout */
+#rec-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:9000;
+  pointer-events:none;
+  box-shadow:inset 0 0 0 8px var(--c-rd), inset 0 0 0 9px rgba(0,0,0,.3);
+  border-radius:0;
+}
+#rec-overlay.on{display:block;}
+#rec-dot{
+  position:fixed;
+  top:14px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:9001;
+  pointer-events:none;
+  display:none;
+  align-items:center;
+  gap:6px;
+  background:rgba(217,85,85,.9);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+  padding:4px 12px;
+  border-radius:99px;
+  backdrop-filter:blur(4px);
+}
+#rec-dot.on{display:flex;}
+#rec-dot-el{width:7px;height:7px;border-radius:50%;background:#fff;animation:bl .8s ease-in-out infinite;}
+
+
+/* QR Modal */
+#qr-modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;animation:fi .15s}
+#qr-modal-wrap.on{display:flex}
+#qr-modal-box{background:var(--c-s1);border-radius:var(--r3);border:1px solid var(--c-bd2);padding:24px;text-align:center;max-width:320px;width:100%;animation:bi .2s}
+#qr-canvas{border-radius:var(--r2);background:#fff;padding:12px;margin:16px auto;display:block}
+
+
+/* Avatar */
+.av-img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.av-upload{position:relative;cursor:pointer}
+.av-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.av-upload:hover::after{content:'✎';position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+
 </style>
 </head>
 <body>
@@ -242,7 +290,7 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 <div id="pw">
   <div id="pw-box">
     <div id="pw-logo">PROD<b style="color:var(--c-s4);font-weight:400">.</b>CREW</div>
-    <div id="pw-sub">劇組管理系統</div>
+    <div id="pw-sub" style="margin-bottom:8px">劇組管理系統</div><div style="font-size:11px;color:var(--c-am);margin-bottom:24px;letter-spacing:.04em">預設密碼：0000</div>
     <input id="pw-inp" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" maxlength="32" autocomplete="off">
     <button class="btn btn-primary btn-full" id="pw-btn">進入</button>
     <div id="pw-err">密碼錯誤，請重試</div>
@@ -253,7 +301,17 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   <div id="pf-box">
     <div style="font-family:var(--fd);font-size:28px;color:#fff;letter-spacing:.05em;margin-bottom:4px">你是誰？</div>
     <div style="font-size:12px;color:var(--c-t3);margin-bottom:26px">設定後自動填入公告發布人</div>
-    <div class="field"><div class="fl">你的姓名</div><input id="pf-name" class="inp" placeholder="輸入真實姓名" maxlength="20"></div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <label class="av-upload" style="width:64px;height:64px;border-radius:50%;background:var(--c-am2);border:2px solid var(--c-am3);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center">
+        <div id="pf-av-preview" style="font-size:24px;font-weight:700;color:var(--c-am);line-height:1">?</div>
+        <input type="file" id="pf-av-input" accept="image/*" style="display:none">
+      </label>
+      <div style="flex:1">
+        <div style="font-size:11px;color:var(--c-t4);margin-bottom:6px">點頭像上傳照片</div>
+        <div class="fl">你的姓名</div>
+        <input id="pf-name" class="inp" placeholder="輸入真實姓名" maxlength="20">
+      </div>
+    </div>
     <div class="field" style="margin-top:14px"><div class="fl">所屬組別</div>
       <div class="dept-grid" id="dept-grid">
         <button class="dept-btn" data-dept="導演組">導演組</button>
@@ -282,6 +340,8 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   </div>
 </div>
 <!-- App -->
+<div id="rec-overlay"></div>
+<div id="rec-dot"><span id="rec-dot-el"></span> REC</div>
 <div id="app">
   <nav class="sidebar">
     <div class="sb-top"><div class="sb-mark">PROD<b>.</b>CREW</div><div class="sb-proj" id="sb-proj">設定項目資訊</div></div>
@@ -314,6 +374,17 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
         <button style="width:32px;height:32px;border-radius:50%;background:var(--c-s2);border:1px solid var(--c-bd2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;flex-shrink:0" data-nav="ann">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-t3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
           <span id="ann-badge" style="display:none;position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--c-rd);border:1.5px solid #080808"></span>
+        </button>
+        <button id="qr-btn" style="width:32px;height:32px;border-radius:50%;background:var(--c-s2);border:1px solid var(--c-bd2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" title="QR Code">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--c-t3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <line x1="14" y1="14" x2="14" y2="14"/><line x1="17" y1="14" x2="17" y2="14"/>
+            <line x1="20" y1="14" x2="20" y2="14"/><line x1="14" y1="17" x2="14" y2="17"/>
+            <line x1="17" y1="17" x2="17" y2="17"/><line x1="20" y1="17" x2="20" y2="17"/>
+            <line x1="14" y1="20" x2="14" y2="20"/><line x1="17" y1="20" x2="17" y2="20"/>
+            <line x1="20" y1="20" x2="20" y2="20"/>
+          </svg>
         </button>
         <button id="fs-btn" style="width:32px;height:32px;border-radius:50%;background:var(--c-s2);border:1px solid var(--c-bd2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" title="全螢幕">
           <svg id="fs-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--c-t3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -370,7 +441,7 @@ const TABS=[
 
 // ── Config ──
 const FB='https://corsa2025zg1001-default-rtdb.firebaseio.com';
-const PWD='corsa2025';
+const PWD='0000';
 const ADM='1001';
 const LS='pc:v5';
 
@@ -443,10 +514,14 @@ setInterval(pull,5000);
 
 // ── Profile ──
 function loadP(){try{const r=localStorage.getItem('pc:prof');if(r)prof=JSON.parse(r);}catch(e){}}
-function saveP(n,d){prof={...prof,name:n,dept:d};localStorage.setItem('pc:prof',JSON.stringify(prof));updateProfUI();}
+function saveP(n,d,av){prof={...prof,name:n,dept:d};if(av)prof.avatar=av;localStorage.setItem('pc:prof',JSON.stringify(prof));updateProfUI();}
 function updateProfUI(){
   const ini=prof.name?prof.name[0].toUpperCase():'?';
-  ['sb-av','tb-av'].forEach(id=>{if($(id))$(id).textContent=ini;});
+  ['sb-av','tb-av'].forEach(id=>{
+    const el=$(id);if(!el)return;
+    if(prof.avatar){el.innerHTML=`<img src="${prof.avatar}" class="av-img">`;}
+    else{el.textContent=ini;}
+  });
   if($('sb-nm'))$('sb-nm').textContent=prof.name||'設定個人資訊';
   if($('sb-dp'))$('sb-dp').innerHTML=(prof.dept||'點此設定')+(prof.isAdmin?` <span class="adm-badge">管理員</span>`:'');
   if($('sb-proj'))$('sb-proj').textContent=D.info.title||'設定項目資訊';
@@ -468,8 +543,8 @@ async function initPW(){
       $('pw').style.transition='opacity .3s';$('pw').style.opacity='0';
       setTimeout(()=>{$('pw').remove();initApp();},300);
     }else{
-      $('pw-err').classList.add('on');$('pw-inp').classList.add('sk');$('pw-inp').value='';
-      setTimeout(()=>{$('pw-inp').classList.remove('sk');$('pw-err').classList.remove('on');},2000);
+      const pe=$('pw-err'),pi=$('pw-inp');if(pe)pe.classList.add('on');if(pi){pi.classList.add('sk');pi.value='';}
+      setTimeout(()=>{if(pi)pi.classList.remove('sk');if(pe)pe.classList.remove('on');},2000);
     }
   };
   $('pw-btn').onclick=go;
@@ -478,7 +553,7 @@ async function initPW(){
 }
 
 // ── Profile Setup ──
-$('dept-grid').onclick=e=>{
+const dg=$('dept-grid');if(dg)dg.onclick=e=>{
   const b=e.target.closest('.dept-btn');if(!b)return;
   document.querySelectorAll('.dept-btn').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');
@@ -486,13 +561,35 @@ $('dept-grid').onclick=e=>{
 $('pf-confirm').onclick=()=>{
   const n=$('pf-name').value.trim();if(!n){$('pf-name').focus();return;}
   const d=document.querySelector('.dept-btn.on')?.dataset.dept||'';
-  saveP(n,d);$('pf-screen').classList.remove('on');
+  saveP(n,d,window._pendingAvatar||prof.avatar||null);
+  window._pendingAvatar=null;
+  const pfs=$('pf-screen');if(pfs)pfs.classList.remove('on');
 };
 $('pf-name').onkeydown=e=>{if(e.key==='Enter')$('pf-confirm').click();};
+// Avatar upload preview
+document.addEventListener('change',e=>{
+  if(e.target.id==='pf-av-input'){
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      window._pendingAvatar=ev.target.result;
+      const prev=$('pf-av-preview');
+      if(prev){prev.innerHTML=`<img src="${ev.target.result}" class="av-img">`;}
+    };
+    reader.readAsDataURL(file);
+  }
+});
 function showPF(){
   $('pf-name').value=prof.name||'';
   document.querySelectorAll('.dept-btn').forEach(b=>b.classList.toggle('on',b.dataset.dept===prof.dept));
-  $('pf-screen').classList.add('on');setTimeout(()=>$('pf-name').focus(),100);
+  const pfsc=$('pf-screen');if(pfsc)pfsc.classList.add('on');
+  // Restore avatar preview
+  const prev=$('pf-av-preview');
+  if(prev){
+    if(prof.avatar)prev.innerHTML=`<img src="${prof.avatar}" class="av-img">`;
+    else{const ini=prof.name?prof.name[0].toUpperCase():'?';prev.textContent=ini;}
+  }
+  setTimeout(()=>{const pn=$('pf-name');if(pn)pn.focus();},100);
 }
 $('pf-chip').onclick=showPF;
 $('tb-av').onclick=showPF;
@@ -509,10 +606,10 @@ function nextBc(){
   $('bc-tm').textContent=a.time?`發布於 ${a.time}`:'';
   $('bc-cn').textContent=a.content;
   $('bc-ct').textContent=bcQ.length>0?`還有 ${bcQ.length} 則`:'';
-  $('bc').classList.add('on');
+  const bc=$('bc');if(bc)bc.classList.add('on');
   if(a.important&&navigator.vibrate)navigator.vibrate([200,100,200]);
 }
-function hideBc(){$('bc').classList.remove('on');setTimeout(()=>{if(bcQ.length)nextBc();else bcOn=false;},220);}
+function hideBc(){const bc=$('bc');if(bc)bc.classList.remove('on');setTimeout(()=>{if(bcQ.length)nextBc();else bcOn=false;},220);}
 $('bc-ok').onclick=hideBc;
 $('bc-view').onclick=()=>{hideBc();D.tab='ann';render();};
 $('bc-bg').onclick=()=>{const imp=$('bc-imp');if(imp&&imp.style.display==='block')return;hideBc();};
@@ -523,7 +620,7 @@ async function heartbeat(){
   try{
     const k=prof.name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g,'_');
     await fetch(`${FB}/online/${k}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name:prof.name,dept:prof.dept||'',isAdmin:prof.isAdmin||false,ts:Date.now()})});
+      body:JSON.stringify({name:prof.name,dept:prof.dept||'',isAdmin:prof.isAdmin||false,avatar:prof.avatar||null,ts:Date.now()})});
   }catch{}
 }
 async function fetchOnline(){
@@ -541,13 +638,11 @@ function render(){
   $('bnav').innerHTML=TABS.map(t=>`<button class="bn${D.tab===t.id?' on':''}" data-nav="${t.id}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[t.icon]||''}</svg><span>${t.label}</span></button>`).join('');
   $('tb-title').textContent=TABS.find(t=>t.id===D.tab)?.label||'';
   updateSync();updateProfUI();
-  // Recording border
+  // Recording border (overlay, doesn't affect layout)
   const rec=D.shots.some(s=>s.status==='shooting');
-  const app=$('app');
-  if(app){
-    app.style.border=rec?'10px solid var(--c-rd)':'';
-    app.style.boxSizing=rec?'border-box':'';
-  }
+  const ro=$('rec-overlay'),rd=$('rec-dot');
+  if(ro)ro.classList.toggle('on',rec);
+  if(rd)rd.classList.toggle('on',rec);
   // Ann badge
   const annBadge=$('ann-badge');
   if(annBadge)annBadge.style.display=D.ann.length>0&&D.tab!=='ann'?'block':'none';
@@ -889,8 +984,8 @@ function shotModal(s={}){
   const slOpts=Array.from({length:99},(_,i)=>{const n=String(i+1).padStart(2,'0');return`<option value="${n}"${s.slate===n?' selected':''}>${n}</option>`;}).join('');
   const tkOpts=Array.from({length:99},(_,i)=>`<option value="${i+1}"${s.take===String(i+1)?' selected':''}>${i+1}</option>`).join('');
   return sheetWrap(s.id?'編輯鏡頭':'新增鏡頭',`
-    <div class="g3">${f('場次 Scene',`<select class="inp" id="s-sc">${scOpts}</select>`)}${f('鏡號 Slate',`<select class="inp" id="s-sl">${slOpts}</select>`)}${f('次數 Take',`<select class="inp" id="s-tk">${tkOpts}</select>`)}</div>
-    ${f('場景名稱',inp('s-st',s.sceneTitle,'例：賽道清晨'))}
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">${f('場次 Scene',`<select class="inp" id="s-sc">${scOpts}</select>`)}${f('鏡號 Slate',`<select class="inp" id="s-sl">${slOpts}</select>`)}${f('次數 Take',`<select class="inp" id="s-tk">${tkOpts}</select>`)}</div>
+    ${f('場景名稱',inp('s-st',s.sceneTitle,'例：學校操場'))}
     ${f('畫面描述 *',inp('s-ds',s.desc,'描述這個鏡頭'))}
     <div class="g3">${f('鏡別',inp('s-tp',s.type,'WS/CU'))}${f('鏡頭',inp('s-ln',s.lens,'50mm'))}${f('運鏡',inp('s-dr',s.dir,'固定'))}</div>
     ${f('備注',inp('s-nt',s.notes,''))}
@@ -1212,5 +1307,57 @@ function updateClock(){
 updateClock();
 setInterval(updateClock, 1000);
 
+// ── QR Code ──
+function drawQR(canvas, text) {
+  // Use QR Server API to generate QR image
+  const url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(text)}&bgcolor=ffffff&color=000000&margin=10`;
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => { ctx.clearRect(0,0,200,200); ctx.drawImage(img,0,0,200,200); };
+  img.onerror = () => {
+    // Fallback: draw simple pattern
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0,0,200,200);
+    ctx.fillStyle = '#333';
+    ctx.font = '12px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('需連線才能產生', 100, 95);
+    ctx.fillText('QR Code', 100, 115);
+  };
+  img.src = url;
+}
+
+function showQR() {
+  const wrap = $('qr-modal-wrap');
+  const canvas = $('qr-canvas');
+  const label = $('qr-url-label');
+  if(!wrap || !canvas) return;
+  const pageUrl = window.location.href.split('?')[0];
+  if(label) label.textContent = pageUrl;
+  drawQR(canvas, pageUrl);
+  wrap.classList.add('on');
+}
+
+document.addEventListener('click', e => {
+  if(e.target.closest('#qr-btn')) showQR();
+  if(e.target.id === 'qr-close-btn' || e.target.id === 'qr-modal-wrap') {
+    const w = $('qr-modal-wrap');
+    if(w) w.classList.remove('on');
+  }
+});
+
 initPW();
-</script></body></html>
+</script>
+<!-- QR Modal -->
+<div id="qr-modal-wrap">
+  <div id="qr-modal-box">
+    <div style="font-family:var(--fd);font-size:20px;color:#fff;letter-spacing:.06em;margin-bottom:4px">掃碼加入劇組</div>
+    <div style="font-size:12px;color:var(--c-t3);margin-bottom:4px" id="qr-url-label"></div>
+    <canvas id="qr-canvas" width="200" height="200"></canvas>
+    <div style="font-size:11px;color:var(--c-t4);margin-bottom:16px">掃描後輸入密碼 <span style="color:var(--c-am);font-weight:600">0000</span> 即可加入</div>
+    <button class="btn btn-primary btn-full" id="qr-close-btn">關閉</button>
+  </div>
+</div>
+
+</body></html>

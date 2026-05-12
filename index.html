@@ -210,6 +210,7 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 @media(max-width:767px){
   :root{--tb:46px;--bn:58px}
   .sidebar{display:none}
+  #sb-members{display:none}
   .tb-title{display:none}
   .content{padding-bottom:var(--bn)}
   .page{padding:14px 12px 18px}
@@ -226,6 +227,14 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   :root{--sw:240px}
   .page{padding:22px 26px}
 }
+
+/* Members sidebar */
+.mb-item{display:flex;align-items:center;gap:7px;padding:5px 4px;border-radius:var(--r);transition:background .1s}
+.mb-item:hover{background:var(--c-s2)}
+.mb-av{width:24px;height:24px;border-radius:50%;background:var(--c-am2);border:1px solid var(--c-am3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--c-am);flex-shrink:0}
+.mb-av.other{background:var(--c-s3);border-color:var(--c-bd2);color:var(--c-t2)}
+.mb-online{width:6px;height:6px;border-radius:50%;background:var(--c-gn);box-shadow:0 0 4px var(--c-gn);flex-shrink:0}
+
 </style>
 </head>
 <body>
@@ -277,6 +286,13 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   <nav class="sidebar">
     <div class="sb-top"><div class="sb-mark">PROD<b>.</b>CREW</div><div class="sb-proj" id="sb-proj">設定項目資訊</div></div>
     <div class="sb-nav" id="sb-nav"></div>
+    <div id="sb-members" style="padding:8px;border-top:1px solid var(--c-bd);border-bottom:1px solid var(--c-bd)">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 4px 8px">
+        <div style="font-size:10px;color:var(--c-t4);letter-spacing:.08em;text-transform:uppercase">在線成員</div>
+        <div id="sb-member-count" style="font-size:10px;color:var(--c-t4)"></div>
+      </div>
+      <div id="sb-member-list" style="display:flex;flex-direction:column;gap:5px"></div>
+    </div>
     <div class="sb-foot">
       <div class="pf-chip" id="pf-chip">
         <div class="pf-av" id="sb-av">?</div>
@@ -288,7 +304,10 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   </nav>
   <div class="main">
     <div class="topbar" style="display:flex;align-items:center;justify-content:space-between">
-      <div class="tb-logo">PROD<i>.</i>CREW</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="tb-logo">PROD<i>.</i>CREW</div>
+        <div id="tb-clock" style="font-family:var(--fd);font-size:20px;color:var(--c-tx);letter-spacing:.06em;line-height:1"></div>
+      </div>
       <div class="tb-title" id="tb-title" style="flex:1;padding:0 10px"></div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto">
         <div id="sync-tb"></div>
@@ -414,6 +433,7 @@ async function pull(){
     const prevAnn=new Set((D.ann||[]).map(a=>a.id));
     (d.ann||[]).filter(a=>!prevAnn.has(a.id)).forEach(a=>{if(D._ts>0)showBc(a);});
     const t=D.tab;
+    fetchOnline().then(()=>{if(typeof updateMemberList==="function")updateMemberList();});
     Object.assign(D,{shots:d.shots||[],script:d.script||[],sb:d.sb||[],ann:d.ann||[],call:d.call||[],info:d.info||D.info,_ts:d._ts});
     D.tab=t;saveL();sync='synced';updateSync();render();
   }catch{sync='error';updateSync();}
@@ -642,7 +662,7 @@ function renderShots(isDsk){
     list.forEach((s,i)=>{
       if(i===0||list[i-1].scene!==s.scene)
         rows+=`<tr><td colspan="8" style="padding:8px 14px 4px;font-size:9px;color:var(--c-am);letter-spacing:.1em;text-transform:uppercase;background:rgba(232,150,30,.03);border-top:1px solid var(--c-bd)">▸ 場景 ${esc(s.scene)}${s.sceneTitle?` — ${esc(s.sceneTitle)}`:''}</td></tr>`;
-      rows+=`<tr><td style="font-family:var(--fd);color:var(--c-am);font-size:14px;white-space:nowrap">${esc(s.shot||'—')}</td>
+      rows+=`<tr><td style="font-family:var(--fd);color:var(--c-am);font-size:13px;white-space:nowrap">${esc(s.scene||'')}-${esc(s.slate||'—')}<span style="color:var(--c-t3);font-size:11px"> T${esc(s.take||'—')}</span></td>
         <td><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px;color:var(--c-tx)">${esc(s.desc||'—')}</div>${s.notes?`<div style="font-size:10px;color:var(--c-t4);margin-top:1px">備注：${esc(s.notes)}</div>`:''}</td>
         <td>${esc(s.type||'—')}</td><td>${esc(s.lens||'—')}</td><td>${esc(s.dir||'—')}</td>
         <td>${badge(s.status,s.id)}</td>
@@ -675,7 +695,10 @@ function renderShots(isDsk){
       </div>`:'';
       cards+=`<div class="card ${s.sc||'sc-'+s.status}" style="margin-bottom:7px;padding:0;overflow:hidden;border-width:1.5px">
         <div class="row" style="gap:11px;padding:12px 13px;cursor:pointer" data-a="exp-shot" data-id="${esc(s.id)}">
-          <div style="width:40px;height:40px;border-radius:var(--r);background:var(--c-s1);border:1px solid var(--c-bd2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-family:var(--fd);color:var(--c-am);letter-spacing:.03em">${esc(s.shot||'—')}</div>
+          <div style="width:50px;height:50px;border-radius:var(--r);background:var(--c-s1);border:1px solid var(--c-bd2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fd);color:var(--c-am);text-align:center;padding:2px">
+            <div style="font-size:11px;letter-spacing:.03em;line-height:1.2">${esc(s.scene||'—')}-${esc(s.slate||'—')}</div>
+            <div style="font-size:9px;color:var(--c-t3);letter-spacing:.03em;margin-top:1px">T${esc(s.take||'—')}</div>
+          </div>
           <div style="flex:1;min-width:0"><div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px">${esc(s.desc||'（無描述）')}</div>
           <div style="font-size:10px;color:var(--c-t4)">${[s.type,s.lens,s.dir].filter(Boolean).map(esc).join(' · ')||'點擊展開'}</div></div>
           ${badge(s.status,s.id)}
@@ -863,9 +886,10 @@ function shotModal(s={}){
     border:1.5px solid ${(s.status||'pending')===st?ST[st].c:'var(--c-bd2)'}">
     ${ST[st].i} ${ST[st].l}</button>`).join('');
   const scOpts=Array.from({length:99},(_,i)=>`<option value="S${i+1}"${s.scene===`S${i+1}`?' selected':''}>S${i+1}</option>`).join('');
-  const tkOpts=Array.from({length:99},(_,i)=>`<option value="Take ${i+1}"${s.shot===`Take ${i+1}`?' selected':''}>Take ${i+1}</option>`).join('');
+  const slOpts=Array.from({length:99},(_,i)=>{const n=String(i+1).padStart(2,'0');return`<option value="${n}"${s.slate===n?' selected':''}>${n}</option>`;}).join('');
+  const tkOpts=Array.from({length:99},(_,i)=>`<option value="${i+1}"${s.take===String(i+1)?' selected':''}>${i+1}</option>`).join('');
   return sheetWrap(s.id?'編輯鏡頭':'新增鏡頭',`
-    <div class="g2">${f('場景',`<select class="inp" id="s-sc">${scOpts}</select>`)}${f('Take',`<select class="inp" id="s-sh">${tkOpts}</select>`)}</div>
+    <div class="g3">${f('場次 Scene',`<select class="inp" id="s-sc">${scOpts}</select>`)}${f('鏡號 Slate',`<select class="inp" id="s-sl">${slOpts}</select>`)}${f('次數 Take',`<select class="inp" id="s-tk">${tkOpts}</select>`)}</div>
     ${f('場景名稱',inp('s-st',s.sceneTitle,'例：賽道清晨'))}
     ${f('畫面描述 *',inp('s-ds',s.desc,'描述這個鏡頭'))}
     <div class="g3">${f('鏡別',inp('s-tp',s.type,'WS/CU'))}${f('鏡頭',inp('s-ln',s.lens,'50mm'))}${f('運鏡',inp('s-dr',s.dir,'固定'))}</div>
@@ -876,7 +900,7 @@ function shotModal(s={}){
 }
 function saveShot(){
   if(!val('s-ds'))return;
-  const item={shot:val('s-sh'),scene:val('s-sc'),sceneTitle:val('s-st'),desc:val('s-ds'),type:val('s-tp'),lens:val('s-ln'),dir:val('s-dr'),notes:val('s-nt'),status:val('s-st2')||'pending'};
+  const item={scene:val('s-sc'),slate:val('s-sl'),take:val('s-tk'),shot:`${val('s-sc')}-${val('s-sl')}-T${val('s-tk')}`,sceneTitle:val('s-st'),desc:val('s-ds'),type:val('s-tp'),lens:val('s-ln'),dir:val('s-dr'),notes:val('s-nt'),status:val('s-st2')||'pending',addedBy:prof.name};
   D.shots=uiState.editId?D.shots.map(s=>s.id===uiState.editId?{...item,id:uiState.editId}:s):[...D.shots,{...item,id:uid()}];
   closeM();save();render();
 }
@@ -894,7 +918,7 @@ function scriptModal(s={}){
 }
 function saveScript(){
   if(!val('sc-ti'))return;
-  const item={scene:val('sc-sc'),title:val('sc-ti'),page:val('sc-pg'),int:val('sc-in')||'INT',time:val('sc-tm'),cast:val('sc-ca').split(/[,，、]/).map(s=>s.trim()).filter(Boolean),content:val('sc-co')};
+  const item={scene:val('sc-sc'),title:val('sc-ti'),page:val('sc-pg'),int:val('sc-in')||'INT',time:val('sc-tm'),cast:val('sc-ca').split(/[,，、]/).map(s=>s.trim()).filter(Boolean),content:val('sc-co'),addedBy:prof.name};
   D.script=uiState.editId?D.script.map(s=>s.id===uiState.editId?{...item,id:uiState.editId}:s):[...D.script,{...item,id:uid()}];
   if(uiState.activeScript?.id===uiState.editId)uiState.activeScript={...item,id:uiState.editId};
   closeM();save();render();
@@ -913,7 +937,7 @@ function sbModal(s={}){
 }
 function saveSb(){
   if(!val('sb-sh'))return;
-  const item={scene:val('sb-sc'),shot:val('sb-sh'),frame:val('sb-fr'),desc:val('sb-ds'),camera:val('sb-cm'),move:val('sb-mv'),dur:val('sb-dr'),mood:val('sb-md'),sfx:val('sb-sx')};
+  const item={scene:val('sb-sc'),shot:val('sb-sh'),frame:val('sb-fr'),desc:val('sb-ds'),camera:val('sb-cm'),move:val('sb-mv'),dur:val('sb-dr'),mood:val('sb-md'),sfx:val('sb-sx'),addedBy:prof.name};
   D.sb=uiState.editId?D.sb.map(s=>s.id===uiState.editId?{...item,id:uiState.editId}:s):[...D.sb,{...item,id:uid()}];
   closeM();save();render();
 }
@@ -929,7 +953,7 @@ function callModal(c={}){
 }
 function saveCall(){
   if(!val('ca-wh')||!val('ca-tm'))return;
-  const item={date:val('ca-dt'),time:val('ca-tm'),who:val('ca-wh'),location:val('ca-lc'),notes:val('ca-nt')};
+  const item={date:val('ca-dt'),time:val('ca-tm'),who:val('ca-wh'),location:val('ca-lc'),notes:val('ca-nt'),addedBy:prof.name};
   let next=uiState.editId?D.call.map(c=>c.id===uiState.editId?{...item,id:uiState.editId}:c):[...D.call,{...item,id:uid()}];
   next.sort((a,b)=>a.time.localeCompare(b.time));
   D.call=next;closeM();save();render();
@@ -941,9 +965,9 @@ function annModal(){
   return sheetWrap('發佈公告',`
     <div class="g2">${f('你的姓名',inp('an-au',prof.name,'姓名'))}${f('身分組別',`<select class="inp" id="an-ro"><option value="">選擇身分</option>${dOpts}</select>`)}</div>
     ${f('公告內容 *',ta('an-cn','','輸入公告內容…',4))}
-    <label style="display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:4px">
-      <input type="checkbox" id="an-im" style="width:17px;height:17px;accent-color:var(--c-am)">
-      <span style="font-size:13px;color:var(--c-t2)">標記為重要公告</span>
+    <label style="display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:4px;${!prof.isAdmin?'opacity:.4;pointer-events:none':''}">
+      <input type="checkbox" id="an-im" style="width:17px;height:17px;accent-color:var(--c-am)" ${!prof.isAdmin?'disabled':''}>
+      <span style="font-size:13px;color:var(--c-t2)">標記為重要公告 ${!prof.isAdmin?'<span style="font-size:10px;color:var(--c-t4)">（管理員限定）</span>':''}</span>
     </label>
   `,'save-ann','發佈公告');
 }
@@ -975,7 +999,7 @@ function infoModal(){
     </div>
     <div style="margin-top:10px;padding:13px;background:var(--c-bg);border-radius:var(--r);border:1px solid var(--c-bd)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="font-size:10px;color:var(--c-gn);font-weight:600">目前在線使用者</div>
+        <div style="font-size:10px;color:var(--c-gn);font-weight:600">目前在線成員</div>
         <button class="btn btn-ghost btn-sm" id="refresh-online">更新</button>
       </div>
       <div id="online-list" style="font-size:12px;color:var(--c-t4)">點更新載入</div>
@@ -987,6 +1011,15 @@ function infoModal(){
   `,'save-info','儲存設定');
 }
 function saveInfo(){
+  if(!prof.isAdmin){
+    showM(`<div class="dialog">
+      <div style="font-size:28px;margin-bottom:12px">🔒</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:8px">需要管理員權限</div>
+      <div style="font-size:13px;color:var(--c-t3);margin-bottom:20px">修改項目設定需要管理員身分</div>
+      <button class="btn btn-primary btn-full" data-a="close-modal">知道了</button>
+    </div>`,true);
+    return;
+  }
   D.info={title:val('in-ti'),subtitle:val('in-sb'),day:val('in-dy'),days:val('in-ds'),dir:val('in-dr'),loc:val('in-lc')};
   closeM();save();render();
 }
@@ -1005,6 +1038,23 @@ function delDialog(type,id){
   </div>`,true);
 }
 function confirmDel(type,id){
+  // Permission: only admin can delete others' content
+  const itemAuthor = {
+    shot: D.shots.find(s=>s.id===id)?.addedBy,
+    script: D.script.find(s=>s.id===id)?.addedBy,
+    sb: D.sb.find(s=>s.id===id)?.addedBy,
+    call: D.call.find(s=>s.id===id)?.addedBy,
+    ann: D.ann.find(s=>s.id===id)?.author,
+  }[type];
+  if(itemAuthor && itemAuthor !== prof.name && !prof.isAdmin){
+    showM(`<div class="dialog">
+      <div style="font-size:28px;margin-bottom:12px">🔒</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:8px">權限不足</div>
+      <div style="font-size:13px;color:var(--c-t3);margin-bottom:20px">只能刪除自己新增的內容<br>管理員可刪除任何人的內容</div>
+      <button class="btn btn-primary btn-full" data-a="close-modal">知道了</button>
+    </div>`,true);
+    return;
+  }
   if(type==='shot'){D.shots=D.shots.filter(s=>s.id!==id);if(uiState.expShot===id)uiState.expShot=null;}
   else if(type==='script'){D.script=D.script.filter(s=>s.id!==id);if(uiState.activeScript?.id===id)uiState.activeScript=null;}
   else if(type==='sb'){D.sb=D.sb.filter(s=>s.id!==id);if(uiState.expSb===id)uiState.expSb=null;}
@@ -1044,7 +1094,7 @@ document.addEventListener('click',e=>{
     case 'exp-sb':uiState.expSb=uiState.expSb===id?null:id;render();break;
     case 'cycle':{const s=D.shots.find(x=>x.id===id);if(!s)break;e.stopPropagation();D.shots=D.shots.map(x=>x.id===id?{...x,status:STO[(STO.indexOf(x.status)+1)%STO.length]}:x);save();render();break;}
     case 'set-st':D.shots=D.shots.map(x=>x.id===id?{...x,status:st}:x);save();render();break;
-    case 'edit-shot':{uiState.editId=id;const s=D.shots.find(x=>x.id===id);showM(shotModal(s||{}));break;}
+    case 'edit-shot':{uiState.editId=id;const s=D.shots.find(x=>x.id===id);if(s&&!s.slate){const m=s.shot?.match(/S(\d+)-(\d+)-T(\d+)/);if(m){s.slate=m[2];s.take=m[3];}}showM(shotModal(s||{}));break;}
     case 'edit-sc':{uiState.editId=id;const s=D.script.find(x=>x.id===id);showM(scriptModal(s||{}));break;}
     case 'edit-sb':{uiState.editId=id;const s=D.sb.find(x=>x.id===id);showM(sbModal(s||{}));break;}
     case 'edit-call':{uiState.editId=id;const c=D.call.find(x=>x.id===id);showM(callModal(c||{}));break;}
@@ -1101,7 +1151,7 @@ function initApp(){
   loadP();loadL();render();updateSync();updateProfUI();
   pull();
   if(!prof.name)setTimeout(showPF,400);
-  heartbeat();setInterval(heartbeat,30000);
+  heartbeat();setInterval(heartbeat,30000);setTimeout(()=>{fetchOnline().then(()=>{if(typeof updateMemberList==="function")updateMemberList();});},1000);
   setInterval(pull,5000);
   if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
 }
@@ -1146,6 +1196,21 @@ document.addEventListener('fullscreenchange',()=>{
   const btn=$('fs-btn');
   if(btn)btn.style.borderColor=isFS?'var(--c-am3)':'var(--c-bd2)';
 });
+
+// ── Clock ──
+function updateClock(){
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  const t = `${h}:${m}:${s}`;
+  const tb = document.getElementById('tb-clock');
+  const sb = document.getElementById('sb-clock');
+  if(tb) tb.textContent = t;
+  if(sb) sb.textContent = t;
+}
+updateClock();
+setInterval(updateClock, 1000);
 
 initPW();
 </script></body></html>

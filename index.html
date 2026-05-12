@@ -283,6 +283,9 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .av-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .av-upload:hover::after{content:'✎';position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
 
+
+
+
 </style>
 </head>
 <body>
@@ -447,7 +450,7 @@ const LS='pc:v5';
 
 // ── State ──
 let D={tab:'dash',shots:[],script:[],sb:[],ann:[],call:[],info:{title:'',subtitle:'',day:'',days:'',dir:'',loc:''},_ts:0};
-let uiState={filter:'all',expShot:null,expSb:null,activeScript:null,editId:null};
+let uiState={filter:'all',expShot:null,expSb:null,expSlate:null,activeScript:null,editId:null};
 let prof={name:'',dept:'',isAdmin:false};
 let sync='local';
 let bcQ=[];let bcOn=false;
@@ -762,6 +765,7 @@ function renderShots(isDsk){
         <td>${esc(s.type||'—')}</td><td>${esc(s.lens||'—')}</td><td>${esc(s.dir||'—')}</td>
         <td>${badge(s.status,s.id)}</td>
         <td><div class="row" style="gap:4px">
+          <button class="btn-icon-sm" style="color:var(--c-am);font-weight:700;font-size:16px;line-height:1;padding:3px 9px" data-a="add-take" data-id="${esc(s.id)}" title="新增下一個Take">+</button>
           <button class="btn-icon-sm" data-a="edit-shot" data-id="${esc(s.id)}">${ic('edit',13)}</button>
           <button class="btn-icon-sm" style="color:var(--c-rd)" data-a="del" data-type="shot" data-id="${esc(s.id)}">${ic('trash',13)}</button>
         </div></td></tr>`;
@@ -770,34 +774,73 @@ function renderShots(isDsk){
       <table class="tbl"><thead><tr><th>編號</th><th>描述</th><th>鏡別</th><th>鏡頭</th><th>運鏡</th><th>狀態</th><th></th></tr></thead>
       <tbody>${rows}</tbody></table></div></div>`;
   } else {
+    // Group by scene → slate
     let cards='';
-    list.forEach((s,i)=>{
-      const show=i===0||list[i-1].scene!==s.scene;
-      const exp=uiState.expShot===s.id;
-      if(show&&s.scene)cards+=`<div style="font-size:9px;color:var(--c-am);letter-spacing:.1em;text-transform:uppercase;margin:${i?'14px':0} 0 7px">▸ 場景 ${esc(s.scene)}${s.sceneTitle?` — ${esc(s.sceneTitle)}`:''}</div>`;
-      const expH=exp?`<div style="padding:0 13px 12px;border-top:1px solid var(--c-bd)">
-        <div class="g3" style="gap:7px;margin-top:10px">
-          ${[['鏡別',s.type],['鏡頭',s.lens],['運鏡',s.dir]].map(([l,v])=>`<div style="background:var(--c-s1);border-radius:var(--r);padding:7px 9px"><div style="font-size:9px;color:var(--c-t4);margin-bottom:2px">${l}</div><div style="font-size:12px;color:var(--c-t2)">${esc(v||'—')}</div></div>`).join('')}
-        </div>
-        ${s.notes?`<div style="background:var(--c-s1);border-radius:var(--r);padding:8px 10px;margin-top:7px"><div style="font-size:9px;color:var(--c-t4);margin-bottom:2px">備注</div><div style="font-size:12px;color:var(--c-t2)">${esc(s.notes)}</div></div>`:''}
-        <div class="row" style="gap:5px;flex-wrap:wrap;margin-top:10px">
-          ${STO.map(st=>`<button class="badge ${ST[st].cl}" data-a="set-st" data-id="${esc(s.id)}" data-st="${st}" style="${s.status===st?'':'opacity:.45'}">${ST[st].i} ${ST[st].l}</button>`).join('')}
-        </div>
-        <div class="row" style="gap:7px;margin-top:10px">
-          <button class="btn btn-ghost btn-sm" data-a="edit-shot" data-id="${esc(s.id)}">${ic('edit',12)} 編輯</button>
-          <button class="btn btn-danger btn-sm" data-a="del" data-type="shot" data-id="${esc(s.id)}">${ic('trash',12)} 刪除</button>
-        </div>
-      </div>`:'';
-      cards+=`<div class="card ${s.sc||'sc-'+s.status}" style="margin-bottom:7px;padding:0;overflow:hidden;border-width:1.5px">
-        <div class="row" style="gap:11px;padding:12px 13px;cursor:pointer" data-a="exp-shot" data-id="${esc(s.id)}">
-          <div style="width:50px;height:50px;border-radius:var(--r);background:var(--c-s1);border:1px solid var(--c-bd2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fd);color:var(--c-am);text-align:center;padding:2px">
-            <div style="font-size:11px;letter-spacing:.03em;line-height:1.2">${esc(s.scene||'—')}-${esc(s.slate||'—')}</div>
-            <div style="font-size:9px;color:var(--c-t3);letter-spacing:.03em;margin-top:1px">T${esc(s.take||'—')}</div>
+    const groups=[];
+    list.forEach(s=>{
+      const scKey=s.scene||'—';
+      const slKey=s.slate||'—';
+      let sg=groups.find(g=>g.scene===scKey);
+      if(!sg){sg={scene:scKey,sceneTitle:s.sceneTitle||'',slates:[]};groups.push(sg);}
+      let sl=sg.slates.find(sl=>sl.slate===slKey);
+      if(!sl){sl={slate:slKey,shots:[]};sg.slates.push(sl);}
+      sl.shots.push(s);
+    });
+
+    groups.forEach((sg,gi)=>{
+      // Scene header
+      cards+=`<div style="font-size:9px;color:var(--c-am);letter-spacing:.1em;text-transform:uppercase;margin:${gi?'16px':0} 0 8px">▸ 場景 ${esc(sg.scene)}${sg.sceneTitle?` — ${esc(sg.sceneTitle)}`:''}</div>`;
+      sg.slates.forEach(sl=>{
+        const slateKey=sg.scene+'-'+sl.slate;
+        const isSlateExp=uiState.expSlate===slateKey;
+        // Slate folder header
+        const allDone=sl.shots.every(s=>s.status==='done');
+        const hasNG=sl.shots.some(s=>s.status==='ng');
+        const isRec=sl.shots.some(s=>s.status==='shooting');
+        const foldColor=allDone?'var(--c-gn)':hasNG?'var(--c-yw)':isRec?'var(--c-rd)':'var(--c-am)';
+        const foldBg=allDone?'rgba(62,184,122,.08)':hasNG?'rgba(240,180,41,.06)':isRec?'rgba(217,85,85,.08)':'rgba(232,150,30,.06)';
+        const firstShot=sl.shots[0];
+        cards+=`<div style="background:${foldBg};border:1.5px solid ${foldColor}40;border-radius:var(--r2);margin-bottom:8px;overflow:hidden">
+          <div class="row" style="padding:11px 13px;cursor:pointer;gap:10px" data-a="exp-slate" data-slate="${esc(slateKey)}">
+            <div style="width:44px;height:44px;border-radius:var(--r);background:var(--c-s1);border:1.5px solid ${foldColor}60;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fd);color:${foldColor};text-align:center">
+              <div style="font-size:11px;letter-spacing:.02em;line-height:1.2">${esc(sg.scene)}-${esc(sl.slate)}</div>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;color:var(--c-tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(firstShot?.desc||'（無描述）')}</div>
+              <div style="font-size:10px;color:var(--c-t4);margin-top:2px">${sl.shots.length} 個 Take · ${esc([firstShot?.type,firstShot?.lens].filter(Boolean).join(' · ')||'點擊展開')}</div>
+            </div>
+            <div class="row" style="gap:5px;flex-shrink:0">
+              <button class="btn btn-primary btn-sm" style="font-size:13px;padding:4px 10px" data-a="add-take" data-id="${esc(firstShot?.id)}" title="新增Take">+</button>
+              <span style="font-size:16px;color:${foldColor};transition:transform .2s;display:block;transform:rotate(${isSlateExp?'90':'0'}deg)">›</span>
+            </div>
           </div>
-          <div style="flex:1;min-width:0"><div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px">${esc(s.desc||'（無描述）')}</div>
-          <div style="font-size:10px;color:var(--c-t4)">${[s.type,s.lens,s.dir].filter(Boolean).map(esc).join(' · ')||'點擊展開'}</div></div>
-          ${badge(s.status,s.id)}
-        </div>${expH}</div>`;
+          ${isSlateExp?`<div style="border-top:1px solid ${foldColor}30">
+            ${sl.shots.map(s=>{
+              const exp=uiState.expShot===s.id;
+              const expH=exp?`<div style="padding:0 12px 11px;background:var(--c-bg)">
+                <div class="g3" style="gap:6px;margin-top:8px">
+                  ${[['鏡別',s.type],['鏡頭',s.lens],['運鏡',s.dir]].map(([l,v])=>`<div style="background:var(--c-s2);border-radius:var(--r);padding:6px 8px"><div style="font-size:9px;color:var(--c-t4);margin-bottom:2px">${l}</div><div style="font-size:11px;color:var(--c-t2)">${esc(v||'—')}</div></div>`).join('')}
+                </div>
+                ${s.notes?`<div style="background:var(--c-s2);border-radius:var(--r);padding:7px 9px;margin-top:6px"><div style="font-size:9px;color:var(--c-t4);margin-bottom:2px">備注</div><div style="font-size:11px;color:var(--c-t2)">${esc(s.notes)}</div></div>`:''}
+                <div class="row" style="gap:5px;flex-wrap:wrap;margin-top:9px">
+                  ${STO.map(st=>`<button class="badge ${ST[st].cl}" data-a="set-st" data-id="${esc(s.id)}" data-st="${st}" style="${s.status===st?'':'opacity:.4'}">${ST[st].i} ${ST[st].l}</button>`).join('')}
+                </div>
+                <div class="row" style="gap:6px;margin-top:9px">
+                  <button class="btn btn-ghost btn-sm" data-a="edit-shot" data-id="${esc(s.id)}">${ic('edit',12)} 編輯</button>
+                  <button class="btn btn-danger btn-sm" data-a="del" data-type="shot" data-id="${esc(s.id)}">${ic('trash',12)} 刪除</button>
+                </div>
+              </div>`:'';
+              return`<div style="border-bottom:1px solid ${foldColor}20">
+                <div class="row" style="gap:10px;padding:10px 12px;cursor:pointer" data-a="exp-shot" data-id="${esc(s.id)}">
+                  <div style="width:32px;height:32px;border-radius:6px;background:var(--c-s2);border:1px solid var(--c-bd2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fd);font-size:13px;color:${foldColor}">T${esc(s.take||'?')}</div>
+                  <div style="flex:1;min-width:0;font-size:12px;color:var(--c-t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.desc||'—')}</div>
+                  ${badge(s.status,s.id)}
+                </div>${expH}
+              </div>`;
+            }).join('')}
+          </div>`:''}
+        </div>`;
+      });
     });
     body=cards;
   }
@@ -1185,10 +1228,35 @@ document.addEventListener('click',e=>{
     case 'save-call':saveCall();break;
     case 'save-ann':saveAnn();break;
     case 'save-info':saveInfo();break;
+    case 'exp-slate':{const sk=e.target.closest('[data-slate]')?.dataset.slate||id;uiState.expSlate=uiState.expSlate===sk?null:sk;render();break;}
     case 'exp-shot':uiState.expShot=uiState.expShot===id?null:id;render();break;
     case 'exp-sb':uiState.expSb=uiState.expSb===id?null:id;render();break;
     case 'cycle':{const s=D.shots.find(x=>x.id===id);if(!s)break;e.stopPropagation();D.shots=D.shots.map(x=>x.id===id?{...x,status:STO[(STO.indexOf(x.status)+1)%STO.length]}:x);save();render();break;}
     case 'set-st':D.shots=D.shots.map(x=>x.id===id?{...x,status:st}:x);save();render();break;
+    case 'add-take':{
+      const src=D.shots.find(x=>x.id===id);
+      if(!src)break;
+      // Find highest take number for this scene+slate combination
+      const sameSlateTakes=D.shots
+        .filter(x=>x.scene===src.scene&&x.slate===src.slate)
+        .map(x=>parseInt(x.take)||1);
+      const maxTake=Math.max(...sameSlateTakes);
+      const nextTake=String(maxTake+1);
+      const newShot={
+        ...src,
+        id:uid(),
+        take:nextTake,
+        shot:`${src.scene}-${src.slate}-T${nextTake}`,
+        status:'pending',
+        addedBy:prof.name,
+      };
+      // Insert after the last shot with same scene+slate
+      const lastIdx=D.shots.reduce((acc,x,i)=>x.scene===src.scene&&x.slate===src.slate?i:acc,-1);
+      const insertIdx=lastIdx>=0?lastIdx+1:D.shots.findIndex(x=>x.id===id)+1;
+      D.shots=[...D.shots.slice(0,insertIdx),newShot,...D.shots.slice(insertIdx)];
+      save();render();
+      break;
+    }
     case 'edit-shot':{uiState.editId=id;const s=D.shots.find(x=>x.id===id);if(s&&!s.slate){const m=s.shot?.match(/S(\d+)-(\d+)-T(\d+)/);if(m){s.slate=m[2];s.take=m[3];}}showM(shotModal(s||{}));break;}
     case 'edit-sc':{uiState.editId=id;const s=D.script.find(x=>x.id===id);showM(scriptModal(s||{}));break;}
     case 'edit-sb':{uiState.editId=id;const s=D.sb.find(x=>x.id===id);showM(sbModal(s||{}));break;}
@@ -1347,6 +1415,7 @@ document.addEventListener('click', e => {
   }
 });
 
+
 initPW();
 </script>
 <!-- QR Modal -->
@@ -1359,5 +1428,8 @@ initPW();
     <button class="btn btn-primary btn-full" id="qr-close-btn">關閉</button>
   </div>
 </div>
+
+
+
 
 </body></html>

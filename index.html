@@ -519,7 +519,7 @@ const TABS=[
 const FB='https://corsa2025zg1001-default-rtdb.firebaseio.com';
 const PWD='0000';
 const ADM='1001';
-const LS='pc:v5';
+let LS='pc:v5';
 
 // ── State ──
 let D={tab:'dash',shots:[],script:[],sb:[],ann:[],call:[],info:{title:'',subtitle:'',day:'',days:'',dir:'',loc:''},_ts:0};
@@ -1661,7 +1661,7 @@ function selectProject(id,name){
   if(_pullInterval){clearInterval(_pullInterval);_pullInterval=null;}
 
   currentProject={id,name};
-  LS_KEY=id?`pc:data:${id}`:'pc:data:v4';
+  LS=id?`pc:data:${id}`:'pc:v5'; // project-specific localStorage key
 
   // Full state reset - use _ts:-1 so pull ALWAYS loads fresh data
   D={tab:'dash',shots:[],script:[],sb:[],ann:[],call:[],
@@ -1670,8 +1670,9 @@ function selectProject(id,name){
   localStorage.setItem('pc:current-proj',JSON.stringify(currentProject));
   localStorage.setItem('pc:lastProj',id);
 
-  // Load localStorage cache for this project
+  // Load localStorage cache for this project (may set _ts from cache)
   loadL();
+  D._ts = -1; // Force pull from Firebase regardless of cache
 
   hideProjectScreen();
   updateProjUI();updateProfUI();render();updateSync();

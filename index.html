@@ -406,7 +406,10 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 <div id="rec-dot"><span id="rec-dot-el"></span> REC</div>
 <div id="app">
   <nav class="sidebar">
-    <div class="sb-top"><div class="sb-mark">PROD<b>.</b>CREW</div><div class="sb-proj" id="sb-proj">設定項目資訊</div></div>
+    <div class="sb-top"><div style="display:flex;align-items:baseline;gap:8px">
+        <div class="sb-mark">PROD<b>.</b>CREW</div>
+        <span style="font-size:9px;color:var(--c-t4);font-family:var(--fd);letter-spacing:.06em">v0.8.7</span>
+      </div><div class="sb-proj" id="sb-proj">設定項目資訊</div></div>
     <div class="sb-nav" id="sb-nav"></div>
     <div id="sb-members" style="padding:8px;border-top:1px solid var(--c-bd);border-bottom:1px solid var(--c-bd)">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 4px 8px">
@@ -550,7 +553,7 @@ const syncEl=s=>{
   const m={local:['#303030','本地'],synced:['var(--c-gn)','已同步'],syncing:['var(--c-am)','同步中…'],error:['var(--c-rd)','連線失敗']};
   const[c,t]=m[s]||m.local;
   const anim=s==='syncing'?'animation:bl 1s infinite':'';
-  return `<span class="sync" style="color:${c}"><span class="sync-dot" style="background:${c};box-shadow:0 0 4px ${c};${anim}"></span>${t}</span>`;
+  return `<span class="sync" style="color:${c}"><span class="sync-dot" style="background:${c};box-shadow:0 0 4px ${c};${anim}"></span><span class="sync-label" style="font-size:10px">${t}</span></span>`;
 };
 const badge=(status,id)=>{const s=ST[status]||ST.pending;return`<button class="badge ${s.cl}" data-a="cycle" data-id="${esc(id)}">${s.i} ${s.l}</button>`;};
 const f=(l,c)=>`<div class="field"><div class="fl">${l}</div>${c}</div>`;

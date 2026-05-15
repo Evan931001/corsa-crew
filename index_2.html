@@ -967,12 +967,9 @@ function renderScript(isDsk){
 
   if(isDsk) return`<div class="sp-wrap">
     <div class="sp-list">
-      <div class="sp-list-hdr" style="flex-direction:column;align-items:stretch;gap:8px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-family:var(--fd);font-size:16px;color:#fff;letter-spacing:.05em">劇本</div>
-          <button class="btn btn-primary btn-sm" data-a="open-modal" data-m="script">${ic('plus',12)} 新增</button>
-        </div>
-        <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center" onclick="showPdfUpload('script')">${ic('down',13)} 匯入 PDF</button>
+      <div class="sp-list-hdr">
+        <div style="font-family:var(--fd);font-size:16px;color:#fff;letter-spacing:.05em">劇本</div>
+        <button class="btn btn-primary btn-sm" data-a="open-modal" data-m="script">${ic('plus',12)} 新增</button>
       </div>
       <div style="flex:1;overflow-y:auto">${listHTML}</div>
     </div>
@@ -992,7 +989,7 @@ function renderScript(isDsk){
   return`<div class="page">
     <div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">劇本</div>
       <div class="row" style="gap:7px">
-        <button class="btn btn-ghost btn-sm" onclick="showPdfUpload('script')">${ic('down',13)} 匯入 PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="showPdfUpload('script')">${ic('doc',13)} PDF 匯入</button>
         <button class="btn btn-primary btn-sm" data-a="open-modal" data-m="script">${ic('plus',13)} 新增場景</button>
       </div>
     </div>
@@ -1016,7 +1013,7 @@ function renderSB(isDsk,isTab){
     </div>
     <iframe src="${sbPdf}" style="width:100%;height:60vh;border:none;background:#fff"></iframe>
   </div>`:''
-  if(!D.sb.length) return`<div class="page"><div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">分鏡板</div><div class="row" style="gap:8px"><button class="btn btn-ghost btn-sm" onclick="showPdfUpload('sb')">${ic('down',13)} 匯入 PDF</button><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="sb">${ic('plus',13)} 新增分鏡</button></div></div>${sbPdfHtml}
+  if(!D.sb.length) return`<div class="page"><div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">分鏡板</div><div class="row" style="gap:8px"><label class="btn btn-ghost btn-sm" style="cursor:pointer">📄 上傳PDF<input type="file" accept=".pdf" data-a="upload-sb-pdf" style="display:none"></label><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="sb">${ic('plus',13)} 新增分鏡</button></div></div>${sbPdfHtml}
     <div class="empty-state">${ic('film',34,'var(--c-am)')}<div class="empty-text">尚未新增任何分鏡</div><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="sb">${ic('plus',13)} 新增</button></div></div>`;
   const cards=D.sb.map(s=>{
     const exp=uiState.expSb===s.id;
@@ -1053,7 +1050,7 @@ function renderSB(isDsk,isTab){
       </div>${det}
     </div>`;
   }).join('');
-  return`<div class="page"><div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">分鏡板</div><div class="row" style="gap:8px"><button class="btn btn-ghost btn-sm" onclick="showPdfUpload('sb')">${ic('down',13)} 匯入 PDF</button><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="sb">${ic('plus',13)} 新增分鏡</button></div></div>
+  return`<div class="page"><div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">分鏡板</div><div class="row" style="gap:8px"><label class="btn btn-ghost btn-sm" style="cursor:pointer">📄 上傳PDF<input type="file" accept=".pdf" data-a="upload-sb-pdf" style="display:none"></label><button class="btn btn-primary btn-sm" data-a="open-modal" data-m="sb">${ic('plus',13)} 新增分鏡</button></div></div>
     ${sbPdfHtml}<div style="display:grid;grid-template-columns:${cols};gap:12px">${cards}</div></div>`;
 }
 
@@ -1079,7 +1076,7 @@ function renderCall(){
     <iframe src="${callPdf}" style="width:100%;height:60vh;border:none;background:#fff"></iframe>
   </div>`:''
   return`<div class="page"><div class="row-sb" style="margin-bottom:14px"><div class="pg-title" style="margin:0">通告單</div>
-    <div class="row" style="gap:8px"><button class="btn btn-ghost btn-sm" onclick="showPdfUpload('callsheet')">${ic('down',13)} 匯入 PDF</button>
+    <div class="row" style="gap:8px"><label class="btn btn-ghost btn-sm" style="cursor:pointer">📄 上傳PDF<input type="file" accept=".pdf" data-a="upload-call-pdf" style="display:none"></label>
     <button class="btn btn-primary btn-sm" data-a="open-modal" data-m="call">${ic('plus',13)} 新增</button></div></div>
     ${callPdfHtml}
     ${D.call.length?`<div class="card" style="padding:0;overflow:hidden">${rows}</div>`
@@ -1661,26 +1658,17 @@ function showPdfUpload(target){
   showM(`<div class="sheet">
     <div class="sh-bar"></div>
     <div class="sh-hdr"><div class="sh-title">匯入 PDF</div><button class="btn-icon-sm" data-a="close-modal">${ic('x',16)}</button></div>
-    <div style="background:var(--c-s2);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;border:1px solid var(--c-bd)">
-      <div style="font-size:11px;color:var(--c-am);font-weight:600;margin-bottom:5px">注意事項</div>
-      <div style="font-size:12px;color:var(--c-t3);line-height:1.7">
-        ✓ 支援<b style="color:var(--c-tx)">文字型 PDF</b>（非掃描圖片）<br>
-        ✓ 最大檔案大小：<b style="color:var(--c-tx)">20MB</b><br>
-        ✓ 系統自動擷取文字內容<br>
-        ✗ 掃描版 PDF 無法解析，請先 OCR 轉換
-      </div>
+    <div style="font-size:13px;color:var(--c-t3);margin-bottom:16px;line-height:1.6">
+      支援格式：<b style="color:var(--c-tx)">PDF</b>（文字型 PDF，非掃描圖片）<br>
+      系統會自動擷取文字內容
     </div>
-    <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:2px dashed var(--c-bd2);border-radius:var(--r2);padding:28px;cursor:pointer;background:var(--c-s1);transition:border-color .15s" id="pdf-drop-zone">
+    <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:2px dashed var(--c-bd2);border-radius:var(--r2);padding:32px;cursor:pointer;background:var(--c-s1);transition:border-color .15s" id="pdf-drop-zone">
       <span style="font-size:32px">📄</span>
       <span style="font-size:14px;color:var(--c-t2)">點擊選擇 PDF 檔案</span>
-      <span style="font-size:11px;color:var(--c-t4)">或拖曳到此區域 · 最大 20MB</span>
+      <span style="font-size:11px;color:var(--c-t4)">或拖曳到此區域</span>
       <input type="file" id="pdf-file-inp" accept=".pdf,application/pdf" style="display:none">
     </label>
-    <div class="field" style="margin-top:14px">
-      <div class="fl">備注（選填）</div>
-      <input class="inp" id="pdf-note" placeholder="例：第一幕劇本、第三版分鏡…">
-    </div>
-    <div id="pdf-status" style="margin-top:8px;font-size:12px;color:var(--c-t4);text-align:center;min-height:18px"></div>
+    <div id="pdf-status" style="margin-top:12px;font-size:12px;color:var(--c-t4);text-align:center;min-height:20px"></div>
     <input type="hidden" id="pdf-target" value="${target}">
   </div>`);
   setTimeout(()=>{
@@ -1697,18 +1685,13 @@ function showPdfUpload(target){
 
 async function handlePdfFile(file){
   const status=$('pdf-status');const target=$('pdf-target')?.value;
-  // Size limit: 20MB
-  if(file.size>20*1024*1024){
-    if(status)status.innerHTML='<span style="color:var(--c-rd)">❌ 檔案超過 20MB 限制（目前：'+( file.size/1024/1024).toFixed(1)+'MB）</span>';
-    return;
-  }
   if(status)status.innerHTML='<span style="color:var(--c-am)">⏳ 解析中…</span>';
   try{
     const text=await parsePDF(file);
     if(!text){if(status)status.innerHTML='<span style="color:var(--c-rd)">❌ 無法擷取文字（可能是掃描 PDF）</span>';return;}
-    const note=$('pdf-note')?.value?.trim()||'';
     if(target==='script'){
-      const scene={id:uid(),scene:'',title:(note||file.name.replace('.pdf','')),int:'INT',time:'',cast:[],content:text,addedBy:prof.name};
+      // Create a new script scene with the full PDF content
+      const scene={id:uid(),scene:'',title:file.name.replace('.pdf',''),int:'INT',time:'',cast:[],content:text,addedBy:prof.name};
       D.script=[...D.script,scene];
       closeM();save();render();
       if(status)status.innerHTML='';

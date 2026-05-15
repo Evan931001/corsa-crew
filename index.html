@@ -566,14 +566,14 @@ async function push(){
   sync='syncing';updateSync();
   try{
     const body={...D,_ts:Date.now()};
-    const dbKey=currentProject.id?`/proj_${currentProject.id}`:`/pc`;await fetch(FB+dbKey+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const dbKey=currentProject.id?`/projects/${currentProject.id}`:`/projects/default`;await fetch(FB+dbKey+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     D._ts=body._ts;sync='synced';
   }catch{sync='error';}
   updateSync();
 }
 async function pull(){
   try{
-    const dbKey=currentProject.id?`/proj_${currentProject.id}`:`/pc`;const r=await fetch(FB+dbKey+'.json');
+    const dbKey=currentProject.id?`/projects/${currentProject.id}`:`/projects/default`;const r=await fetch(FB+dbKey+'.json');
     if(!r.ok)throw 0;
     const d=await r.json();
     if(!d||d._ts<D._ts){sync='synced';updateSync();return;}
@@ -717,12 +717,12 @@ async function heartbeat(){
   if(!prof.name)return;
   try{
     const k=prof.name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g,'_');
-    await fetch(`${FB}/online_${currentProject?.id||'default'}/${k}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},
+    await fetch(`${FB}/online/${currentProject?.id||'default'}/${k}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({name:prof.name,dept:prof.dept||'',isAdmin:prof.isAdmin||false,avatar:prof.avatar||null,ts:Date.now()})});
   }catch{}
 }
 async function fetchOnline(){
-  try{const onlineKey=currentProject?.id?`/online_${currentProject.id}`:`/online_default`;const r=await fetch(FB+onlineKey+'.json');const d=await r.json();if(!d){onlineUsers=[];return;}const now=Date.now();onlineUsers=Object.values(d).filter(u=>now-(u.ts||0)<90000);}catch{onlineUsers=[];}
+  try{const onlineKey=currentProject?.id?`/online/${currentProject.id}`:`/online/default`;const r=await fetch(FB+onlineKey+'.json');const d=await r.json();if(!d){onlineUsers=[];return;}const now=Date.now();onlineUsers=Object.values(d).filter(u=>now-(u.ts||0)<90000);}catch{onlineUsers=[];}
 }
 
 // ── Render ──

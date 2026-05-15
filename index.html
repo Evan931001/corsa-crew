@@ -983,6 +983,7 @@ function renderScript(isDsk){
     <div class="row-sb" style="margin-bottom:14px">
       <button class="btn btn-ghost btn-sm" data-a="back-sc">${ic('back',14)} 返回</button>
       <div class="row" style="gap:7px">
+        <button class="btn btn-ghost btn-sm" onclick="showPdfUpload('script')">${ic('down',12)}</button>
         <button class="btn btn-ghost btn-sm" data-a="edit-sc" data-id="${esc(sc.id)}">${ic('edit',12)}</button>
         <button class="btn btn-danger btn-sm" data-a="del" data-type="script" data-id="${esc(sc.id)}">${ic('trash',12)}</button>
       </div>

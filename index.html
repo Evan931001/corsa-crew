@@ -622,11 +622,12 @@ async function initPW(){
   const h=await sha(PWD);
   if(isAuth(h)){
     $('pw').remove();
-    // Try to restore last project
-    const lastId=localStorage.getItem('pc:lastProj');
-    const projs=loadProjects();
-    if(lastId&&projs.find(p=>p.id===lastId)){selectProject(lastId);}
-    else{showProjScreen();}
+    // Fetch projects from Firebase first
+    fetchProjects().then(projs=>{
+      const lastId=localStorage.getItem('pc:lastProj');
+      if(lastId&&projs.find(p=>p.id===lastId)){selectProject(lastId,projs.find(p=>p.id===lastId).name);}
+      else{showProjScreen();}
+    });
     return;
   }
   $('pw').style.display='flex';
@@ -635,7 +636,10 @@ async function initPW(){
     if(t===h){
       localStorage.setItem(PW_K,JSON.stringify({hash:h,exp:Date.now()+PW_DAYS*864e5}));
       $('pw').style.transition='opacity .3s';$('pw').style.opacity='0';
-      setTimeout(()=>{$('pw').remove();showProjScreen();},300);
+      setTimeout(()=>{
+        $('pw').remove();
+        fetchProjects().then(()=>showProjScreen());
+      },300);
     }else{
       const pe=$('pw-err'),pi=$('pw-inp');if(pe)pe.classList.add('on');if(pi){pi.classList.add('sk');pi.value='';}
       setTimeout(()=>{if(pi)pi.classList.remove('sk');if(pe)pe.classList.remove('on');},2000);
@@ -1550,16 +1554,60 @@ document.addEventListener('click', e => {
 
 
 // ── Projects ──
-const PROJ_KEY='pc:projects';
-function loadProjects(){
-  try{const r=localStorage.getItem(PROJ_KEY);return r?JSON.parse(r):[];}catch{return [];}
+// ── Project list: stored in Firebase so all members share the same list ──
+const PROJ_KEY='pc:proj-cache'; // local cache only
+let _projects=[]; // in-memory cache
+
+function loadProjects(){ return _projects; }
+
+async function fetchProjects(){
+  try{
+    const r=await fetch(FB+'/proj_list.json');
+    if(!r.ok)throw 0;
+    const d=await r.json();
+    _projects=d?Object.values(d):[];
+    // Cache locally
+    localStorage.setItem(PROJ_KEY,JSON.stringify(_projects));
+    return _projects;
+  }catch{
+    // Fallback to local cache
+    try{const c=localStorage.getItem(PROJ_KEY);if(c)_projects=JSON.parse(c);}catch{}
+    return _projects;
+  }
 }
-function saveProjects(list){localStorage.setItem(PROJ_KEY,JSON.stringify(list));}
+
+async function saveProjects(list){
+  _projects=list;
+  localStorage.setItem(PROJ_KEY,JSON.stringify(list));
+  try{
+    // Save as object keyed by id for easier Firebase operations
+    const obj={};list.forEach(p=>obj[p.id]=p);
+    await fetch(FB+'/proj_list.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(obj)});
+  }catch{}
+}
+
+async function addProjectToFirebase(proj){
+  _projects=[..._projects,proj];
+  localStorage.setItem(PROJ_KEY,JSON.stringify(_projects));
+  try{
+    await fetch(`${FB}/proj_list/${proj.id}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(proj)});
+  }catch{}
+}
+
+async function removeProjectFromFirebase(id){
+  _projects=_projects.filter(p=>p.id!==id);
+  localStorage.setItem(PROJ_KEY,JSON.stringify(_projects));
+  try{
+    await fetch(`${FB}/proj_list/${id}.json`,{method:'DELETE'});
+  }catch{}
+}
 
 function showProjectScreen(){
   const el=document.getElementById('proj-screen');
   if(el)el.style.display='flex';
+  // Show cached list immediately, then refresh from Firebase
   renderProjectList();
+  fetchProjects().then(()=>renderProjectList());
 }
 function showProjScreen(){showProjectScreen();}
 function hideProjScreen(){hideProjectScreen();}
@@ -1569,7 +1617,7 @@ function hideProjectScreen(){
 }
 
 function renderProjectList(){
-  const list=loadProjects();
+  const list=loadProjects(); // uses cached _projects
   const container=document.getElementById('proj-list');
   if(!container)return;
   if(list.length===0){
@@ -1601,8 +1649,7 @@ function renderProjectList(){
       e.stopPropagation();
       const id=btn.dataset.delProj;
       if(!confirm('確認刪除此專案？此操作無法復原'))return;
-      const updated=loadProjects().filter(p=>p.id!==id);
-      saveProjects(updated);
+      removeProjectFromFirebase(id).then(()=>renderProjectList());
       if(currentProject.id===id){currentProject={id:'',name:''};}
       renderProjectList();
     });
@@ -1621,6 +1668,7 @@ function selectProject(id,name){
      info:{title:name,subtitle:'',day:'',days:'',dir:'',loc:''},_ts:-1};
 
   localStorage.setItem('pc:current-proj',JSON.stringify(currentProject));
+  localStorage.setItem('pc:lastProj',id);
 
   // Load localStorage cache for this project
   loadL();
@@ -1642,11 +1690,8 @@ function selectProject(id,name){
 function createProject(name){
   if(!name.trim())return;
   const id='p'+Date.now();
-  const list=loadProjects();
   const proj={id,name:name.trim(),createdAt:new Date().toLocaleDateString('zh-TW')};
-  list.push(proj);
-  saveProjects(list);
-  selectProject(id,name.trim());
+  addProjectToFirebase(proj).then(()=>selectProject(id,name.trim()));
 }
 
 // Bind project screen buttons

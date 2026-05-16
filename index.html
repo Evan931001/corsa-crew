@@ -304,7 +304,18 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .proj-new{border-style:dashed;color:var(--c-t3)}
 .proj-new:hover{border-color:var(--c-am);color:var(--c-am)}
 
+
+/* ── Google Login ── */
+#google-screen{position:fixed;inset:0;background:var(--c-bg);z-index:9995;display:none;align-items:center;justify-content:center;padding:24px;animation:fi .2s}
+#google-screen.on{display:flex}
+#google-box{width:100%;max-width:360px;text-align:center}
+.google-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:13px;background:#fff;color:#333;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;transition:box-shadow .15s;font-family:inherit}
+.google-btn:hover{box-shadow:0 2px 12px rgba(255,255,255,.2)}
+.google-btn svg{flex-shrink:0}
+
 </style>
+<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>if(typeof pdfjsLib!=='undefined')pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 </head>
@@ -339,6 +350,19 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
         <button id="proj-new-confirm" class="btn btn-primary btn-sm" style="flex:1;justify-content:center">建立</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Google Login -->
+<div id="google-screen">
+  <div id="google-box">
+    <div style="font-family:var(--fd);font-size:32px;color:var(--c-am);letter-spacing:.18em;margin-bottom:6px">PROD<b style="color:var(--c-s4);font-weight:400">.</b>CREW</div>
+    <div style="font-size:12px;color:var(--c-t4);margin-bottom:40px;letter-spacing:.04em">劇組管理系統</div>
+    <button class="google-btn" id="google-login-btn">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      使用 Google 帳號登入
+    </button>
+    <div id="google-err" style="font-size:12px;color:var(--c-rd);margin-top:12px;min-height:16px"></div>
   </div>
 </div>
 
@@ -520,6 +544,29 @@ const TABS=[
 
 // ── Config ──
 const FB='https://corsa2025zg1001-default-rtdb.firebaseio.com';
+
+// Firebase Auth - will be initialized after SDK loads
+let fbAuth = null;
+let googleProvider = null;
+let currentUser = null;
+
+function initFirebase(){
+  const firebaseConfig = {
+    apiKey: "AIzaSyCWuPGepQ8AmI9FCcpDPaBiKWqkieacPmg",
+    authDomain: "corsa2025zg1001.firebaseapp.com",
+    databaseURL: "https://corsa2025zg1001-default-rtdb.firebaseio.com",
+    projectId: "corsa2025zg1001",
+    storageBucket: "corsa2025zg1001.firebasestorage.app",
+    messagingSenderId: "100386422921",
+    appId: "1:100386422921:web:84f5bd288b889c96648658"
+  };
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    fbAuth = firebase.auth();
+    googleProvider = new firebase.auth.GoogleAuthProvider();
+    console.log('Firebase Auth initialized');
+  }catch(e){console.error('Firebase init error:',e);}
+}
 const PWD='0000';
 const ADM='1001';
 let LS='pc:v5';
@@ -625,12 +672,13 @@ async function initPW(){
   const h=await sha(PWD);
   if(isAuth(h)){
     $('pw').remove();
-    // Fetch projects from Firebase first
-    fetchProjects().then(projs=>{
-      const lastId=localStorage.getItem('pc:lastProj');
-      if(lastId&&projs.find(p=>p.id===lastId)){selectProject(lastId,projs.find(p=>p.id===lastId).name);}
-      else{showProjScreen();}
-    });
+    // Check Google sign in status
+    if(fbAuth){
+      fbAuth.onAuthStateChanged(user=>{
+        if(user){currentUser=user;onGoogleSignIn();}
+        else{showGoogleScreen();}
+      });
+    }else{showGoogleScreen();}
     return;
   }
   $('pw').style.display='flex';
@@ -641,7 +689,10 @@ async function initPW(){
       $('pw').style.transition='opacity .3s';$('pw').style.opacity='0';
       setTimeout(()=>{
         $('pw').remove();
-        fetchProjects().then(()=>showProjScreen());
+        // Check if already Google signed in
+        const user=fbAuth?fbAuth.currentUser:null;
+        if(user){currentUser=user;onGoogleSignIn();}
+        else{showGoogleScreen();}
       },300);
     }else{
       const pe=$('pw-err'),pi=$('pw-inp');if(pe)pe.classList.add('on');if(pi){pi.classList.add('sk');pi.value='';}
@@ -1806,6 +1857,107 @@ async function handlePdfFile(file){
 }
 
 // ── Project System ──
+// ── Google Auth ──
+function showGoogleScreen(){
+  const el=document.getElementById('google-screen');
+  if(el)el.classList.add('on');
+}
+function hideGoogleScreen(){
+  const el=document.getElementById('google-screen');
+  if(el)el.classList.remove('on');
+}
+
+async function signInWithGoogle(){
+  const err=document.getElementById('google-err');
+  if(err)err.textContent='';
+  if(!fbAuth){if(err)err.textContent='Firebase 未初始化，請重新整理';return;}
+  try{
+    const result=await fbAuth.signInWithPopup(googleProvider);
+    currentUser=result.user;
+    hideGoogleScreen();
+    onGoogleSignIn();
+  }catch(e){
+    if(err)err.textContent='登入失敗：'+e.message;
+  }
+}
+
+async function onGoogleSignIn(){
+  if(!currentUser)return;
+  const uid=currentUser.uid;
+  // Check if user profile exists in Firebase
+  try{
+    const r=await fetch(`${FB}/users/${uid}.json`);
+    const data=await r.json();
+    if(data&&data.name){
+      // Profile exists - restore it
+      prof={name:data.name,dept:data.dept||'',isAdmin:data.isAdmin||false,avatar:data.avatar||currentUser.photoURL||''};
+      localStorage.setItem('pc:prof',JSON.stringify(prof));
+      updateProfUI();
+      // Go to project selection
+      fetchProjects().then(()=>{
+        const lastId=localStorage.getItem('pc:lastProj');
+        const projs=loadProjects();
+        if(lastId&&projs.find(p=>p.id===lastId)){selectProject(lastId,projs.find(p=>p.id===lastId).name);}
+        else{showProjScreen();}
+      });
+    }else{
+      // First time - show profile setup
+      // Pre-fill with Google name
+      const nameEl=document.getElementById('pf-name');
+      if(nameEl)nameEl.value=currentUser.displayName||'';
+      // Set Google avatar
+      if(currentUser.photoURL){
+        prof.avatar=currentUser.photoURL;
+        const prev=document.getElementById('pf-av-preview');
+        if(prev)prev.innerHTML=`<img src="${currentUser.photoURL}" class="av-img">`;
+      }
+      const pfEl=document.getElementById('pf-screen');
+      if(pfEl)pfEl.classList.add('on');
+      // Override pf-confirm to also save to Firebase
+      const confirmBtn=document.getElementById('pf-confirm');
+      if(confirmBtn){
+        confirmBtn.onclick=async()=>{
+          const n=document.getElementById('pf-name')?.value?.trim();
+          if(!n){document.getElementById('pf-name')?.focus();return;}
+          const d=document.querySelector('.dept-btn.on')?.dataset.dept||'';
+          saveP(n,d,window._pendingAvatar||prof.avatar||null);
+          // Save to Firebase users
+          await fetch(`${FB}/users/${uid}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({name:n,dept:d,avatar:prof.avatar||currentUser.photoURL||'',uid,email:currentUser.email,isAdmin:false})});
+          const pfEl=document.getElementById('pf-screen');if(pfEl)pfEl.classList.remove('on');
+          fetchProjects().then(()=>showProjScreen());
+        };
+      }
+    }
+  }catch(e){
+    console.error('Profile load error:',e);
+    showProjScreen();
+  }
+}
+
+// Override saveP to also save to Firebase if logged in
+const _origSaveP=saveP;
+
+document.addEventListener('click',e=>{
+  if(e.target.id==='google-login-btn') signInWithGoogle();
+});
+
+// Firebase will be initialized on window load
+// Check if already signed in on page load
+// (handled in window.onload below)
+
+// Wait for Firebase SDK to load, then initialize
+window.addEventListener('load', function(){
+  try{
+    initFirebase();
+    if(fbAuth){
+      fbAuth.onAuthStateChanged(user=>{
+        if(user) currentUser=user;
+      });
+    }
+  }catch(e){console.error('Firebase load error:',e);}
+});
+
 initPW();
 </script>
 <!-- QR Modal -->

@@ -431,7 +431,7 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   <nav class="sidebar">
     <div class="sb-top"><div style="display:flex;align-items:baseline;gap:8px">
         <div class="sb-mark">PROD<b>.</b>CREW</div>
-        <span style="font-size:9px;color:var(--c-t4);font-family:var(--fd);letter-spacing:.06em">v0.8.7</span>
+        <span style="font-size:9px;color:var(--c-t4);font-family:var(--fd);letter-spacing:.06em">v0.8.75</span>
       </div><div class="sb-proj" id="sb-proj">設定項目資訊</div></div>
     <div class="sb-nav" id="sb-nav"></div>
     <div id="sb-members" style="padding:8px;border-top:1px solid var(--c-bd);border-bottom:1px solid var(--c-bd)">
@@ -500,13 +500,7 @@ select.inp{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns=
     <div class="content" id="content"></div>
   </div>
   <nav class="bnav" id="bnav"></nav>
-  <!-- Mobile floating settings button -->
-  <button id="mob-set-btn" data-a="open-info"
-    style="position:fixed;bottom:calc(var(--bn) + 14px);right:14px;width:44px;height:44px;border-radius:50%;
-    background:var(--c-s2);border:1.5px solid var(--c-bd2);display:none;align-items:center;justify-content:center;
-    cursor:pointer;z-index:99;box-shadow:0 4px 16px rgba(0,0,0,.5)">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--c-t2)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-  </button>
+
   <div id="modal"></div>
 </div>
 <script>
@@ -546,6 +540,7 @@ const TABS=[
   {id:'script',label:'劇本',   icon:'doc'},
   {id:'sb',    label:'分鏡',   icon:'film'},
   {id:'call',  label:'通告單', icon:'clock'},
+  {id:'_set',  label:'設定',   icon:'set'},
 ];
 
 // ── Config ──
@@ -828,13 +823,15 @@ function render(){
   const ro=$('rec-overlay'),rd=$('rec-dot');
   if(ro)ro.classList.toggle('on',rec);
   if(rd)rd.classList.toggle('on',rec);
-  // Mobile settings button - show on all tabs
-  const mobSet=$('mob-set-btn');
-  if(mobSet) mobSet.style.display=window.innerWidth<768?'flex':'none';
   // Ann badge
   const annBadge=$('ann-badge');
   if(annBadge)annBadge.style.display=D.ann.length>0&&D.tab!=='ann'?'block':'none';
   // Content
+  // Settings tab opens modal instead of page
+  if(D.tab==='_set'){
+    D.tab='dash';
+    fetchOnline().then(()=>{showM(infoModal());setTimeout(()=>{const f=$('import-f');if(f)f.addEventListener('change',e=>{if(e.target.files[0])importJ(e.target.files[0]);});},50);});
+  }
   switch(D.tab){
     case 'shots': $('content').innerHTML=renderShots(isDsk);break;
     case 'script':$('content').innerHTML=renderScript(isDsk);break;
